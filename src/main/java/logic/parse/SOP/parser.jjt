@@ -1,0 +1,202 @@
+options {
+  STATIC=false;
+  MULTI=true;
+  VISITOR=true;
+  NODE_EXTENDS="BaseNode";
+  UNICODE_INPUT=true;
+}
+
+PARSER_BEGIN(parser)
+
+package logic.parse.SOP;
+
+public class parser {
+}
+
+PARSER_END(parser)
+
+
+SKIP :
+{
+  " "
+| "\t"
+| <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+}
+
+TOKEN : 
+{
+     	<MINUS: 	"-" >
+    | 	<PLUS: 		"+" >
+    | 	<PERIOD:	"." >
+    | 	<VIRTICAL:	"|" >
+    |	<COMMA:		"," >
+    | 	<OP_BRACE:	"{" >
+    | 	<END_BRACE:	"}" >
+    | 	<AT:		"@" >
+    | 	<HASH:		"#" >
+	| 	<ARG:		(["A"-"Z", "a"-"z", "0"-"9", "%", "\\", "*", "$"])+ >
+
+}
+
+ASTRecipient Recipient():
+{}
+{
+	DebugExp() {return jjtThis;}	
+}
+
+void DebugExp() #DebugEx(>1) :
+{}
+{
+	Address() | Debug() (AddExp())? < AT > domain()
+}
+
+void Debug() :
+{}
+{
+	<HASH> function() <PERIOD> command() (<PERIOD> commandArg())*  <HASH>
+}
+
+void Address() :
+{}
+{
+	AddExp() < AT > domain()
+}
+
+void domain():
+{}
+{
+	Subdomain() (<PERIOD> DomainArg())+
+
+}
+
+void AddExp() #void :
+{}
+{
+	MulExp() 	(<MINUS>	MulExp()#Exception(2) 
+				| <PLUS>	MulExp()#Union(2)  )*
+}
+
+void MulExp() #void :
+{}
+{
+	Exp()	(<PERIOD>	Exp() #Intersection(2))*
+	
+}
+
+void Exp() :
+{}
+{
+	Rule() <OP_BRACE> Paralist() <END_BRACE>
+}
+
+void Paralist() #Paralis(>1):
+{}
+{
+	Para() (<PLUS > Para()
+			|<VIRTICAL > Para() )*
+}
+
+void Para() #PolimolPara(>1):
+{}
+{
+	Value() ( < MINUS > Value()
+			|<COMMA> Value() )*
+}
+
+void Rule() :
+
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void Value() :
+
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void Subdomain() :
+
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void Arg() :
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void function() :
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void alias() :
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void command() :
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void commandArg() :
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+void DomainArg() :
+{ Token t; }
+
+{
+    t=<ARG> { jjtThis.nodeValue = t.image; }
+}
+
+ASTRecipient1 Recipient1():
+{}
+{
+	DebugExp1() {return jjtThis;}	
+}
+
+void DebugExp1() #DebugEx1(>1) :
+{}
+{
+	(Debug())? Address1() 	
+}
+
+void Address1() :
+{}
+{
+	Paras1() < AT > domain1()
+}
+
+void Paras1() :
+{}
+{
+	Paralist() (<PERIOD> Paralist())*
+}
+
+void domain1() :
+{}
+{
+	DomainArg() (<PERIOD> DomainArg())*
+}
+

@@ -1,0 +1,10 @@
+.settings/
+.classpath
+.project
+
+.gradle/
+build/
+
+.DS_Store
+Thumbs.db
+/bin/
