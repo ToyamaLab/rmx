@@ -12,7 +12,7 @@ import org.slf4j.*;
 
 import data.Message;
 
-public class IncomingMailService implements Runnable{
+public class IncomingMailService {
 	//メンバ変数
 	private Socket socket;
 	private BufferedReader in;
@@ -30,6 +30,7 @@ public class IncomingMailService implements Runnable{
 			connState = new StateService(socket);
 			oMsg = new Message();
 			this.sendAck("220"+connState.getServerName()+"SMTP");
+			this.conversation();
 		}catch(IOException e) {
 			log.warn("# Error: " + e.toString());
 			socket.close();
@@ -48,14 +49,6 @@ public class IncomingMailService implements Runnable{
 			socket.close();
 		}
 		log.info("S :  Send  : [" + acknowledgement + "]");
-	}
-	
-	public void run() {
-		try {
-			this.conversation();
-		} catch (IOException e) {
-			log.warn("# Error: " + e.toString());
-		}
 	}
 	
 	private void conversation() throws IOException{

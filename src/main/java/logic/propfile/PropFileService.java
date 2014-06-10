@@ -54,6 +54,13 @@ public class PropFileService {
 			firstDomainName[i] = tmp[0];
 			lastDomainName[i] = tmp[1];
 			
+			//
+			hashOfFileAndDomain = new HashMap<String, String>();
+			hashOfFileAndDomain.put("propFileName","default");
+			hashOfFileAndDomain.put("fullDomainName",lastDomainName[i]);
+			hashOfFileAndDomain.put("domainName", lastDomainName[i]);
+			setOfDomconfObj.add(hashOfFileAndDomain);
+			
 			//env.propertiesファイル内にfirstDomain[i]のキーが存在すれば
 			if(envBundle.containsKey(firstDomainName[i])) {
 				//(ex)valuesOfFirstDomainKey->testk,testb

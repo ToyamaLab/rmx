@@ -19,7 +19,8 @@ public class PluginService {
 	public static ArrayList<PluginInterface> getPlugins() {
 		ArrayList<PluginInterface> plugins = new ArrayList<PluginInterface>();
 		String cpath = System.getProperty("user.dir") +
-				File.separator + "src/plugins";
+				File.separator + "src/main/java/plugins";
+		
 		try {
 			File f = new File(cpath);
 			String[] files = f.list();
