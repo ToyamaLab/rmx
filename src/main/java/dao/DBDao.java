@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
+import logic.parse.*;
+
 public class DBDao {
 	//
 	private Connection conn;
@@ -32,16 +34,16 @@ public class DBDao {
 	public ResultSet read(String query, ListIterator<String> params) throws Exception{
 		Class.forName(driver);
 		//ユーザ名とパスワードのチェック
-		if(user!=null && pass!=null) {
+		if (user!=null && pass!=null) {
 			conn = DriverManager.getConnection(url, user, pass);
 			//パラメータがあればPreparedStatement、無ければStatementへ
-			if(params==null) {
+			if (params==null) {
 				stmt = conn.createStatement(
 						ResultSet.TYPE_SCROLL_SENSITIVE,
 						ResultSet.CONCUR_UPDATABLE
 						);
-			}else {prepstmt = conn.prepareStatement(query);}
-		}else {System.out.println("DBに接続できません。");}
+			} else prepstmt = conn.prepareStatement(query);
+		} else System.out.println("DBに接続できません。");
 		
 		if(prepstmt!=null) {
 			int num=1;
@@ -68,6 +70,9 @@ public class DBDao {
 		return resultSet;
 	}
 	
+	public ResultSet bodyRead (Parse4Body parse) throws Exception{
+		return read(parse.getQuery(), parse.getParameter().listIterator());
+	}
 	
 	public void write(String query) throws ClassNotFoundException,SQLException{
 		Class.forName(driver);

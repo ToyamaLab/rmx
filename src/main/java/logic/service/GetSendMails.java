@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
-import javax.activation.MailcapCommandMap;
-
 import dao.DBDao;
 import data.Message;
 
 import logic.parse.User;
+import logic.bodyfunction.*;
 
 public class GetSendMails {
 	private User user;
 	private ResourceBundle domconfBundle;
 	private Message oMsg;
+	private ContentsMatch cm;
 	
 	public GetSendMails(User user,ResourceBundle domconfBundle,Message oMsg) {
 		this.user = user;
@@ -42,8 +42,16 @@ public class GetSendMails {
 			sMsg.setRecipient(mailAddresses.get(i));
 			sMsg.setSender(oMsg.getSender());
 			sMsg.setSubject(oMsg.getSubject());
-			for(int j=0;j<oMsg.getBody().size();j++) {
-				sMsg.addBody(oMsg.getBody().get(j));
+			if(cm != null){
+				ArrayList<String> edited = cm.editBody(oMsg.getBody(), mailAddresses.get(i));
+				for(int j = 0; j < edited.size(); j++){
+					sMsg.addBody(edited.get(j));
+				}
+			}
+			else{
+				for(int j=0;j<oMsg.getBody().size();j++) {
+					sMsg.addBody(oMsg.getBody().get(j));
+				}
 			}
 			for(int k=0;k<oMsg.getHeader().size();k++) {
 				sMsg.addHeader(oMsg.getHeader().get(k));
@@ -70,6 +78,10 @@ public class GetSendMails {
 			rs.close();
 		} catch (Exception e) {e.printStackTrace();}
 		return mailAddresses;
+	}
+
+	public void setCm(ContentsMatch cm) {
+		this.cm = cm;
 	}
 	
 }

@@ -13,6 +13,7 @@ import logic.parse.User;
 import logic.plugin.GetSendMailsOfFunction;
 import logic.propfile.PropFileService;
 import logic.service.GetSendMails;
+import logic.bodyfunction.*;
 import presentation.mail.IncomingMailService;
 import presentation.mail.SendMailService;
 import dao.PropfileDao;
@@ -70,7 +71,15 @@ public class CreateFlow implements Runnable{
 			//RMX形式の場合 ex)team{rmx}+grade{3}@test.keio.com
 			//normalFlgがtrue
 			if(user.getNormalFlg()) {
+				ContentsMatch cm = new ContentsMatch();
 				GetSendMails gsm = new GetSendMails(user, domconfBundle, oMsg);
+				//BodyFunctionを使用している時
+				if(cm.checkUse(oMsg.getBody())){
+					if(!cm.checkErr(oMsg.getBody())){
+						cm.getResults(oMsg.getBody(), domconfBundle);
+						gsm.setCm(cm);
+					}
+				}
 				sMsgs = gsm.getSendMails();
 			}
 			//#functionの場合 ex)#event.attend#team{rmx}@test.keio.com
