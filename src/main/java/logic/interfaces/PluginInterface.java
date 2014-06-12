@@ -10,7 +10,8 @@ public interface PluginInterface {
 			String function,
 			String command,
 			ArrayList<String> commandArgs,
-			ArrayList<String> destinations);
+			ArrayList<String> destinations,
+			String domconfPropFileName);
 	
 	public ArrayList<String> getAvailableFunctionNames();
 }
