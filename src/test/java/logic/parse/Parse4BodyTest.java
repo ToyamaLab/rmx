@@ -22,7 +22,7 @@ public class Parse4BodyTest {
 
 
 	@Test
-	public void ルールtestパラメータ1でSQLが返る() {
+	public void ルールtestパラメータ1でSQLが返る() throws Exception {
 		
 		String tag = "<if test{1}>";
 		
@@ -37,7 +37,7 @@ public class Parse4BodyTest {
 	}
 	
 	@Test
-	public void ルールcheckパラメータ1でSQLが返る() {
+	public void ルールcheckパラメータ1でSQLが返る() throws Exception {
 		
 		String tag = "<if check{1}>";
 		
@@ -50,5 +50,33 @@ public class Parse4BodyTest {
 		assertThat(sut.getParameter(), is(expectedPara));
 	}
 	
+	@Test
+	public void ルールtest2パラメータtestでSQLが返る() throws Exception {
+		String tag = "<if test2{test}>";
+		
+		String expectedQuery = "(select email from test2 where test2 = ?)";
+		ArrayList<String> expectedPara = new ArrayList<String>();
+		expectedPara.add("string");
+		expectedPara.add("test");
+		sut.setParse(tag);
+		assertThat(sut.getQuery(), is(expectedQuery));
+		assertThat(sut.getParameter(), is(expectedPara));
+	}
+	
+	@Test //現時点で失敗
+	public void ルールtestパラメータ1と2でSQLが返る() throws Exception {
+		String tag = "<if test{1}>";
+		
+		String expectedQuery = "(select email from check where test >= ? and test <= ?)";
+		ArrayList<String> expectedPara = new ArrayList<String>();
+		expectedPara.add("integer");
+		expectedPara.add("1");
+		expectedPara.add("integer");
+		expectedPara.add("2");
+		sut.setParse(tag);
+		assertThat(sut.getQuery(), is(expectedQuery));
+		assertThat(sut.getParameter(), is(expectedPara));
+
+	}
 
 }

@@ -54,9 +54,7 @@ public class ContentsMatch {
 				e.printStackTrace();
 			}
 			
-		}
-		
-		
+		}		
 	}
 	
 	
@@ -72,12 +70,12 @@ public class ContentsMatch {
 		String endTagOutside = new String();
 		int startIndex = 0; 
 		int endIndex = 0;
-		int tagStack = 0;
 
 		ArrayList<String> edited = new ArrayList<String>();
 		ArrayList<String> insideBody = new ArrayList<String>();
 		ArrayList<String> bottomBody = new ArrayList<String>();
 		
+		int tagStack = 0;
 		for (int i = 0; i < _body.size(); i++){
 			String part = _body.get(i);
 			if (part.indexOf(BEGINTAG) > -1){
