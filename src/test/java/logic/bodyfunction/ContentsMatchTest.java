@@ -136,5 +136,4 @@ public class ContentsMatchTest {
 		String recipient = "matt@db.ics.keio.ac.jp";
 		assertThat(sut.editBody(_body5, recipient), is(expected));
 	}
-	
 }
