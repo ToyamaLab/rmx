@@ -3,17 +3,16 @@ options {
   MULTI=true;
   VISITOR=true;
   NODE_EXTENDS="BaseNode";
-  UNICODE_INPUT=true;
 }
 
-PARSER_BEGIN(parser)
+PARSER_BEGIN(parser1)
 
 package logic.parse.SOP;
 
-public class parser {
+public class parser1 {
 }
 
-PARSER_END(parser)
+PARSER_END(parser1)
 
 
 SKIP :
@@ -48,13 +47,13 @@ ASTRecipient Recipient():
 void DebugExp() #DebugEx(>1) :
 {}
 {
-	Address() | Debug() (AddExp())? < AT > domain()
+	(Debug())? Address() 	
 }
 
 void Debug() :
 {}
 {
-	<HASH> function() <PERIOD> command() (<PERIOD> commandArg())*  <HASH>
+	<HASH> function() (<PERIOD> alias())?  <HASH>
 }
 
 void Address() :
@@ -93,8 +92,7 @@ void Exp() :
 void Paralist() #Paralis(>1):
 {}
 {
-	Para() (<PLUS > Para()
-			|<VIRTICAL > Para() )*
+	Para() (<PLUS> Para())*
 }
 
 void Para() #PolimolPara(>1):
@@ -149,54 +147,10 @@ void alias() :
     t=<ARG> { jjtThis.nodeValue = t.image; }
 }
 
-void command() :
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
-void commandArg() :
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
 void DomainArg() :
 { Token t; }
 
 {
     t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
-ASTRecipient1 Recipient1():
-{}
-{
-	DebugExp1() {return jjtThis;}	
-}
-
-void DebugExp1() #DebugEx1(>1) :
-{}
-{
-	Address1() | Debug() (Paras1())? < AT > domain1()	
-}
-
-void Address1() :
-{}
-{
-	Paras1() < AT > domain1()
-}
-
-void Paras1() :
-{}
-{
-	Paralist() (<PERIOD> Paralist())*
-}
-
-void domain1() :
-{}
-{
-	DomainArg() (<PERIOD> DomainArg())*
 }
 

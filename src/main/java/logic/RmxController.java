@@ -6,10 +6,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+
 import logic.propfile.PropFileService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
+import logic.parse.Distributor;
+import logic.propfile.PropfileOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dao.PropfileDao;
 
 
 public class RmxController {
@@ -26,13 +35,21 @@ public class RmxController {
 	
 	//env.propertiesファイルをチェックする
 	public static void propFileController() {
+
 		propFileService.init();
 		if(!propFileService.getDomBundles().isEmpty())
 			smtpListenerController();
+
+		PropfileOperator prop_ope = new PropfileOperator();
+		ArrayList<HashMap<String, String>> domains_maps =
+				prop_ope.getDomainsMaps();
+		if(!domains_maps.isEmpty())
+			smtpListenerController(domains_maps);
+
 	}
 	
 	//ソケットを開き、システムをスタート
-	public static void smtpListenerController() {
+	public static void smtpListenerController(ArrayList<HashMap<String, String>> domains_maps) {
 		try {
 			ServerSocket sSocket;
 			Socket socket;
@@ -51,7 +68,12 @@ public class RmxController {
 				socket = sSocket.accept();
 				log.debug("S :Accepted: ("
 						+ socket.getInetAddress().getHostName() + ")");
+<<<<<<< HEAD
 				Thread th = new Thread(new CreateFlow(socket));
+=======
+				Distributor dist;
+				Thread th = new Thread(dist = new Distributor(socket,envBundle, domains_maps));
+>>>>>>> revise
 				th.start();
 				
 			}

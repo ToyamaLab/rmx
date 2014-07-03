@@ -11,8 +11,17 @@ public interface PluginInterface {
 			String function,
 			String command,
 			ArrayList<String> commandArgs,
+
 			ArrayList<String> destinations,
 			ResourceBundle domconfBundle);
-	
+
+			String target,
+			ArrayList<String> recipients,
+			String propFileName,
+			ResourceBundle domconfBundle,
+			String domain,
+			String subdomain,
+			String propfile);
+
 	public ArrayList<String> getAvailableFunctionNames();
 }

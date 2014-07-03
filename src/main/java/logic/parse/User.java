@@ -129,6 +129,7 @@ public class User implements parserVisitor {
 	public void UserStart(String recipient, ResourceBundle dom) {
 
 		System.out.println("==== parser start ====");
+		this.recipient = recipient;
 		User visitor = new User();
 		visitor.rb = dom;
 		parser parser = new parser(new StringReader(recipient));
@@ -532,6 +533,7 @@ public class User implements parserVisitor {
 
 		function = node.jjtGetChild(0).jjtAccept(this, null).toString();
 		command = node.jjtGetChild(1).jjtAccept(this, null).toString();
+		
 		if(childnum>2) {
 			for(int i=2;i<childnum;i++) {
 				commandArgs.add(node.jjtGetChild(i).jjtAccept(this, null).toString());
@@ -1105,11 +1107,13 @@ public class User implements parserVisitor {
 		polyTypesNum = 0;
 		polyTypesPointer = 0;
 	}
-
+	
+	@Override
 	public ArrayList<String> getparalist(){
 		return paralist;
 	}
-
+	
+	@Override
 	public ArrayList<String> getValues() {
 		/*
 		 * zonop add. make values from para. para : String, zonop+obunai,
@@ -1121,6 +1125,7 @@ public class User implements parserVisitor {
 		return values;
 	}
 
+	@Override
 	public ArrayList<String> getqueries(){
 		ArrayList<String> replaced_queries = new ArrayList<String>();
 		for(int i = 0; i < queries.size(); i++){
@@ -1128,64 +1133,87 @@ public class User implements parserVisitor {
 		}
 		return replaced_queries;
 	}
-
+	
 	public ArrayList<String> getminimamqueries(){
 
 		return minimamqueries;
 	}
 
+	@Override
 	public ArrayList<String> getoperator(){
 		return operator;
 	}
 
+	@Override
 	public ArrayList<String> getKeys() {
 		return keys;
 	}
-
+	
+	@Override
 	public String getDomain() {
 		return domain;
 	}
 
+	@Override
 	public String getFunction() {
 		return function;
 	}
 	
+	@Override
 	public boolean getFunctionFlg() {
 		return functionFlg;
 	}
 	
+	@Override
 	public boolean getNormalFlg() {
 		return normalFlg;
 	}
 	
+	@Override
 	public String getCommand(){
 		return command;
 	}
 	
+	@Override
 	public ArrayList<String> getCommandArgs(){
 		return commandArgs;
 	}
-
-	public String getSundomain() {
+	
+	@Override
+	public String getTarget() {
+		if(getFunctionFlg()) {
+			int start = recipient.indexOf("#", 1);
+			return recipient.substring(start+1);
+		}else
+			return null;
+	}
+	
+	@Override
+	public String getSubdomain() {
 		return subdomain;
 	}
 
+	@Override
 	public String getRecipient() {
 		return recipient;
 	}
-
+	
+	@Override
 	public ArrayList<String> getPara() {
 		return para;
 	}
-
+	
+	@Override
 	public ArrayList<Integer> getParanum(){
 		return paranum;
 	}
 
+	@Override
 	public String getQuery() {
 		return finalquery;
 	}
 
+	@Override
 	public String getfulldomain(){
 		return subdomain + "." + domain; 
 	}
