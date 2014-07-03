@@ -103,7 +103,7 @@ public class GetSendMailsOfFunction {
 			DBDao dbDao = new DBDao(domconfBundle);
 			ResultSet rs;
 			rs = dbDao.read(query, params);
-			while(rs.next()) {mailAddresses.add(rs.getString("email"));}
+			while(rs.next()) {mailAddresses.add(rs.getString(1));}
 			rs.close();
 		} catch (Exception e) {e.printStackTrace();}
 		return mailAddresses;
