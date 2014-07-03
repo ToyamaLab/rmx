@@ -6,24 +6,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-import logic.error.ErrorMailService;
-import logic.parse.User;
-import logic.plugin.GetSendMailsOfFunction;
 import logic.propfile.PropFileService;
-import logic.service.GetSendMails;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import presentation.mail.IncomingMailService;
-import presentation.mail.SendMailService;
-import dao.PropfileDao;
-import data.Message;
 
 public class RmxController {
 	
 	private static final Logger log = LoggerFactory.getLogger(RmxController.class);
-	
+	private static PropFileService propFileService = PropFileService.getInstance();
 	//コンストラクタ
 	public RmxController() {		
 	}
@@ -34,10 +26,8 @@ public class RmxController {
 	
 	//env.propertiesファイルをチェックする
 	public static void propFileController() {
-		PropFileService propFileService = new PropFileService();
-		ArrayList<HashMap<String, String>> propFileNamesAndDomains =
-				propFileService.getDomconfPropFileNamesAndDomains();
-		if(!propFileNamesAndDomains.isEmpty())
+		propFileService.init();
+		if(!propFileService.getDomBundles().isEmpty())
 			smtpListenerController();
 	}
 	
@@ -48,7 +38,7 @@ public class RmxController {
 			Socket socket;
 			int RECEIV_PORT;
 			
-			ResourceBundle envBundle = PropfileDao.readPropFile("env");
+			ResourceBundle envBundle = propFileService.getEnvBundle();
 			
 			RECEIV_PORT = Integer.parseInt(envBundle.getString("receive_port"));
 			sSocket = new ServerSocket(RECEIV_PORT);
@@ -61,8 +51,7 @@ public class RmxController {
 				socket = sSocket.accept();
 				log.debug("S :Accepted: ("
 						+ socket.getInetAddress().getHostName() + ")");
-				CreateFlow flow;
-				Thread th = new Thread(flow = new CreateFlow(socket,envBundle));
+				Thread th = new Thread(new CreateFlow(socket));
 				th.start();
 				
 			}

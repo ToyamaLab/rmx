@@ -22,12 +22,11 @@ import data.Message;
 public class CreateFlow implements Runnable{
 	//メンバ変数
 	private Socket socket;
-	private ResourceBundle envBundle;
+	private PropFileService pfs = PropFileService.getInstance();
 	private static final Logger log = LoggerFactory.getLogger(RmxController.class);
 	
-	public CreateFlow(Socket socket, ResourceBundle envBundle) {
+	public CreateFlow(Socket socket) {
 		this.socket = socket;
-		this.envBundle = envBundle;
 	}
 
 	@Override
@@ -48,21 +47,18 @@ public class CreateFlow implements Runnable{
 			//エラー用メッセージ
 			Message errorMsg = new Message();
 			
-			//送られてきたメールのドメインから使用する.propertiesファイル名を得る
-			PropFileService pfs = new PropFileService();
-			String domconfPropFileName = pfs.getPropFileName(oMsg.getRecipient());
+			//送られてきたメールのドメインから使用するpropertiesのオブジェクトを得る
+			ResourceBundle domconfBundle = pfs.searchDomBundle(oMsg.getRecipient());
 			
-			//poropertiesファイル名が得られなかったとき
-			if(domconfPropFileName==null) {
+			//propertiesオブジェクトが得られなかったとき
+			if(domconfBundle==null) {
 				errorMsg = ErrorMailService.nonePropError(oMsg);
 				SendMailService sm = new SendMailService();
-				sm.sendMail(errorMsg, envBundle);
+				sm.sendMail(errorMsg, pfs.getEnvBundle());
 				log.info("Error Mail \"nonePropError\" is sending to {}", errorMsg.getRecipient());
 				
 			}
 			
-			//得られたときはpropertiesファイルをオブジェクトとして得る
-			ResourceBundle domconfBundle = PropfileDao.readPropFile(domconfPropFileName);
 			
 			//メールの宛先にSOPを通す
 			User user = new User();
@@ -85,14 +81,14 @@ public class CreateFlow implements Runnable{
 			//#functionの場合 ex)#event.attend#team{rmx}@test.keio.com
 			//functionFlgがtrue
 			else if(user.getFunctionFlg()) {
-				GetSendMailsOfFunction gsmf = new GetSendMailsOfFunction(user, domconfBundle, oMsg,domconfPropFileName);
+				GetSendMailsOfFunction gsmf = new GetSendMailsOfFunction(user, domconfBundle, oMsg);
 				sMsgs = gsmf.getSendMailsOfFunction();
 			}
 			//それ以外は文法エラー
 			else {
 				errorMsg = ErrorMailService.syntaxErrorMail(oMsg);
 				SendMailService sm = new SendMailService();
-				sm.sendMail(errorMsg, envBundle);
+				sm.sendMail(errorMsg, pfs.getEnvBundle());
 				log.info("Error Mail \"syntaxError\" is sending to {}", errorMsg.getRecipient());
 			}
 			
@@ -100,7 +96,7 @@ public class CreateFlow implements Runnable{
 			if(sMsgs.isEmpty()) {
 				errorMsg = ErrorMailService.noneRecipientError(oMsg);
 				SendMailService sm = new SendMailService();
-				sm.sendMail(errorMsg, envBundle);
+				sm.sendMail(errorMsg, pfs.getEnvBundle());
 				log.info("Error Mail \"noneRecipient\" is sending to {}", errorMsg.getRecipient());
 			}
 			
@@ -108,7 +104,7 @@ public class CreateFlow implements Runnable{
 			log.info("Mail:{} -> {}", oMsg.getSender(), oMsg.getRecipient());
 			SendMailService sm = new SendMailService();
 			for(int i=0;i<sMsgs.size();i++)
-				sm.sendMail(sMsgs.get(i), envBundle);
+				sm.sendMail(sMsgs.get(i), pfs.getEnvBundle());
 		}catch(IOException e) {
 			
 		}
