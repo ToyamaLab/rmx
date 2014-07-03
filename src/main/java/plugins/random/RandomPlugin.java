@@ -2,16 +2,17 @@ package plugins.random;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.ResourceBundle;
 
-import data.Message;
 import logic.interfaces.PluginInterface;
+import data.Message;
 
 public class RandomPlugin implements PluginInterface{
 
 	@Override
 	public ArrayList<Message> pluginStart(Message oMsg, String function,
 			String command, ArrayList<String> commandArgs,
-			ArrayList<String> destinations,String domconfPropFileName) {
+			ArrayList<String> destinations,ResourceBundle domconfBundle) {
 		ArrayList<Message> sMsgs = new ArrayList<Message>();
 		if(command.equalsIgnoreCase("shuffle")) {
 			Random rnd = new Random();

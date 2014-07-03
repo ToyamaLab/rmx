@@ -1,6 +1,7 @@
 package logic.interfaces;
 
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 import data.Message;
 
@@ -11,7 +12,7 @@ public interface PluginInterface {
 			String command,
 			ArrayList<String> commandArgs,
 			ArrayList<String> destinations,
-			String domconfPropFileName);
+			ResourceBundle domconfBundle);
 	
 	public ArrayList<String> getAvailableFunctionNames();
 }

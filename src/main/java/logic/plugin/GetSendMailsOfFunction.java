@@ -14,7 +14,6 @@ import logic.parse.User;
 public class GetSendMailsOfFunction {
 	private User user;
 	private ResourceBundle domconfBundle;
-	private String domconfPropFileName;
 	private Message oMsg;
 	private String function;
 	private String command;
@@ -24,11 +23,9 @@ public class GetSendMailsOfFunction {
 	
 	public GetSendMailsOfFunction(User user,
 			ResourceBundle domconfBundle,
-			Message oMsg,
-			String domconfPropFileName) {
+			Message oMsg) {
 		this.user = user;
 		this.domconfBundle = domconfBundle;
-		this.domconfPropFileName = domconfPropFileName;
 		this.oMsg = oMsg;
 		this.function = user.getFunction();
 		this.command = user.getCommand();
@@ -47,7 +44,7 @@ public class GetSendMailsOfFunction {
 		
 		//送信メッセージを返す
 		//引数で宛先(destinations)を予め渡しておく事で、plugin側でパースしない
-		ArrayList<Message> sMsgs = plugin.pluginStart(oMsg, function, command, commandArgs, destinations,domconfPropFileName);
+		ArrayList<Message> sMsgs = plugin.pluginStart(oMsg, function, command, commandArgs, destinations,domconfBundle);
 		
 		return sMsgs;
 	}
