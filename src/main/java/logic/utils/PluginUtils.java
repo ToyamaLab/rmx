@@ -1,4 +1,4 @@
-package logic.service;
+package logic.utils;
 
 import java.io.File;
 import java.net.URL;
@@ -11,23 +11,34 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dao.DBDao;
 import data.Message;
+import logic.SmtpListener;
 import logic.interfaces.PluginInterface;
 import logic.parse.User;
 
-public class PluginService {
+public class PluginUtils {
+	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
+	
 	/**ユーティリティクラスなのでコンストラクタは呼び出せないように*/
-	private PluginService() {}
+	private PluginUtils() {}
 	
 	/**
-	 * cpathにあるjarファイルを読み込んでPluginインスタンスとしてArrayListに格納する
+	 * cpathにあるjarファイルを読み込んでPluginインスタンスとしてArrayListに格納する.
+	 * @param cpath プラグイン用の.jarファイルが配置されているパス
+	 * @return 使用できる全てのプラグイン
 	 * */
 	public static ArrayList<PluginInterface> setPlugins(String cpath) {
 		ArrayList<PluginInterface> plugins = new ArrayList<PluginInterface>();
 		try {
 			File f = new File(cpath);
 			String[] files = f.list();
+			//
+			if(files.length==0)
+			 {log.error("not exists file in plugins dir."); return null;}
 			for(int i=0;i<files.length;i++) {
 				if(files[i].endsWith(".jar")) {
 					File file = new File(cpath + File.separator+files[i]);
@@ -71,50 +82,5 @@ public class PluginService {
 			}
 		}
 		return null;
-	}
-	
-	public static ArrayList<String> getRecipients(Message oMsg,
-			ResourceBundle domconfBundle){
-		String target = trimSharp(oMsg.getRecipient());
-		if(target.indexOf("@")>0) {
-			//targetをパースする
-			User funcUser = new User();
-			funcUser.UserStart(target, domconfBundle);
-			
-			//クエリとパラメーターを得る
-			String query = funcUser.getQuery();
-			ListIterator<String> params = funcUser.getPara().listIterator();
-			
-			//宛先(destinations)を得る
-			ArrayList<String> recipients = getMailAddresses(domconfBundle, query, params);
-			
-			return recipients;
-		}else {
-			ArrayList<String> returnMe = new ArrayList<String>();
-			returnMe.add(oMsg.getSender());
-			
-			return returnMe;
-		}
-	}
-	
-	public static String trimSharp(String str) {
-		int start = str.indexOf("#", 1);
-		return str.substring(start+1);
-	}
-	
-	public static ArrayList<String> getMailAddresses(
-			ResourceBundle domconfBundle,
-			String query,
-			ListIterator<String> params){
-		//
-		ArrayList<String> mailAddresses  = new ArrayList<String>();
-		try {
-			DBDao dbDao = new DBDao(domconfBundle);
-			ResultSet rs;
-			rs = dbDao.read(query, params);
-			while(rs.next()) {mailAddresses.add(rs.getString(1));}
-			rs.close();
-		} catch (Exception e) {e.printStackTrace();}
-		return mailAddresses;
 	}
 }

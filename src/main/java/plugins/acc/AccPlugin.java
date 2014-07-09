@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import plugins.acc.regist.RegisterAcc;
-import plugins.acc.util.AccUtil;
+import plugins.acc.util.RegistUtil;
 import data.Message;
 import logic.interfaces.PluginInterface;
 
@@ -16,15 +16,14 @@ public class AccPlugin implements PluginInterface{
 			String function,
 			String command,
 			ArrayList<String> commandArgs,
-			String target,
 			ArrayList<String> recipients,
-			String propfile,
-			ResourceBundle domconfBundle) {
+			ResourceBundle domconfBundle,
+			String propfile) {
 		
-		String acc_propfile = AccUtil.getAccPropfileName(propfile);
+		//String acc_propfile = AccUtil.getAccPropfileName(propfile);
 		ArrayList<Message> sMsg = new ArrayList<Message>();
 		if(command.equalsIgnoreCase("regist")) {
-			RegisterAcc r_acc = new RegisterAcc(commandArgs, oMsg, propfile, acc_propfile, domconfBundle);
+			RegisterAcc r_acc = new RegisterAcc(commandArgs, oMsg, domconfBundle);
 			r_acc.saveAddress();
 			
 		}

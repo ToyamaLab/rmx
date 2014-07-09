@@ -167,7 +167,7 @@ public class User implements parserVisitor {
 		for (int i = 0; i < para.size(); i++) {
 			System.out.println("para : " + para.get(i).toString());
 		}
-
+		
 		visitor.finalquery = this.simplereplace(visitor.finalquery);
 		System.out.println("final query : " + visitor.finalquery);
 		this.checkATmark();
@@ -1056,7 +1056,7 @@ public class User implements parserVisitor {
 				break;
 			q = q.replaceAll("\\$" + Integer.toString(i), "?");
 		}
-
+		
 		if(q.indexOf("$sender") > 0){
 			q = q.replaceAll("\\$sender", "?");
 		}

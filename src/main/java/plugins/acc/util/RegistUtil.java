@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import data.Message;
 
-public class AccUtil {
-	private AccUtil() {}
+public class RegistUtil {
+	private RegistUtil() {}
 	
 	public static String getAccPropfileName(String domconfPropFileName) {
 		return domconfPropFileName+"_acc";
@@ -43,6 +43,17 @@ public class AccUtil {
 	public static String strExtract(String str, String beginStr) {
 		int start = str.indexOf(beginStr);
 		return str.substring(start+1);
+	}
+	
+	public static String getDummy(String user_name, String content, String recipient) {
+		String domain = getDomain(recipient);
+		String dummy = user_name+"@"+content+"."+domain;
+		return dummy;
+	}
+	
+	public static String getDomain(String str) {
+		int num_at = str.indexOf("@");
+		return str.substring(num_at+1);
 	}
 	
 	

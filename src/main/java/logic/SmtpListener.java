@@ -14,20 +14,19 @@ import org.slf4j.LoggerFactory;
 
 
 import logic.parse.Distributor;
-import logic.propfile.PropfileOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dao.PropfileDao;
 
 
-public class RmxController {
+public class SmtpListener {
+	//メンバ変数
+	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
+	private static PropFileService propfileInstance = PropFileService.getInstance();
 	
-	private static final Logger log = LoggerFactory.getLogger(RmxController.class);
-	private static PropFileService propFileService = PropFileService.getInstance();
 	//コンストラクタ
-	public RmxController() {		
-	}
+	private SmtpListener() {}
 	
 	public static void startPkg() {
 		propFileController();
@@ -36,26 +35,19 @@ public class RmxController {
 	//env.propertiesファイルをチェックする
 	public static void propFileController() {
 
-		propFileService.init();
-		if(!propFileService.getDomBundles().isEmpty())
+		propfileInstance.init();
+		if(!propfileInstance.getDomBundles().isEmpty())
 			smtpListenerController();
-
-		PropfileOperator prop_ope = new PropfileOperator();
-		ArrayList<HashMap<String, String>> domains_maps =
-				prop_ope.getDomainsMaps();
-		if(!domains_maps.isEmpty())
-			smtpListenerController(domains_maps);
-
 	}
 	
 	//ソケットを開き、システムをスタート
-	public static void smtpListenerController(ArrayList<HashMap<String, String>> domains_maps) {
+	public static void smtpListenerController() {
 		try {
 			ServerSocket sSocket;
 			Socket socket;
 			int RECEIV_PORT;
 			
-			ResourceBundle envBundle = propFileService.getEnvBundle();
+			ResourceBundle envBundle = propfileInstance.getEnvBundle();
 			
 			RECEIV_PORT = Integer.parseInt(envBundle.getString("receive_port"));
 			sSocket = new ServerSocket(RECEIV_PORT);
@@ -68,14 +60,9 @@ public class RmxController {
 				socket = sSocket.accept();
 				log.debug("S :Accepted: ("
 						+ socket.getInetAddress().getHostName() + ")");
-<<<<<<< HEAD
-				Thread th = new Thread(new CreateFlow(socket));
-=======
-				Distributor dist;
-				Thread th = new Thread(dist = new Distributor(socket,envBundle, domains_maps));
->>>>>>> revise
-				th.start();
-				
+
+				Thread t = new Thread(new Distributor(socket,propfileInstance));
+				t.start();
 			}
 		}catch (SecurityException e) {
 			log.error("# Error: " + e.toString());

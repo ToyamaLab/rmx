@@ -10,20 +10,14 @@ import data.Message;
 public class RandomPlugin implements PluginInterface{
 
 	@Override
-
-	public ArrayList<Message> pluginStart(Message oMsg, String function,
-			String command, ArrayList<String> commandArgs,
-			ArrayList<String> destinations,ResourceBundle domconfBundle) {
-
 	public ArrayList<Message> pluginStart(
 			Message oMsg,
 			String function,
 			String command,
 			ArrayList<String> commandArgs,
-			String target,
 			ArrayList<String> recipients,
-			String propfile,
-			ResourceBundle domconfBundle) {
+			ResourceBundle domconfBundle,
+			String propfile) {
 
 		ArrayList<Message> sMsgs = new ArrayList<Message>();
 		if(command.equalsIgnoreCase("shuffle")) {

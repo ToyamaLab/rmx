@@ -170,13 +170,12 @@ public class User1 implements parserVisitor {
         commandArgs = visitor.commandArgs;
         functionFlg = visitor.functionFlg;
         normalFlg = visitor.normalFlg;
-        finalquery = visitor.finalquery;
         paralist = visitor.paralist;
         queries = visitor.queries;
 
 		System.out.println(subdomain);
 		System.out.println(domname);
-		visitor.finalquery = this.simplereplace(visitor.finalquery);
+		finalquery = this.simplereplace(visitor.finalquery);
 		System.out.println("final query : " + finalquery);
 
 		for (int i = 0; i < para.size(); i++) {
@@ -387,6 +386,7 @@ public class User1 implements parserVisitor {
 		} else {
 			keyquery = rule + "[" + 1 + "]";
 		}
+		System.out.println("@@"+keyquery);
 		String query = "(" + rb.getString(keyquery) + ")";
 		
 		int count = 0;
@@ -396,6 +396,7 @@ public class User1 implements parserVisitor {
 			q = q.replaceFirst("\\$", "?");
 			count++;
 		}
+		
 		System.out.println("count : " + count);
 		if(count != 0)
 			paranum.add(count);
@@ -524,12 +525,11 @@ public class User1 implements parserVisitor {
 				break;
 			q = q.replaceAll("\\$" + Integer.toString(i), "?");
 		}
-
+		
 		if(q.indexOf("$@") > 0){
 			q = q.replaceAll("\\$@", "?");
 			containsATmark = true;
 		}
-
 		return q;
 	}
 

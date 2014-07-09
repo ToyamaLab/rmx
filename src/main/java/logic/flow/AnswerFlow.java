@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import logic.RmxController;
+import logic.SmtpListener;
 import logic.parse.User;
 import logic.parse.SOP.parserVisitor;
 import data.Message;
@@ -16,7 +16,7 @@ public class AnswerFlow {
 	private ResourceBundle domconfBundle;
 	private ResourceBundle envBundle;
 	private parserVisitor user_info;
-	private static final Logger log = LoggerFactory.getLogger(RmxController.class);
+	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
 	
 	public AnswerFlow(Message oMsg, ResourceBundle domconfBundle, ResourceBundle envBundle, parserVisitor user_info) {
 		this.oMsg = oMsg;
