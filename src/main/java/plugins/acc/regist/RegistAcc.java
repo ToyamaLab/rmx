@@ -8,7 +8,7 @@ import plugins.acc.util.RegistUtil;
 import dao.DBDao;
 import data.Message;
 
-public class RegisterAcc {
+public class RegistAcc {
 	//
 	private Message oMsg;
 	private ResourceBundle domconfBundle;
@@ -16,23 +16,26 @@ public class RegisterAcc {
 	private String sender;
 	private String user_name;
 	private String content;
+	ArrayList<String> recipients;
 	
 	//コンストラクタ
-	public RegisterAcc(
+	public RegistAcc(
 			ArrayList<String> commandArgs,
 			Message oMsg,
-			ResourceBundle domconfBundle) {
+			ResourceBundle domconfBundle,
+			ArrayList<String> recipients) {
 		this.oMsg = oMsg;
 		this.domconfBundle = domconfBundle;
 		this.sender = oMsg.getSender();
 		this.content = commandArgs.get(0);
 		this.user_name = commandArgs.get(1);
+		this.recipients = recipients;
 	}
 	
 	public void saveAddress() {
 		try {
 			dummy = RegistUtil.getDummy(user_name, content, oMsg.getRecipient());
-			String insert_query = RegistUtil.createInsertQuery(oMsg.getRecipient(), oMsg.getSender() , commandArgs);
+			String insert_query = RegistUtil.createInsertQuery(dummy, sender, content, user_name);
 			DBDao dbDao = new DBDao(domconfBundle);
 			dbDao.write(insert_query);
 		} catch (ClassNotFoundException e) {
@@ -44,11 +47,20 @@ public class RegisterAcc {
 		}
 	}
 	
-	public Message createReply(Message oMsg, ArrayList<String> commandArgs) {
+	public Message createReply() {
 		Message sMsg = new Message();
-		ArrayList<String> body = RegistUtil.createRegistBody(oMsg, commandArgs);
+		ArrayList<String> body = RegistUtil.createRegistBody(oMsg, dummy, user_name, content);
+		sMsg.setRecipient(sender);
+		sMsg.setSender(sender);
+		sMsg.setSubject("");
+		for(int i=0;i<body.size();i++) {
+			sMsg.addBody(body.get(i));
+		}
+		for(int j=0;j<oMsg.getHeader().size();j++) {
+			sMsg.addHeader(oMsg.getHeader().get(j));
+		}
 		
-		
+		return sMsg; 
 	}
 	
 	

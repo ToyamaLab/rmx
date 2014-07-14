@@ -1,7 +1,5 @@
 package logic.utils;
 
-import static org.hamcrest.CoreMatchers.endsWith;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.MissingResourceException;

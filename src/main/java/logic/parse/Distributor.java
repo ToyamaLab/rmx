@@ -9,7 +9,6 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import presentation.mail.IncomingMailService;
 import data.Message;
 import logic.SmtpListener;
 import logic.flow.AnswerFlow;
@@ -91,10 +90,10 @@ public class Distributor implements Runnable{
 			
 			/**テスト*/
 			Message oMsg = new Message();
-			oMsg.setRecipient("#random.shuffle.50#kita@name.testk.rmxdev.db.ics.keio.ac.jp");
+			oMsg.setRecipient("#acc.regist.test.kita#@testk.rmxdev.db.ics.keio.ac.jp");
 			oMsg.setSender("kita@db.ics.keio.ac.jp");
 			oMsg.setSubject("test");
-			oMsg.addBody("<if");
+			oMsg.addBody("");
 			oMsg.addBody(".");
 			oMsg.addHeader("test");
 			System.out.println("受信メール:");
@@ -122,6 +121,7 @@ public class Distributor implements Runnable{
 			//自然形式について
 			else {
 				domain = ParseUtils.getDomainOfNatural(recipient);
+				System.out.println("@"+domain);
 				subdomain = ParseUtils.getSubdomainOfNatural(recipient);
 				propfile = ParseUtils.getPropfileName(domain, subdomain, domainsMaps);
 				domBundle = ParseUtils.searchDomBundle(domain, subdomain, domBundles);

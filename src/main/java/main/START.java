@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import plugins.acc.util.ListUtil;
+import plugins.acc.util.RegistUtil;
 import logic.SmtpListener;
 import logic.bodyfunction.ContentsMatch;
 import logic.flow.AnswerFlow;
@@ -30,7 +32,12 @@ public class START {
 		Distributor d = new Distributor(null,pfs);
 		d.parse();
 		
-		
+//		ResourceBundle domBundle = ResourceBundle.getBundle("rmxdev_testk");
+//		String sender = "kita@keio.com";
+//		String user_name = "kita";
+//		ArrayList<String> body = new ArrayList<String>();
+//		body = ListUtil.createListBody(sender, user_name, domBundle);
+//		System.out.println(body);
 	}
 	
 }

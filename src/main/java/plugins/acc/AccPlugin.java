@@ -3,8 +3,8 @@ package plugins.acc;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import plugins.acc.regist.RegisterAcc;
-import plugins.acc.util.RegistUtil;
+import plugins.acc.list.ListAcc;
+import plugins.acc.regist.RegistAcc;
 import data.Message;
 import logic.interfaces.PluginInterface;
 
@@ -17,17 +17,24 @@ public class AccPlugin implements PluginInterface{
 			String command,
 			ArrayList<String> commandArgs,
 			ArrayList<String> recipients,
-			ResourceBundle domconfBundle,
+			ResourceBundle domBundle,
 			String propfile) {
 		
-		//String acc_propfile = AccUtil.getAccPropfileName(propfile);
-		ArrayList<Message> sMsg = new ArrayList<Message>();
+		ArrayList<Message> sMsgs = new ArrayList<Message>();
 		if(command.equalsIgnoreCase("regist")) {
-			RegisterAcc r_acc = new RegisterAcc(commandArgs, oMsg, domconfBundle);
+			RegistAcc r_acc = new RegistAcc(commandArgs, oMsg, domBundle, recipients);
 			r_acc.saveAddress();
-			
+			sMsgs.add(r_acc.createReply());
+			System.out.println("test");
 		}
-		return sMsg;
+		
+		//
+		else if(command.equalsIgnoreCase("list")) {
+			ListAcc l_acc = new ListAcc(commandArgs, oMsg, domBundle, recipients);
+			sMsgs.add(l_acc.createReply());
+		}
+		
+		return null;
 	}
 
 	@Override

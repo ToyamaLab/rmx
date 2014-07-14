@@ -76,7 +76,7 @@ public class FunctionFlow {
 		// 3. src/main/java/pluginsの中にあるプラグインを全て入手
 		PluginsHolder p_holder = new PluginsHolder();
 		ArrayList<PluginInterface> plugins = p_holder.holdPlugins();
-		System.out.println(plugins);
+		
 		// 4. function名に合ったプラグイン1つを入手
 		PluginInterface plugin = p_holder.selectPlugin(plugins, function);
 		
