@@ -10,17 +10,23 @@ import data.Message;
 public class RandomPlugin implements PluginInterface{
 
 	@Override
-	public ArrayList<Message> pluginStart(Message oMsg, String function,
-			String command, ArrayList<String> commandArgs,
-			ArrayList<String> destinations,ResourceBundle domconfBundle) {
+	public ArrayList<Message> pluginStart(
+			Message oMsg,
+			String function,
+			String command,
+			ArrayList<String> commandArgs,
+			ArrayList<String> recipients,
+			ResourceBundle domconfBundle,
+			String propfile) {
+
 		ArrayList<Message> sMsgs = new ArrayList<Message>();
 		if(command.equalsIgnoreCase("shuffle")) {
 			Random rnd = new Random();
 			int ran = rnd.nextInt(Integer.parseInt(commandArgs.get(0)));
 			
-			for(int i=0;i<destinations.size();i++) {
+			for(int i=0;i<recipients.size();i++) {
 				Message sMsg = new Message();
-				sMsg.setRecipient(destinations.get(i));
+				sMsg.setRecipient(recipients.get(i));
 				sMsg.setSender(oMsg.getSender());
 				sMsg.setSubject("random number");
 				sMsg.addBody(Integer.toString(ran));

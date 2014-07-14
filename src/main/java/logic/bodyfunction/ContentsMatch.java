@@ -16,7 +16,12 @@ public class ContentsMatch {
 	public ContentsMatch() {
 		queryResult = new ArrayList<ArrayList<String>>();
 	}
-
+	
+	/**
+	 * body(メール本文)内に開始タグ(<if)が含まれていればtrue、そうでなければfalseを返す
+	 * @param _body メール本文
+	 * @return boolean
+	 * */
 	public boolean checkUse(ArrayList<String> _body) {
 		Iterator<String> itr = _body.iterator();
 		while (itr.hasNext()) {
@@ -26,6 +31,11 @@ public class ContentsMatch {
 		return false;
 	}
 
+	/**
+	 * エラーをチェック
+	 * @param body メール本文
+	 * @return boolean
+	 * */
 	public boolean checkErr(ArrayList<String> _body) {		
 		if (isCorrectOrder(_body)) {
 			return false;
@@ -133,7 +143,8 @@ public class ContentsMatch {
 			edited.addAll(bottomBody);
 		return edited;
 	}
-		
+	
+	
 	private boolean isCorrectOrder(ArrayList<String> _body) {
 		Iterator<String> itr = _body.iterator();
 		int count = 0;

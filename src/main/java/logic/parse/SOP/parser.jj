@@ -667,7 +667,7 @@ void DebugExp1()               :
 {/*@bgen(jjtree) #DebugEx1(> 1) */
         try {
 /*@egen*/
-	(Debug())? Address1()/*@bgen(jjtree)*/
+	Address1() | Debug() (Paras1())? < AT > domain1()/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -687,7 +687,7 @@ void DebugExp1()               :
             jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
           }
         }
-/*@egen*/ 	
+/*@egen*/	
 }
 
 void Address1() :
