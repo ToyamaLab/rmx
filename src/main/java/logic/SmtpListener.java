@@ -2,22 +2,16 @@ package logic;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
 
+import java.util.ResourceBundle;
 
 import logic.propfile.PropFileService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import logic.parse.Distributor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import dao.PropfileDao;
 
 
 public class SmtpListener {

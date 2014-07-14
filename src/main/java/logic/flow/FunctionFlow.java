@@ -86,17 +86,9 @@ public class FunctionFlow {
 		sMsgs = plugin.pluginStart(oMsg, function, command, commandArgs, recipients, domBundle, propfile);
 		
 		// 7. メールの送信
-//		log.info("Mail:{} -> {}", oMsg.getSender(), oMsg.getRecipient());
-//		SendMailService sm = new SendMailService();
-//		for(int i=0;i<sMsgs.size();i++)
-//			sm.sendMail(sMsgs.get(i), envBundle);
-		for(int i=0;i<sMsgs.size();i++) {
-			System.out.println("受信メール:");
-			System.out.println("宛先:"+sMsgs.get(i).getRecipient());
-			System.out.println("送信者:"+sMsgs.get(i).getSender());
-			System.out.println("タイトル:"+sMsgs.get(i).getSubject());
-			System.out.println("本文:"+sMsgs.get(i).getBody());
-			System.out.println("ヘッダー:"+sMsgs.get(i).getHeader());
-		}
+		log.info("Mail:{} -> {}", oMsg.getSender(), oMsg.getRecipient());
+		SendMailService sm = new SendMailService();
+		for(int i=0;i<sMsgs.size();i++)
+			sm.sendMail(sMsgs.get(i), envBundle);
 	}
 }
