@@ -26,18 +26,8 @@ import logic.utils.PropfileUtils;
 
 public class START {
 	public static void main(String args[]) {
-		//SmtpListener.startPkg();
-		PropFileService pfs = PropFileService.getInstance();
-		pfs.init();
-		Distributor d = new Distributor(null,pfs);
-		d.parse();
+		SmtpListener.startPkg();
 		
-//		ResourceBundle domBundle = ResourceBundle.getBundle("rmxdev_testk");
-//		String sender = "kita@keio.com";
-//		String user_name = "kita";
-//		ArrayList<String> body = new ArrayList<String>();
-//		body = ListUtil.createListBody(sender, user_name, domBundle);
-//		System.out.println(body);
 	}
 	
 }

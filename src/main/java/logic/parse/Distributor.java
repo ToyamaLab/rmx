@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import presentation.mail.IncomingMailService;
 import data.Message;
 import logic.SmtpListener;
 import logic.flow.AnswerFlow;
@@ -84,24 +85,9 @@ public class Distributor implements Runnable{
 	public void parse() {
 		try {
 			//送られてきたメールをオブジェクトとして得る
-//			Message oMsg = new Message();
-//			IncomingMailService icm = new IncomingMailService(socket);
-//			oMsg = icm.getMessage();
-			
-			/**テスト*/
 			Message oMsg = new Message();
-			oMsg.setRecipient("#acc.regist.test.kita#@testk.rmxdev.db.ics.keio.ac.jp");
-			oMsg.setSender("kita@db.ics.keio.ac.jp");
-			oMsg.setSubject("test");
-			oMsg.addBody("");
-			oMsg.addBody(".");
-			oMsg.addHeader("test");
-			System.out.println("受信メール:");
-			System.out.println("宛先:"+oMsg.getRecipient());
-			System.out.println("送信者:"+oMsg.getSender());
-			System.out.println("タイトル:"+oMsg.getSubject());
-			System.out.println("本文:"+oMsg.getBody());
-			System.out.println("ヘッダー:"+oMsg.getHeader());
+			IncomingMailService icm = new IncomingMailService(socket);
+			oMsg = icm.getMessage();
 			
 			//宛先を得る
 			recipient = oMsg.getRecipient();
