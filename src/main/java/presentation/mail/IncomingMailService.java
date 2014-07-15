@@ -6,18 +6,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import logic.propfile.StateService;
-
 import org.slf4j.*;
 
 import data.Message;
+import data.State;
 
 public class IncomingMailService {
 	//メンバ変数
 	private Socket socket;
 	private BufferedReader in;
 	private OutputStreamWriter out;
-	private StateService connState;
+	private State connState;
 	private Message oMsg;
 	private static final Logger log = LoggerFactory.getLogger(IncomingMailService.class);
 	
@@ -27,7 +26,7 @@ public class IncomingMailService {
 			this.socket = socket;
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new OutputStreamWriter(socket.getOutputStream());
-			connState = new StateService(socket);
+			connState = new State(socket);
 			oMsg = new Message();
 			this.sendAck("220"+connState.getServerName()+"SMTP");
 			this.conversation();

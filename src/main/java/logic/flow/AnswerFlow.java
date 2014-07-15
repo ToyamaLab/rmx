@@ -16,7 +16,7 @@ public class AnswerFlow {
 	private ResourceBundle domconfBundle;
 	private ResourceBundle envBundle;
 	private parserVisitor user_info;
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
+	private static final Logger log = LoggerFactory.getLogger(AnswerFlow.class);
 	
 	public AnswerFlow(Message oMsg, ResourceBundle domconfBundle, ResourceBundle envBundle, parserVisitor user_info) {
 		this.oMsg = oMsg;

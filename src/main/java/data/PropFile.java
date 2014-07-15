@@ -1,8 +1,7 @@
-package logic.propfile;
+package data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import logic.utils.PropfileUtils;
@@ -16,23 +15,23 @@ import dao.PropfileDao;
  * rmxdevが必要となる. <br/>
  * その値testkを取得したとき、用意するpropertiesファイルはtestk_rmxdevである.
  */
-public final class PropFileService {
+public final class PropFile {
 	// メンバ変数
 	private final String ENVPROPFILENAME = "env";
 	private ArrayList<HashMap<String, String>> domainsMaps;
 	private ResourceBundle envBundle;
 	private HashMap<String, ResourceBundle> domBundles;
-	private static PropFileService pfs = new PropFileService();
+	private static PropFile pfs = new PropFile();
 
 	// コンストラクタ
-	private PropFileService() {
+	private PropFile() {
 		domainsMaps = new ArrayList<HashMap<String, String>>();
 		envBundle = PropfileDao.readPropFile(ENVPROPFILENAME);
 		domBundles = new HashMap<String, ResourceBundle>();
 	}
 	
 	
-	public static PropFileService getInstance() {
+	public static PropFile getInstance() {
 		return pfs;
 	}
 

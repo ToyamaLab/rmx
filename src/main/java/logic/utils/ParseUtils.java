@@ -13,9 +13,6 @@ import org.slf4j.LoggerFactory;
 public class ParseUtils {
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
 
-	/** コンストラクタは呼び出せないようにするためにprivateにする*/
-	private ParseUtils() {}
-	
 	/**Distributor.java*/
 	
 	/**

@@ -1,7 +1,5 @@
 package logic.error;
 
-import java.util.ArrayList;
-
 import data.Message;
 /*
  * 受信メールがRMX形式およびプラグインにも対応していないとき

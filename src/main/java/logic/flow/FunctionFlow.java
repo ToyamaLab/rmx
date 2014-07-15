@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import presentation.mail.SendMailService;
 import data.Message;
+import data.PropFile;
 
 public class FunctionFlow {
 	//メンバ変数
@@ -25,20 +26,20 @@ public class FunctionFlow {
 	private parserVisitor userInfo;
 	private String propfile;
 	private String domain;
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
+	private static final Logger log = LoggerFactory.getLogger(FunctionFlow.class);
+	private PropFile pf = PropFile.getInstance();
 	private User funcUser;
 	private User1 funcUser1;
 	
 	//コンストラクタ
 	public FunctionFlow(
 			Message oMsg,
-			ResourceBundle envBundle,
 			ResourceBundle domBundle,
 			parserVisitor userInfo,
 			String propfile,
 			String domain) {
 		this.oMsg = oMsg;
-		this.envBundle = envBundle;
+		this.envBundle = pf.getEnvBundle();
 		this.domBundle = domBundle;
 		this.userInfo = userInfo;
 		this.propfile = propfile;

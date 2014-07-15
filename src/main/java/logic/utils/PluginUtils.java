@@ -3,10 +3,7 @@ package logic.utils;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -14,17 +11,11 @@ import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dao.DBDao;
-import data.Message;
 import logic.SmtpListener;
 import logic.interfaces.PluginInterface;
-import logic.parse.User;
 
 public class PluginUtils {
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
-	
-	/**ユーティリティクラスなのでコンストラクタは呼び出せないように*/
-	private PluginUtils() {}
 	
 	/**
 	 * cpathにあるjarファイルを読み込んでPluginインスタンスとしてArrayListに格納する.

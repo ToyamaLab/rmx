@@ -10,19 +10,16 @@ import org.slf4j.LoggerFactory;
 
 import dao.DBDao;
 import data.Message;
-import logic.SmtpListener;
 import logic.bodyfunction.ContentsMatch;
 import logic.parse.SOP.parserVisitor;
 
 public class FlowUtils {
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
-	//
-	private FlowUtils() {}
+	private static final Logger log = LoggerFactory.getLogger(FlowUtils.class);
 	
 	/**
 	 * 宛先をリストとして返す.
 	 * @param userInfo userもしくはuser1
-	 * @param domBUndle propertyオブジェクト
+	 * @param domBundle propertyオブジェクト
 	 * @return 宛先のリスト
 	 * */
 	public static ArrayList<String> getRecipients(parserVisitor userInfo, ResourceBundle domBundle){

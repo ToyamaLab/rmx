@@ -1,4 +1,4 @@
-package logic.propfile;
+package data;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import org.slf4j.*;
 
- public class StateService{
+ public class State{
 	//
 	private String state;
 	//
@@ -23,9 +23,9 @@ import org.slf4j.*;
 	//
 	private DateFormat date;
 	
-	private static final Logger log = LoggerFactory.getLogger(StateService.class);
+	private static final Logger log = LoggerFactory.getLogger(State.class);
 	//コンストラクタ
-	public StateService(Socket _connSocket) {
+	public State(Socket _connSocket) {
 		try {
 			connSocket = _connSocket;
 		
