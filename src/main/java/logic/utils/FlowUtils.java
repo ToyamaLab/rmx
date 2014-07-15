@@ -83,18 +83,16 @@ public class FlowUtils {
 			sMsg.setSubject(oMsg.getSubject());
 			if(cm != null){
 				ArrayList<String> edited = cm.editBody(oMsg.getBody(), recipients.get(i));
-				for(int j = 0; j < edited.size(); j++){
+				for (int j = 0; j < edited.size(); j++)
 					sMsg.addBody(edited.get(j));
-				}
 			}
 			else{
-				for(int j=0;j<oMsg.getBody().size();j++) 
+				for (int j=0;j<oMsg.getBody().size();j++) 
 					sMsg.addBody(oMsg.getBody().get(j));
 			}
 			
-			for(int k=0;k<oMsg.getHeader().size();k++) {
+			for(int k=0;k<oMsg.getHeader().size();k++)
 				sMsg.addHeader(oMsg.getHeader().get(k));
-			}
 			
 			//送信メッセージをリストに挿入
 			if(sMsg != null)

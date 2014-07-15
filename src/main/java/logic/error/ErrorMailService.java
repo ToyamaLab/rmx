@@ -5,8 +5,6 @@ import data.Message;
  * 受信メールがRMX形式およびプラグインにも対応していないとき
  */
 public class ErrorMailService {
-	//コンストラクタ
-	public ErrorMailService() {}
 	
 	public static Message syntaxErrorMail(Message oMsg) {
 		//シンタックスエラーメール作成

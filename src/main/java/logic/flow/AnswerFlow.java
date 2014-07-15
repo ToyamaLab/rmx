@@ -9,6 +9,7 @@ import logic.SmtpListener;
 import logic.parse.User;
 import logic.parse.SOP.parserVisitor;
 import data.Message;
+import data.PropFile;
 
 public class AnswerFlow {
 	//
@@ -17,10 +18,11 @@ public class AnswerFlow {
 	private ResourceBundle envBundle;
 	private parserVisitor user_info;
 	private static final Logger log = LoggerFactory.getLogger(AnswerFlow.class);
+	private PropFile pf = PropFile.getInstance();
 	
-	public AnswerFlow(Message oMsg, ResourceBundle domconfBundle, ResourceBundle envBundle, parserVisitor user_info) {
+	public AnswerFlow(Message oMsg, ResourceBundle domconfBundle, parserVisitor user_info) {
 		this.oMsg = oMsg;
-		this.envBundle = envBundle;
+		this.envBundle = pf.getEnvBundle();
 		this.domconfBundle = domconfBundle;
 		this.user_info = user_info;
 	}

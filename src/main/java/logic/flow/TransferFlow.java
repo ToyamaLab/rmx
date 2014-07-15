@@ -40,9 +40,8 @@ public class TransferFlow {
 		ContentsMatch cm = new ContentsMatch();
 		System.out.println("@@"+cm.checkErr(oMsg.getBody()));
 		if(cm.checkUse(oMsg.getBody())) {
-			if(!cm.checkErr(oMsg.getBody())) {
+			if(!cm.checkErr(oMsg.getBody()))
 				cm.getResults(oMsg.getBody(), domBundle);
-			}
 		}
 		
 		// 3. 送信用メッセージを得る

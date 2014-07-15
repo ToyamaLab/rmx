@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
 import logic.parse.*;
 
 public class DBDao {
-	//
 	private Connection conn;
 	private ResultSet resultSet;
 	private PreparedStatement prepstmt;
@@ -34,10 +33,10 @@ public class DBDao {
 	public ResultSet read(String query, ListIterator<String> params) throws Exception{
 		Class.forName(driver);
 		//ユーザ名とパスワードのチェック
-		if (user!=null && pass!=null) {
+		if (user != null && pass != null) {
 			conn = DriverManager.getConnection(url, user, pass);
 			//パラメータがあればPreparedStatement、無ければStatementへ
-			if (params==null) {
+			if (params == null) {
 				stmt = conn.createStatement(
 						ResultSet.TYPE_SCROLL_SENSITIVE,
 						ResultSet.CONCUR_UPDATABLE
@@ -45,16 +44,16 @@ public class DBDao {
 			} else prepstmt = conn.prepareStatement(query);
 		} else System.out.println("DBに接続できません。");
 		
-		if(prepstmt!=null) {
+		if(prepstmt != null) {
 			int num=1;
-			while(params.hasNext()) {
+			while (params.hasNext()) {
 				String testpara = params.next().toString();
 				if (testpara.toString().equalsIgnoreCase("integer")) {
 					int temp;
 					temp = Integer.parseInt((params.next().toString()));
 					prepstmt.setInt(num, temp);
 					num++;
-				}else {
+				} else {
 					String str = params.next().toString();
 					if (!str.equalsIgnoreCase("all") && !str.equalsIgnoreCase("*")) {
 						prepstmt.setString(num, str);
@@ -63,14 +62,14 @@ public class DBDao {
 				}
 			}
 			resultSet = prepstmt.executeQuery();
-		}else if(stmt!=null) {
+		} else if (stmt!=null){
 			stmt.executeUpdate("SET enable_seqscan = false");
 			resultSet = stmt.executeQuery(query);
 		}
 		return resultSet;
 	}
 	
-	public ResultSet bodyRead (Parse4Body parse) throws Exception{
+	public ResultSet bodyRead(Parse4Body parse) throws Exception{
 		return read(parse.getQuery(), parse.getParameter().listIterator());
 	}
 	

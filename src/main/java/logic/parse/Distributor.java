@@ -132,7 +132,7 @@ public class Distributor implements Runnable{
 				TransferFlow t_flow = new TransferFlow(oMsg, domBundle, userInfo);
 				t_flow.startTransfer();
 			}else if(answer_flg) {
-				AnswerFlow a_flow = new AnswerFlow(oMsg, domBundle, envBundle, userInfo);
+				AnswerFlow a_flow = new AnswerFlow(oMsg, domBundle, userInfo);
 				a_flow.startAnswer();
 			}else if(mixture_flg) {
 				

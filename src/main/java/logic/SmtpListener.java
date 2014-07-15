@@ -17,9 +17,6 @@ public class SmtpListener {
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
 	private static PropFile propfileInstance = PropFile.getInstance();
 	
-	//コンストラクタ
-	private SmtpListener() {}
-	
 	public static void startPkg() {
 		propFileController();
 	}
@@ -49,8 +46,7 @@ public class SmtpListener {
 				//メールがメールサーバにくると、originalMessageインスタンスを作成
 				
 				socket = sSocket.accept();
-				log.debug("S :Accepted: ("
-						+ socket.getInetAddress().getHostName() + ")");
+				log.debug("S :Accepted: (" + socket.getInetAddress().getHostName() + ")");
 
 				Thread t = new Thread(new Distributor(socket));
 				t.start();

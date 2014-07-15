@@ -46,37 +46,30 @@ import org.slf4j.*;
 	}
 
 	public void setState(String _state) {
-		//
 		state = _state;
 	}
 
 	public String getState() {
-		//
 		return state;
 	}
 
 	public String getServerName() {
-		//
 		return serverName;
 	}
 
 	public String getServerAddress() {
-		//
 		return serverAddress;
 	}
 
 	public String getClientName() {
-		//
 		return clientName;
 	}
 
 	public String getClientAddress() {
-		//
 		return clientAddress;
 	}
 
 	public DateFormat getDate() {
-		// 
 		return date;
 	}
 }

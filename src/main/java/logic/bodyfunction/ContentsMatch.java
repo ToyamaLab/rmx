@@ -45,7 +45,6 @@ public class ContentsMatch {
 	}
 	
 	public void getResults(ArrayList<String> _body, ResourceBundle domBundle){
-		
 		ArrayList<String> tags = this.findTags(_body);
 		DBDao db = new DBDao(domBundle);
 		Parse4Body parse = new Parse4Body(domBundle);
@@ -73,7 +72,6 @@ public class ContentsMatch {
 	}
 	
 	private ArrayList<String> editBody(ArrayList<String> _body, String _recipient, ArrayList<ArrayList<String>> _queryResult, int queryResultnum){
-		
 		String startTagOutside = new String();
 		String startTagInside = new String();
 		String endTagInside = new String();

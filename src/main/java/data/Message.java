@@ -95,18 +95,13 @@ public class Message {
 		if ((s.indexOf('<') > -1) && (s.indexOf('>') > -1)) {
 			i = s.indexOf('<') + 1;
 			j = s.indexOf('>');
-
 			address = s.substring(i, j);
-
 			return address;
 
-			// The e-mail address is as is.
+		// The e-mail address is as is.
 		} else {
-
 			i = s.indexOf(':');
-
 			address = s.substring(i + 1);
-
 			return address.trim();
 		}
 	}
