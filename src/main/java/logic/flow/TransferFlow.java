@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import presentation.mail.SendMailService;
-import logic.SmtpListener;
 import logic.bodyfunction.ContentsMatch;
 import logic.parse.SOP.parserVisitor;
 import logic.utils.FlowUtils;
 import data.Message;
+import data.PropFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +19,13 @@ public class TransferFlow {
 	private ResourceBundle domBundle;
 	private ResourceBundle envBundle;
 	private parserVisitor userInfo;
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
+	private static final Logger log = LoggerFactory.getLogger(TransferFlow.class);
+	private PropFile pf = PropFile.getInstance();
 	
 	//コンストラクタ
-	public TransferFlow(Message oMsg, ResourceBundle domconfBundle, ResourceBundle envBundle, parserVisitor user_info) {
+	public TransferFlow(Message oMsg, ResourceBundle domconfBundle, parserVisitor user_info) {
 		this.oMsg = oMsg;
-		this.envBundle = envBundle;
+		this.envBundle = pf.getEnvBundle();
 		this.domBundle = domconfBundle;
 		this.userInfo = user_info;
 	}
@@ -39,9 +40,8 @@ public class TransferFlow {
 		ContentsMatch cm = new ContentsMatch();
 		System.out.println("@@"+cm.checkErr(oMsg.getBody()));
 		if(cm.checkUse(oMsg.getBody())) {
-			if(!cm.checkErr(oMsg.getBody())) {
+			if(!cm.checkErr(oMsg.getBody()))
 				cm.getResults(oMsg.getBody(), domBundle);
-			}
 		}
 		
 		// 3. 送信用メッセージを得る

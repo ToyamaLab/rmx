@@ -2,14 +2,12 @@ package logic;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import java.util.ResourceBundle;
-
-import logic.propfile.PropFileService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import data.PropFile;
 import logic.parse.Distributor;
 
 
@@ -17,10 +15,7 @@ import logic.parse.Distributor;
 public class SmtpListener {
 	//メンバ変数
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
-	private static PropFileService propfileInstance = PropFileService.getInstance();
-	
-	//コンストラクタ
-	private SmtpListener() {}
+	private static PropFile propfileInstance = PropFile.getInstance();
 	
 	public static void startPkg() {
 		propFileController();
@@ -36,13 +31,12 @@ public class SmtpListener {
 	
 	//ソケットを開き、システムをスタート
 	public static void smtpListenerController() {
+		ServerSocket sSocket;
+		Socket socket;
+		int RECEIV_PORT;
+		ResourceBundle envBundle = propfileInstance.getEnvBundle();
+
 		try {
-			ServerSocket sSocket;
-			Socket socket;
-			int RECEIV_PORT;
-			
-			ResourceBundle envBundle = propfileInstance.getEnvBundle();
-			
 			RECEIV_PORT = Integer.parseInt(envBundle.getString("receive_port"));
 			sSocket = new ServerSocket(RECEIV_PORT);
 			log.info("RMX System begin");
@@ -52,10 +46,9 @@ public class SmtpListener {
 				//メールがメールサーバにくると、originalMessageインスタンスを作成
 				
 				socket = sSocket.accept();
-				log.debug("S :Accepted: ("
-						+ socket.getInetAddress().getHostName() + ")");
+				log.debug("S :Accepted: (" + socket.getInetAddress().getHostName() + ")");
 
-				Thread t = new Thread(new Distributor(socket,propfileInstance));
+				Thread t = new Thread(new Distributor(socket));
 				t.start();
 			}
 		}catch (SecurityException e) {

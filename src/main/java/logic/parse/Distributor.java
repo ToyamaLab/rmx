@@ -11,12 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import presentation.mail.IncomingMailService;
 import data.Message;
-import logic.SmtpListener;
+import data.PropFile;
 import logic.flow.AnswerFlow;
 import logic.flow.FunctionFlow;
 import logic.flow.TransferFlow;
 import logic.parse.SOP.parserVisitor;
-import logic.propfile.PropFileService;
 import logic.utils.ParseUtils;
 
 public class Distributor implements Runnable{
@@ -35,7 +34,8 @@ public class Distributor implements Runnable{
 	private ArrayList<HashMap<String, String>> domainsMaps;
 	private Socket socket;
 	private ResourceBundle envBundle;
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
+	private static final Logger log = LoggerFactory.getLogger(Distributor.class);
+	private PropFile pf = PropFile.getInstance();
 
 	/**
 	 * tree parser created by obunai
@@ -50,12 +50,12 @@ public class Distributor implements Runnable{
 	boolean function_flg;
 	
 	//コンストラクタ
-	public Distributor(Socket socket, PropFileService propfileInstance) {
+	public Distributor(Socket socket) {
 		try {
 			this.socket = socket;
-			this.envBundle = propfileInstance.getEnvBundle();
-			this.domainsMaps = propfileInstance.getDomainsMaps();
-			domBundles = propfileInstance.getDomBundles();
+			this.envBundle = pf.getEnvBundle();
+			this.domainsMaps = pf.getDomainsMaps();
+			domBundles = pf.getDomBundles();
 			keys = new ArrayList<String>();
 			values = new ArrayList<String>();
 			domain = new String();
@@ -129,15 +129,15 @@ public class Distributor implements Runnable{
 			
 			//それぞれのフラグに応じてflowへ飛ばす
 			if(transfer_flg) {
-				TransferFlow t_flow = new TransferFlow(oMsg, domBundle, envBundle, userInfo);
+				TransferFlow t_flow = new TransferFlow(oMsg, domBundle, userInfo);
 				t_flow.startTransfer();
 			}else if(answer_flg) {
-				AnswerFlow a_flow = new AnswerFlow(oMsg, domBundle, envBundle, userInfo);
+				AnswerFlow a_flow = new AnswerFlow(oMsg, domBundle, userInfo);
 				a_flow.startAnswer();
 			}else if(mixture_flg) {
 				
 			}else if(function_flg) {
-				FunctionFlow f_flow = new FunctionFlow(oMsg, envBundle, domBundle, userInfo, propfile, domain);
+				FunctionFlow f_flow = new FunctionFlow(oMsg, domBundle, userInfo, propfile, domain);
 				f_flow.startFunction();
 			}else {
 				

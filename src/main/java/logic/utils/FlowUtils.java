@@ -10,19 +10,16 @@ import org.slf4j.LoggerFactory;
 
 import dao.DBDao;
 import data.Message;
-import logic.SmtpListener;
 import logic.bodyfunction.ContentsMatch;
 import logic.parse.SOP.parserVisitor;
 
 public class FlowUtils {
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
-	//
-	private FlowUtils() {}
+	private static final Logger log = LoggerFactory.getLogger(FlowUtils.class);
 	
 	/**
 	 * 宛先をリストとして返す.
 	 * @param userInfo userもしくはuser1
-	 * @param domBUndle propertyオブジェクト
+	 * @param domBundle propertyオブジェクト
 	 * @return 宛先のリスト
 	 * */
 	public static ArrayList<String> getRecipients(parserVisitor userInfo, ResourceBundle domBundle){
@@ -86,18 +83,16 @@ public class FlowUtils {
 			sMsg.setSubject(oMsg.getSubject());
 			if(cm != null){
 				ArrayList<String> edited = cm.editBody(oMsg.getBody(), recipients.get(i));
-				for(int j = 0; j < edited.size(); j++){
+				for (int j = 0; j < edited.size(); j++)
 					sMsg.addBody(edited.get(j));
-				}
 			}
 			else{
-				for(int j=0;j<oMsg.getBody().size();j++) 
+				for (int j=0;j<oMsg.getBody().size();j++) 
 					sMsg.addBody(oMsg.getBody().get(j));
 			}
 			
-			for(int k=0;k<oMsg.getHeader().size();k++) {
+			for(int k=0;k<oMsg.getHeader().size();k++)
 				sMsg.addHeader(oMsg.getHeader().get(k));
-			}
 			
 			//送信メッセージをリストに挿入
 			if(sMsg != null)

@@ -13,9 +13,6 @@ import org.slf4j.LoggerFactory;
 public class ParseUtils {
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
 
-	/** コンストラクタは呼び出せないようにするためにprivateにする*/
-	private ParseUtils() {}
-	
 	/**Distributor.java*/
 	
 	/**
@@ -103,10 +100,12 @@ public class ParseUtils {
 		//2つの#が含まれていれば,その間の文字列を取り除く
 		if(_recipient.contains("#")) {
 			int sharp_last_num = _recipient.lastIndexOf("#");
-			if(sharp_last_num>0)
+			if (sharp_last_num>0)
 				recipient = _recipient.substring(sharp_last_num+1);
-			else return null;
-		}else {recipient = _recipient;}
+			else 
+				return null;
+		}else 
+			recipient = _recipient;
 			
 		//ルールの数
 		int rule_num;
@@ -129,20 +128,22 @@ public class ParseUtils {
 				
 		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
 		int dot_num = (fulldomain.split("\\.").length)-1;//ドメインの中の"."の数
-		if(dot_num>rule_num) {
+		if (dot_num>rule_num) {
 			//ex)ルール数が2なら3つめの"."以降がドメイン名である.
 			//rule1.rule2.subdomain.domain
 			int start_num = searchChr(fulldomain, ".", rule_num+1);
 			//start_numが-1でないとき
-			if(start_num>0) {
+			if (start_num>0) {
 				String domain = fulldomain.substring(start_num+1);
 				return domain;
 			}
 			//start_numが-1のとき
-			else return null;
+			else 
+				return null;
 		}
 		//ドメインに含まれる"."の数がルール数以下のとき
-		else return null; 
+		else 
+			return null; 
 	}
 	
 	/**
@@ -155,10 +156,12 @@ public class ParseUtils {
 		//2つの#が含まれていれば,その間の文字列を取り除く
 		if(_recipient.contains("#")) {
 			int sharp_last_num = _recipient.lastIndexOf("#");
-			if(sharp_last_num>0)
+			if (sharp_last_num>0)
 				recipient = _recipient.substring(sharp_last_num+1);
-			else return null;
-		}else {recipient = _recipient;}
+			else 
+				return null;
+		} else 
+			recipient = _recipient;
 		
 		//ルールの数
 		int rule_num;
@@ -173,12 +176,12 @@ public class ParseUtils {
 		if(account.contains(".")) {
 			String[] accounts = account.split("\\.");
 			rule_num = accounts.length;
-		}else
+		} else
 			rule_num = 1;
 			
 		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
 		int dot_num = (fulldomain.split("\\.").length)-1;//ドメインの中の"."の数
-		if(dot_num>rule_num) {
+		if (dot_num>rule_num) {
 			//ex)ルール数が2なら3つめの"."以降がドメイン名である.
 			//rule1.rule2.subdomain.domain
 			int start_num = searchChr(fulldomain, ".", rule_num);
@@ -189,10 +192,12 @@ public class ParseUtils {
 				return subdomain;
 			}
 			//start_numが-1のとき
-			else return null;
+			else
+				return null;
 		}
 		//ドメインに含まれる"."の数がルール数以下のとき
-		else return null; 
+		else
+			return null; 
 	}
 	
 	/**
@@ -204,7 +209,7 @@ public class ParseUtils {
 	 * */
 	private static int searchChr(String str1, String str2, int n) {
 		int return_num = -1;
-		for(int i=0;i<n;i++) {
+		for (int i=0;i<n;i++) {
 			return_num = str1.indexOf(str2, return_num+1);
 		}
 		return return_num;
@@ -234,12 +239,14 @@ public class ParseUtils {
 			for (int i = 0; i < keys.size(); i++) {
 				String key = (String) keys.get(i);
 				try {
-					if (domBundle.getString(key).equalsIgnoreCase("generate")){
-						if(keys.size()>1){key_answer_flg[i] = true;}	
+					if (domBundle.getString(key).equalsIgnoreCase("generate")) {
+						if(keys.size()>1)
+							key_answer_flg[i] = true;
 						AnswerFlag = true;
 					} 
 					else {
-						if(keys.size()>1){key_answer_flg[i] = false;}
+						if(keys.size()>1)
+							key_answer_flg[i] = false;
 						NormalFlag = true;
 					}
 				} catch (Exception E) {
@@ -305,7 +312,7 @@ public class ParseUtils {
 		} 
 
 		try {
-			if(keys.size() > 1){
+			if (keys.size() > 1){
 				key_answer_flg = new boolean[keys.size()];
 			}
 			
@@ -313,11 +320,13 @@ public class ParseUtils {
 				String key = (String) keys.get(i);
 				try {
 					if (domBundle.getString(key).equalsIgnoreCase("generate")){
-						if(keys.size()>1){key_answer_flg[i] = true;}	
+						if(keys.size()>1)
+							key_answer_flg[i] = true;
 						AnswerFlag = true;
 					} 
 					else {
-						if(keys.size()>1){key_answer_flg[i] = false;}
+						if(keys.size()>1)
+							key_answer_flg[i] = false;
 						NormalFlag = true;
 					}
 				} catch (Exception E) {
@@ -333,16 +342,16 @@ public class ParseUtils {
 				return false;
 			}
 			
-			if(NormalFlag && AnswerFlag){
+			if (NormalFlag && AnswerFlag){
 				System.out.println("both transfer and answer rule(Parse)");
 				return false;
-			}else if (!NormalFlag && AnswerFlag) {
+			} else if (!NormalFlag && AnswerFlag) {
 				System.out.println("only answer rule(Parse)");
 				return true;
-			}else if(NormalFlag && !AnswerFlag){
+			} else if(NormalFlag && !AnswerFlag){
 				System.out.println("only transfer rule(Parse)");
 				return false;
-			}else{
+			} else{
 				System.out.println("?????");
 				return false;
 			}
@@ -377,9 +386,10 @@ public class ParseUtils {
 		boolean[] key_answer_flg = null;
 		boolean mixture_flg = false;
 		
-		if (keys.size() < 1) {return false;}
+		if (keys.size() < 1)
+			return false;
 		
-		else if(keys.size() > 1){
+		else if (keys.size() > 1){
 			key_answer_flg = new boolean[keys.size()];
 			for (int i = 0; i < keys.size(); i++) {
 				String key = (String) keys.get(i);
@@ -392,9 +402,8 @@ public class ParseUtils {
 			System.out.println("key_answer_flg num : " + key_answer_flg.length);
 			for(int i = 0; i < key_answer_flg.length-1; i++){
 				System.out.println("searching key_answer_flg...");
-				if(key_answer_flg[i]!=key_answer_flg[i+1]){
-					mixture_flg=true;
-				}
+				if(key_answer_flg[i] != key_answer_flg[i+1])
+					mixture_flg = true;
 			}
 		}	
 		return mixture_flg;

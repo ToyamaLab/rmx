@@ -5,23 +5,17 @@ import java.util.HashMap;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import logic.SmtpListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PropfileUtils {
-	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
-	/** コンストラクタは呼び出せないようにするためにprivateにする*/
-	private PropfileUtils() {}
-	
-	/*PropfileService*/
+	private static final Logger log = LoggerFactory.getLogger(PropfileUtils.class);
 	
 	/**
 	 * env.propertiesを読み込み、domconfをキー名としてそのpropertiesを提供するマップを格納し、返す
 	 * @param envBundle env.properties
 	 * @return 使用できるdomconfBundleが格納
-	 * */
+	 */
 	public static HashMap<String, ResourceBundle> getBundles(ResourceBundle envBundle){
 		// 1. domconf.properties格納するためのHashMap
 		HashMap<String, ResourceBundle> domBundles = new HashMap<String, ResourceBundle>();
@@ -33,7 +27,7 @@ public class PropfileUtils {
 		// 3. env.propertiesのdomainから値を取得
 		String domainNames = envBundle.getString("domain");
 		
-		// 4. domain-valueに記述されていない.or ","から始まるときはnulllを返す.
+		// 4. domain-valueに記述されていない.or ","から始まるときはnullを返す.
 		if(domainNames.length()==0 || domainNames.startsWith(","))
 			{log.error("not exists domain-value or start with ',' at env.properties"); return null;}
 		
