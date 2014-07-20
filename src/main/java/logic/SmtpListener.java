@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import data.PropFile;
+import logic.impl.OpenPropFileImpl;
 import logic.parse.Distributor;
 
 
@@ -15,22 +15,23 @@ import logic.parse.Distributor;
 public class SmtpListener {
 	//メンバ変数
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
-	private static PropFile propfileInstance = PropFile.getInstance();
+	private static OpenPropFileImpl propfileInstance = OpenPropFileImpl.getInstance();
 	
-	public static void startPkg() {
-		propFileController();
-	}
 	
-	//env.propertiesファイルをチェックする
-	public static void propFileController() {
-
-		propfileInstance.init();
+	public void startPkg() {
+		//env.propertiesファイルをチェックする
+		propfileInstance.open();
+		
+		//正しく展開した後、ソケットを開く
 		if(!propfileInstance.getDomBundles().isEmpty())
-			smtpListenerController();
+			this.smtpListenerController();
+		else {
+			log.error("# Error: RMX Config Files are NOT correct.");
+			System.exit(-1);
+		}
 	}
 	
-	//ソケットを開き、システムをスタート
-	public static void smtpListenerController() {
+	private void smtpListenerController() {
 		ServerSocket sSocket;
 		Socket socket;
 		int RECEIV_PORT;

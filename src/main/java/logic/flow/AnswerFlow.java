@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import logic.SmtpListener;
+import logic.impl.OpenPropFileImpl;
 import logic.parse.User;
 import logic.parse.SOP.parserVisitor;
 import data.Message;
-import data.PropFile;
 
 public class AnswerFlow {
 	//
@@ -18,7 +18,7 @@ public class AnswerFlow {
 	private ResourceBundle envBundle;
 	private parserVisitor user_info;
 	private static final Logger log = LoggerFactory.getLogger(AnswerFlow.class);
-	private PropFile pf = PropFile.getInstance();
+	private OpenPropFileImpl pf = OpenPropFileImpl.getInstance();
 	
 	public AnswerFlow(Message oMsg, ResourceBundle domconfBundle, parserVisitor user_info) {
 		this.oMsg = oMsg;

@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import presentation.mail.IncomingMailService;
 import data.Message;
-import data.PropFile;
 import logic.flow.AnswerFlow;
 import logic.flow.FunctionFlow;
 import logic.flow.TransferFlow;
+import logic.impl.OpenPropFileImpl;
 import logic.parse.SOP.parserVisitor;
 import logic.utils.ParseUtils;
 
@@ -35,7 +35,7 @@ public class Distributor implements Runnable{
 	private Socket socket;
 	private ResourceBundle envBundle;
 	private static final Logger log = LoggerFactory.getLogger(Distributor.class);
-	private PropFile pf = PropFile.getInstance();
+	private OpenPropFileImpl pf = OpenPropFileImpl.getInstance();
 
 	/**
 	 * tree parser created by obunai

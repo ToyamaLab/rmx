@@ -4,7 +4,8 @@ import logic.SmtpListener;
 
 public class START {
 	public static void main(String args[]) {
-		SmtpListener.startPkg();
+		SmtpListener sl = new SmtpListener();
+		sl.startPkg();
 		
 	}
 	

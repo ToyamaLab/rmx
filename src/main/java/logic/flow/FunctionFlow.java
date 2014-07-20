@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import logic.SmtpListener;
+import logic.impl.OpenPropFileImpl;
 import logic.interfaces.PluginInterface;
 import logic.parse.User;
 import logic.parse.User1;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import presentation.mail.SendMailService;
 import data.Message;
-import data.PropFile;
 
 public class FunctionFlow {
 	//メンバ変数
@@ -27,7 +27,7 @@ public class FunctionFlow {
 	private String propfile;
 	private String domain;
 	private static final Logger log = LoggerFactory.getLogger(FunctionFlow.class);
-	private PropFile pf = PropFile.getInstance();
+	private OpenPropFileImpl pf = OpenPropFileImpl.getInstance();
 	private User funcUser;
 	private User1 funcUser1;
 	
