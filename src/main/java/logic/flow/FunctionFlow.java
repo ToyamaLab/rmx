@@ -3,8 +3,8 @@ package logic.flow;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import logic.SmtpListener;
 import logic.impl.OpenPropFileImpl;
+import logic.impl.SmtpListener;
 import logic.interfaces.PluginInterface;
 import logic.parse.User;
 import logic.parse.User1;

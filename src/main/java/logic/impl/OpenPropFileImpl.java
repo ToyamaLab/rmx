@@ -47,9 +47,6 @@ public final class OpenPropFileImpl implements OpenPropFile {
 		return pfs;
 	}
 
-	/**
-	 * domconf.propertiesが格納されているdomBundlesを得る
-	 * */
 	@Override
 	public void open() {
 		envBundle = pfd.read(ENVPROPFILENAME);
@@ -133,7 +130,7 @@ public final class OpenPropFileImpl implements OpenPropFile {
 	
 
 	/**
-	 * env.propertiesを読み込み、使えるドメインとサブドメインごとにとプロパティファイル名などをHashMapに格納して、それらをArrayListに格納するヘルパーメソッド
+	 * env.propertiesを読み込み、使えるドメインとサブドメインごとにプロパティファイル名などをHashMapに格納して、それらをArrayListに格納するヘルパーメソッド
 	 * @return 使用できるドメイン名など
 	 * */
 	private ArrayList<HashMap<String, String>> setDomainsObj(){
@@ -227,14 +224,17 @@ public final class OpenPropFileImpl implements OpenPropFile {
 		return true;
 	}
 	
+	@Override
 	public ResourceBundle getEnvBundle() {
 		return envBundle;
 	}
 	
+	@Override
 	public ArrayList<HashMap<String, String>> getDomainsMaps() {
 		return domainsMaps;
 	}
 
+	@Override
 	public HashMap<String, ResourceBundle> getDomBundles() {
 		return domBundles;
 	}

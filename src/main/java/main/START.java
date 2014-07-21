@@ -1,6 +1,6 @@
 package main;
 
-import logic.SmtpListener;
+import logic.impl.SmtpListener;
 
 public class START {
 	public static void main(String args[]) {

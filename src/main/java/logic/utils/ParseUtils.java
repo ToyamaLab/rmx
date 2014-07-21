@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import logic.SmtpListener;
+import logic.impl.SmtpListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

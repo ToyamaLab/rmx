@@ -3,7 +3,8 @@ package logic.bodyfunction;
 import java.util.*;
 import java.sql.*;
 
-import dao.DBDao;
+import dao.DatabaseDao;
+import dao.impl.DatabaseDaoImpl;
 import logic.parse.*;
 
 public class ContentsMatch {
@@ -46,7 +47,7 @@ public class ContentsMatch {
 	
 	public void getResults(ArrayList<String> _body, ResourceBundle domBundle){
 		ArrayList<String> tags = this.findTags(_body);
-		DBDao db = new DBDao(domBundle);
+		DatabaseDao db = new DatabaseDaoImpl(domBundle);
 		Parse4Body parse = new Parse4Body(domBundle);
 		for(int i = 0; i < tags.size(); i++){
 			parse.setParse(tags.get(i));

@@ -1,5 +1,9 @@
 package logic;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
 /**
  * env.propertiesのチェック、及びそれを用いてRMXで用いる
  * ドメインからruleファイルを呼び出すHashMapの構築を行う<br/>
@@ -14,5 +18,11 @@ public interface OpenPropFile {
 	 * env.propertiesからdomvonf.propertiesに関するHashMapを構築する。
 	 */
 	public void open();
-
+	
+	public ResourceBundle getEnvBundle();
+	
+	public ArrayList<HashMap<String, String>> getDomainsMaps();
+	
+	public HashMap<String, ResourceBundle> getDomBundles();
+	
 }

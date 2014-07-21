@@ -8,7 +8,8 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dao.DBDao;
+import dao.DatabaseDao;
+import dao.impl.DatabaseDaoImpl;
 import data.Message;
 import logic.bodyfunction.ContentsMatch;
 import logic.parse.SOP.parserVisitor;
@@ -33,7 +34,7 @@ public class FlowUtils {
 		System.out.println(userInfo.getPara());
 		// 4. DBから宛先の集合を得る
 		try {
-			DBDao dbDao = new DBDao(domBundle);
+			DatabaseDao dbDao = new DatabaseDaoImpl(domBundle);
 			ResultSet rs;
 			rs = dbDao.read(query, params);
 			while(rs.next()) {recipients.add(rs.getString(1));}

@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import plugins.acc.util.RegistUtil;
-import dao.DBDao;
+import dao.DatabaseDao;
+import dao.impl.DatabaseDaoImpl;
 import data.Message;
 
 public class RegistAcc {
@@ -36,7 +37,7 @@ public class RegistAcc {
 		try {
 			dummy = RegistUtil.getDummy(user_name, content, oMsg.getRecipient());
 			String insert_query = RegistUtil.createInsertQuery(dummy, sender, content, user_name);
-			DBDao dbDao = new DBDao(domconfBundle);
+			DatabaseDao dbDao = new DatabaseDaoImpl(domconfBundle);
 			dbDao.write(insert_query);
 		} catch (ClassNotFoundException e) {
 			// TODO 自動生成された catch ブロック

@@ -1,4 +1,4 @@
-package logic;
+package logic.impl;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import logic.impl.OpenPropFileImpl;
 import logic.parse.Distributor;
 
 
