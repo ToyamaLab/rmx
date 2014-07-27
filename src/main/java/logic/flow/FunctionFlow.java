@@ -65,11 +65,11 @@ public class FunctionFlow {
 			recipients.add(oMsg.getSender());
 		else {//team{rmx}@keio.comのとき
 			if(FlowUtils.whichForm(target).equalsIgnoreCase("functionalForm")) {
-				funcUser.UserStart(target, domBundle);
+				funcUser.parseStart(target, domBundle, null);
 				recipients = FlowUtils.getRecipients(funcUser, domBundle);
 			}
 			else {
-				funcUser1.User1Start(target, domBundle, domain);
+				funcUser1.parseStart(target, domBundle, domain);
 				recipients = FlowUtils.getRecipients(funcUser1, domBundle);
 			}
 		}

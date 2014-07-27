@@ -101,7 +101,7 @@ public class Distributor implements Runnable{
 				subdomain = ParseUtils.getSubdomainOfFunctional(recipient);
 				propfile = ParseUtils.getPropfileName(domain, subdomain, domainsMaps);
 				domBundle = ParseUtils.searchDomBundle(domain, subdomain, domBundles);
-				user.UserStart(recipient, domBundle);
+				user.parseStart(recipient, domBundle, null);
 				userInfo = user; //userInfoにはuserとuser1の両方を格納できる(ポリモーフィズム)
 			}
 			//自然形式について
@@ -111,7 +111,7 @@ public class Distributor implements Runnable{
 				subdomain = ParseUtils.getSubdomainOfNatural(recipient);
 				propfile = ParseUtils.getPropfileName(domain, subdomain, domainsMaps);
 				domBundle = ParseUtils.searchDomBundle(domain, subdomain, domBundles);
-				user1.User1Start(recipient, domBundle, domain);
+				user1.parseStart(recipient, domBundle, domain);
 				userInfo = user1; //userInfoにはuserとuser1の両方を格納できる(ポリモーフィズム)
 			}
 			

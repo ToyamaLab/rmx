@@ -56,6 +56,8 @@ public final class OpenPropFileImpl implements OpenPropFile {
 	}
 	
 	/**
+	 * @inheritDoc
+	 * <p>
 	 * env.propertiesを読み込み、domconfをキー名としてそのpropertiesを提供するマップを格納するヘルパーメソッド
 	 * @return 使用できるdomconfBundleが格納
 	 */

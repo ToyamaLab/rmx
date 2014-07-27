@@ -1,5 +1,6 @@
 package controller.impl;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
@@ -34,6 +35,13 @@ public class LogicControllerImpl implements LogicController {
 	}
 	
 	private void startlogic(){
+		try{
+			Incoming ic = new IncomingImpl(cSocket);
+			ic.getMail();
+			oMsg = ic.getMessage();
+		} catch (IOException e) {
+			
+		}
 	}
 
 	@Override
