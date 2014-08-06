@@ -45,6 +45,7 @@ public class ParseImpl implements Parse {
 		domain = new String();
 		subdomain = new String();
 		propfile = new String();
+		domainsMaps = OpenPropFileImpl.getInstance().getDomainsMaps();
 	}
 
 	/**
