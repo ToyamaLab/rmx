@@ -1,12 +1,14 @@
 package main;
 
-import logic.impl.SmtpListener;
+import controller.SystemController;
+import controller.impl.SystemControllerImpl;
 
 public class START {
 	public static void main(String args[]) {
-		SmtpListener sl = new SmtpListener();
-		sl.startPkg();
-		
+//		SmtpListener sl = new SmtpListener();
+//		sl.startPkg();
+		SystemController sc = new SystemControllerImpl();
+		sc.startSystem();
 	}
 	
 }

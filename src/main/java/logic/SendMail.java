@@ -9,7 +9,7 @@ public interface SendMail {
 	
 	/**
 	 * メールを送信
-	 * @param sMsg 実際に送信するオブジェクト
+	 * @param sMsg サーバと通信し、実際に送信する
 	 */
 	public void send(Message sMsg);
 

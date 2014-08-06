@@ -1,5 +1,7 @@
 package logic;
 
+import java.util.ResourceBundle;
+
 import logic.parse.Parsable;
 
 /**
@@ -16,5 +18,11 @@ public interface Parse {
 	 * @return パーザオブジェクト
 	 */
 	public Parsable getParser();
+	
+	/**
+	 * 使用したProperties(domconf)ファイルのリソースバンドルを返す。
+	 * @return 使用したdomBundle
+	 */
+	public ResourceBundle getDomBundle();
 	
 }

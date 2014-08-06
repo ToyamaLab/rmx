@@ -13,9 +13,9 @@ public interface MakeMessage {
 	/**
 	 * メッセージを作成
 	 * @param oMseg 受信したメール
-	 * @param recipients データベース等で取得したメールアドレスのリスト
+	 * @param parse パーズオブジェクト
 	 * @return 送信メッセージのリスト
 	 */
-	public List<Message> make(Message oMseg, List<String> recipients);
+	public List<Message> make(Message oMseg, Parse parse);
 
 }

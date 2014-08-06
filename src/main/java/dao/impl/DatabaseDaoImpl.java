@@ -9,8 +9,8 @@ import java.sql.Statement;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
+import logic.parse.Parse4Body;
 import dao.DatabaseDao;
-import logic.parse.*;
 
 public class DatabaseDaoImpl implements DatabaseDao {
 	private Connection conn;
@@ -32,7 +32,7 @@ public class DatabaseDaoImpl implements DatabaseDao {
 	
 	//
 	@Override
-	public ResultSet read(String query, ListIterator<String> params) throws Exception{
+	public ResultSet read(String query, ListIterator<String> params) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
 		//ユーザ名とパスワードのチェック
 		if (user != null && pass != null) {

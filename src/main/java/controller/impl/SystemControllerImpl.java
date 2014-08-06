@@ -28,6 +28,7 @@ public class SystemControllerImpl implements SystemController {
 		opf = OpenPropFileImpl.getInstance();
 	}
 	
+	@Override
 	public void startSystem() {
 		opf.open();
 		if (!opf.getDomBundles().isEmpty()) {

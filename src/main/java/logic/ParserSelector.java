@@ -3,7 +3,7 @@ package logic;
 import logic.parse.Parsable;
 
 /**
- * メールアドレスから適したパーザを設定する。
+ * メールアドレスから適したパーザを設定するファクトリインターフェース。
  * そのパーザに必要な情報も返すメソッドも保持する。
  */
 public interface ParserSelector {

@@ -35,7 +35,7 @@ public final class OpenPropFileImpl implements OpenPropFile {
 	private static final Logger log = LoggerFactory.getLogger(OpenPropFileImpl.class);
 
 	/**
-	 * コンストラクタを<code>private</にすることで>シングルトンを保証
+	 * コンストラクタを<code>private</code>にすることでシングルトンを保証
 	 */
 	private OpenPropFileImpl() {
 		domainsMaps = new ArrayList<HashMap<String, String>>();

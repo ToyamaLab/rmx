@@ -20,7 +20,7 @@ public interface DatabaseDao {
 	 * @throws Exception
 	 */
 	public ResultSet read(String query, ListIterator<String> params)
-			throws Exception;
+			throws SQLException, ClassNotFoundException;
 
 	/**
 	 * 本文編集機能で用いたパーザからSQLを実行
