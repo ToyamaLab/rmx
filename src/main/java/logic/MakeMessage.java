@@ -16,6 +16,6 @@ public interface MakeMessage {
 	 * @param parse パーズオブジェクト
 	 * @return 送信メッセージのリスト
 	 */
-	public List<Message> make(Message oMseg, Parse parse);
+	public List<Message> make(Message oMsg, Parse parse);
 
 }

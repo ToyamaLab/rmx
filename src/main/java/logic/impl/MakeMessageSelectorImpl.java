@@ -47,8 +47,8 @@ public class MakeMessageSelectorImpl implements MakeMessageSelector {
 		if (mixture)
 			return null;
 		if (function)
-			return null;
-		else return null;
+			return new MakeFunction(parser, domBundle);
+		else return new MakeError("syntax");
 
 	}
 	

@@ -2,6 +2,7 @@ package plugins.acc.regist;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import plugins.acc.util.RegistUtil;
@@ -17,14 +18,14 @@ public class RegistAcc {
 	private String sender;
 	private String user_name;
 	private String content;
-	ArrayList<String> recipients;
+	List<String> recipients;
 	
 	//コンストラクタ
 	public RegistAcc(
-			ArrayList<String> commandArgs,
+			List<String> commandArgs,
 			Message oMsg,
 			ResourceBundle domconfBundle,
-			ArrayList<String> recipients) {
+			List<String> recipients) {
 		this.oMsg = oMsg;
 		this.domconfBundle = domconfBundle;
 		this.sender = oMsg.getSender();

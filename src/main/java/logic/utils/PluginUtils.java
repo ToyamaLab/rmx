@@ -4,15 +4,16 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import logic.impl.SmtpListener;
 import logic.interfaces.PluginInterface;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PluginUtils {
 	private static final Logger log = LoggerFactory.getLogger(SmtpListener.class);
@@ -64,7 +65,7 @@ public class PluginUtils {
 	 * */
 	public static PluginInterface getPlugin(ArrayList<PluginInterface> plugins, String function) {
 		for(int i=0;i<plugins.size();i++) {
-			ArrayList<String> pluginFunctions = plugins.get(i).getAvailableFunctionNames();
+			List<String> pluginFunctions = plugins.get(i).getAvailableFunctionNames();
 			for(int j=0;j<pluginFunctions.size();j++) {
 				if(pluginFunctions.get(j).equalsIgnoreCase(function))
 					return plugins.get(i);

@@ -1,10 +1,10 @@
 package logic.flow;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import logic.impl.OpenPropFileImpl;
-import logic.impl.SmtpListener;
 import logic.interfaces.PluginInterface;
 import logic.parse.User;
 import logic.parse.User1;
@@ -82,7 +82,7 @@ public class FunctionFlow {
 		PluginInterface plugin = p_holder.selectPlugin(plugins, function);
 		
 		// 5. 送信用メッセージを作成
-		ArrayList<Message> sMsgs = new ArrayList<Message>();
+		List<Message> sMsgs = new ArrayList<Message>();
 		// 6. 送信用メッセージを得る
 		sMsgs = plugin.pluginStart(oMsg, function, command, commandArgs, recipients, domBundle, propfile);
 		

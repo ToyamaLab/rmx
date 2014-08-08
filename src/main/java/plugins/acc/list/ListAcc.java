@@ -1,6 +1,7 @@
 package plugins.acc.list;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import plugins.acc.util.ListUtil;
@@ -10,16 +11,16 @@ public class ListAcc {
 	//メンバ変数
 	private Message oMsg;
 	private ResourceBundle domBundle;
-	private ArrayList<String> recipietnts;
+	private List<String> recipietnts;
 	private String user_name;
 	private String content;
 	
 	//コンストラクタ
 	public ListAcc(
-			ArrayList<String> commandArgs,
+			List<String> commandArgs,
 			Message oMsg,
 			ResourceBundle domBundle,
-			ArrayList<String> recipients) {
+			List<String> recipients) {
 		this.content = commandArgs.get(0);
 		this.user_name = commandArgs.get(1);
 		this.oMsg = oMsg;

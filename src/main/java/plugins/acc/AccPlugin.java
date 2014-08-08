@@ -1,22 +1,23 @@
 package plugins.acc;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import logic.interfaces.PluginInterface;
 import plugins.acc.list.ListAcc;
 import plugins.acc.regist.RegistAcc;
 import data.Message;
-import logic.interfaces.PluginInterface;
 
 public class AccPlugin implements PluginInterface{
 
 	@Override
-	public ArrayList<Message> pluginStart(
+	public List<Message> pluginStart(
 			Message oMsg,
 			String function,
 			String command,
-			ArrayList<String> commandArgs,
-			ArrayList<String> recipients,
+			List<String> commandArgs,
+			List<String> recipients,
 			ResourceBundle domBundle,
 			String propfile) {
 		

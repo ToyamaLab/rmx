@@ -13,7 +13,8 @@ import dao.impl.DatabaseDaoImpl;
 import data.Message;
 
 /**
- * {@link MakeMessage}の実装 Transferのみのルールのとき、この具象クラスを用いる。
+ * {@link MakeMessage}の実装
+ * Transferのみのルールのとき、この具象クラスを用いる。
  */
 public class MakeTransfer implements MakeMessage {
 
@@ -27,7 +28,7 @@ public class MakeTransfer implements MakeMessage {
 	 * @inheritDoc
 	 */
 	@Override
-	public List<Message> make(Message oMseg, Parse parse) {
+	public List<Message> make(Message oMsg, Parse parse) {
 
 		DatabaseDao db = new DatabaseDaoImpl(parse.getDomBundle());
 		ResultSet rs;
@@ -51,14 +52,14 @@ public class MakeTransfer implements MakeMessage {
 		for (int i = 0; i < finalrecipients.size(); i++) {
 			Message sMsg = new Message();
 
-			sMsg.setSender(oMseg.getSender());
+			sMsg.setSender(oMsg.getSender());
 			sMsg.setRecipient(finalrecipients.get(i));
-			for (int k = 0; k < oMseg.getHeader().size(); k++) {
-				sMsg.addHeader(oMseg.getHeader().get(k));
+			for (int k = 0; k < oMsg.getHeader().size(); k++) {
+				sMsg.addHeader(oMsg.getHeader().get(k));
 			}
-			sMsg.setSubject(oMseg.getSubject());
-			for (int j = 0; j < oMseg.getBody().size(); j++) {
-				sMsg.addBody(oMseg.getBody().get(j));
+			sMsg.setSubject(oMsg.getSubject());
+			for (int j = 0; j < oMsg.getBody().size(); j++) {
+				sMsg.addBody(oMsg.getBody().get(j));
 			}
 			sMsgs.add(sMsg);
 		}
