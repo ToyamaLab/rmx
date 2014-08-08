@@ -51,18 +51,16 @@ public class MakeTransfer implements MakeMessage {
 		for (int i = 0; i < finalrecipients.size(); i++) {
 			Message sMsg = new Message();
 
-			sMsg.setRecipient(finalrecipients.get(i));
 			sMsg.setSender(oMseg.getSender());
+			sMsg.setRecipient(finalrecipients.get(i));
+			for (int k = 0; k < oMseg.getHeader().size(); k++) {
+				sMsg.addHeader(oMseg.getHeader().get(k));
+			}
 			sMsg.setSubject(oMseg.getSubject());
 			for (int j = 0; j < oMseg.getBody().size(); j++) {
 				sMsg.addBody(oMseg.getBody().get(j));
 			}
-			for (int k = 0; k < oMseg.getHeader().size(); k++) {
-				sMsg.addHeader(oMseg.getHeader().get(i));
-			}
-
-			if (sMsg != null)
-				sMsgs.add(sMsg);
+			sMsgs.add(sMsg);
 		}
 		return sMsgs;
 	}

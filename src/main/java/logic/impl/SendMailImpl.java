@@ -27,7 +27,7 @@ public class SendMailImpl implements SendMail {
 	/** アウトプットテキストリーダ */
 	private BufferedOutputStream out;
 	/** ログ出力 */
-	private static final Logger log = LoggerFactory.getLogger(SendMailService.class);
+	private static final Logger log = LoggerFactory.getLogger(SendMailImpl.class);
 	/** プロトコルの終端記号 */
 	private static final String CRLF = "\r\n";
 	/** RMXシステムプロパティファイル */

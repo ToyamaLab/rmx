@@ -41,7 +41,7 @@ public class MakeMessageSelectorImpl implements MakeMessageSelector {
 		}
 		
 		if (transfer)
-			return null;
+			return new MakeTransfer(parser);
 		if (answer)
 			return null;
 		if (mixture)
