@@ -1,19 +1,19 @@
 package logic.interfaces;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import data.Message;
 
 public interface PluginInterface {
-	public ArrayList<Message> pluginStart(
+	public List<Message> pluginStart(
 			Message oMsg,
 			String function,
 			String command,
-			ArrayList<String> commandArgs,
-			ArrayList<String> recipients,
+			List<String> commandArgs,
+			List<String> recipients,
 			ResourceBundle domBundle,
 			String propfile);
 
-	public ArrayList<String> getAvailableFunctionNames();
+	public List<String> getAvailableFunctionNames();
 }

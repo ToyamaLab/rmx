@@ -1,4 +1,4 @@
-package presentation.mail;
+package logic.impl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -9,23 +9,41 @@ import java.net.UnknownHostException;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
-import org.slf4j.*;
+import logic.SendMail;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import data.Message;
 
-public class SendMailService {
+/**
+ * {@link SendMail}の実装
+ */
+public class SendMailImpl implements SendMail {
+
 	/** インプットテキストリーダ */
 	private BufferedInputStream in;
 	/** アウトプットテキストリーダ */
 	private BufferedOutputStream out;
 	/** ログ出力 */
-	private static final Logger log = LoggerFactory.getLogger(SendMailService.class);
+	private static final Logger log = LoggerFactory.getLogger(SendMailImpl.class);
 	/** プロトコルの終端記号 */
 	private static final String CRLF = "\r\n";
-
-	public SendMailService() {}
+	/** RMXシステムプロパティファイル */
+	private ResourceBundle envBundle;
+	/** OpenPropFileImpl */
+	OpenPropFileImpl opf = OpenPropFileImpl.getInstance();
 	
-	public void sendMail(Message sMsg,ResourceBundle envBundle) {
+	public SendMailImpl() {
+		envBundle = opf.getEnvBundle();
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void send(Message sMsg) {
+
 		try {
 			Socket mySocket = new Socket(InetAddress.getByName(envBundle.getString("mailServer")), 25);
 			String buffer = new String();
@@ -174,4 +192,5 @@ public class SendMailService {
 		}
 		return ack.toString();
 	}
+
 }

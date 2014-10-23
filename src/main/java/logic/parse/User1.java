@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 /** Super OBUNAI Parser */
 import logic.parse.SOP.*;
 
-public class User1 implements parserVisitor {
+public class User1 implements Parsable {
 
 	/** ex) db.ics.keio.ac.jp */
 	public  String domain;
@@ -138,8 +138,9 @@ public class User1 implements parserVisitor {
 		rule1 = new ArrayList<String>();
 		minimamqueries = new ArrayList<String>();
 	}
-
-	public void User1Start(String recipient, ResourceBundle dom, String _domname) {
+	
+	@Override
+	public void parseStart(String recipient, ResourceBundle dom, String _domname) {
 
 		System.out.println("==== parser1 start ====");
 		

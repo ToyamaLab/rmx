@@ -2,10 +2,12 @@ package plugins.acc.regist;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import plugins.acc.util.RegistUtil;
-import dao.DBDao;
+import dao.DatabaseDao;
+import dao.impl.DatabaseDaoImpl;
 import data.Message;
 
 public class RegistAcc {
@@ -16,14 +18,14 @@ public class RegistAcc {
 	private String sender;
 	private String user_name;
 	private String content;
-	ArrayList<String> recipients;
+	List<String> recipients;
 	
 	//コンストラクタ
 	public RegistAcc(
-			ArrayList<String> commandArgs,
+			List<String> commandArgs,
 			Message oMsg,
 			ResourceBundle domconfBundle,
-			ArrayList<String> recipients) {
+			List<String> recipients) {
 		this.oMsg = oMsg;
 		this.domconfBundle = domconfBundle;
 		this.sender = oMsg.getSender();
@@ -36,7 +38,7 @@ public class RegistAcc {
 		try {
 			dummy = RegistUtil.getDummy(user_name, content, oMsg.getRecipient());
 			String insert_query = RegistUtil.createInsertQuery(dummy, sender, content, user_name);
-			DBDao dbDao = new DBDao(domconfBundle);
+			DatabaseDao dbDao = new DatabaseDaoImpl(domconfBundle);
 			dbDao.write(insert_query);
 		} catch (ClassNotFoundException e) {
 			// TODO 自動生成された catch ブロック

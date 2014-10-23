@@ -1,4 +1,4 @@
-package dao;
+package dao.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,9 +9,10 @@ import java.sql.Statement;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
-import logic.parse.*;
+import logic.parse.Parse4Body;
+import dao.DatabaseDao;
 
-public class DBDao {
+public class DatabaseDaoImpl implements DatabaseDao {
 	private Connection conn;
 	private ResultSet resultSet;
 	private PreparedStatement prepstmt;
@@ -22,7 +23,7 @@ public class DBDao {
 	private String pass;
 	
 	//コンストラクタ
-	public DBDao(ResourceBundle domconfBundle) {
+	public DatabaseDaoImpl(ResourceBundle domconfBundle) {
 		this.driver = domconfBundle.getString("DB_DRIVER");
 		this.url = domconfBundle.getString("DB_URL");
 		this.user = domconfBundle.getString("DB_ID");
@@ -30,7 +31,8 @@ public class DBDao {
 	}
 	
 	//
-	public ResultSet read(String query, ListIterator<String> params) throws Exception{
+	@Override
+	public ResultSet read(String query, ListIterator<String> params) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
 		//ユーザ名とパスワードのチェック
 		if (user != null && pass != null) {
@@ -69,10 +71,12 @@ public class DBDao {
 		return resultSet;
 	}
 	
+	@Override
 	public ResultSet bodyRead(Parse4Body parse) throws Exception{
 		return read(parse.getQuery(), parse.getParameter().listIterator());
 	}
 	
+	@Override
 	public void write(String query) throws ClassNotFoundException,SQLException{
 		Class.forName(driver);
 		conn = DriverManager.getConnection(url,user,pass);
@@ -81,6 +85,7 @@ public class DBDao {
 	}
 	
 	//
+	@Override
 	public void close() throws SQLException {
 		if(resultSet!=null)
 			resultSet.close();

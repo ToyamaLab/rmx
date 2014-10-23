@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 import logic.parse.SOP.*;
 
-public class User implements parserVisitor {
+public class User implements Parsable {
 
 
 	/** ex) db.ics.keio.ac.jp */
@@ -126,7 +126,7 @@ public class User implements parserVisitor {
 		minimamqueries = new ArrayList<String>();
 	}
 
-	public void UserStart(String recipient, ResourceBundle dom) {
+	public void parseStart(String recipient, ResourceBundle dom, String _domname) {
 
 		System.out.println("==== parser start ====");
 		this.recipient = recipient;

@@ -1,4 +1,4 @@
-package presentation.mail;
+package logic.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,51 +6,63 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import org.slf4j.*;
+import logic.Incoming;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import data.Message;
 import data.State;
 
-public class IncomingMailService {
-	//メンバ変数
-	private Socket socket;
+/**
+ * Incomingの実装
+ */
+public class IncomingImpl implements Incoming {
+	
+	private Socket cSocket;
 	private BufferedReader in;
 	private OutputStreamWriter out;
 	private State connState;
 	private Message oMsg;
-	private static final Logger log = LoggerFactory.getLogger(IncomingMailService.class);
+	private static final Logger log = LoggerFactory.getLogger(IncomingImpl.class);
+	private static final String CRLF = "\r\n";
 	
-	//コンストラクタ
-	public IncomingMailService(Socket socket) throws IOException{
-		try {
-			this.socket = socket;
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = new OutputStreamWriter(socket.getOutputStream());
-			connState = new State(socket);
-			oMsg = new Message();
-			this.sendAck("220"+connState.getServerName()+"SMTP");
+	public IncomingImpl(Socket _cSocket) throws IOException {
+		cSocket = _cSocket;
+		in = new BufferedReader(new InputStreamReader(cSocket.getInputStream()));
+		out = new OutputStreamWriter(cSocket.getOutputStream());
+		connState = new State(cSocket);
+		oMsg = new Message();
+		
+		//Acknowledge 220.
+	}
+	
+	@Override
+	public void getMail(){
+		try{
+			this.sendAck("220" + connState.getServerName() + "SMTP");
 			this.conversation();
-		}catch(IOException e) {
+		} catch (IOException e) {
 			log.warn("# Error: " + e.toString());
-			socket.close();
-		}catch (Exception e) {
-			log.warn("# Error: " + e.toString());
-			socket.close();
+			try {
+				cSocket.close();
+			} catch (IOException E){
+			}
 		}
 	}
 	
-	private void sendAck(String acknowledgement) throws IOException{
-		try {
-			out.write(acknowledgement + "\r\n");
+	private void sendAck(String acknowledgement) throws IOException {
+		try{
+			out.write(acknowledgement + CRLF);
 			out.flush();
 		} catch (IOException e) {
 			log.warn("# Error: " + e.toString());
-			socket.close();
+			cSocket.close();
 		}
 		log.info("S :  Send  : [" + acknowledgement + "]");
 	}
-	
-	private void conversation() throws IOException{
+
+	private void conversation() throws IOException {
 		try {
 			String line = new String();
 			while((line = in.readLine())!=null) {
@@ -150,7 +162,7 @@ public class IncomingMailService {
 					System.out.println();
 
 					// Close the connection with the client.
-					socket.close();
+					cSocket.close();
 
 					break;
 				}
@@ -168,23 +180,25 @@ public class IncomingMailService {
 			}
 		}catch (IOException e) {
 			log.warn("# Error: " + e.toString());
-			socket.close();
+			cSocket.close();
 		} catch (Exception e) {
 			log.warn("# Error: " + e.toString());
-			socket.close();
+			cSocket.close();
 		}
+	}
+
+	@Override
+	public Message getMessage() {
+		return oMsg;
 	}
 	
 	private String checkSubject(String str) {
-			int i = str.indexOf(':');
-			return str.substring(i + 1);
+		int i = str.indexOf(':');
+		return str.substring(i + 1);
 	}
 	
 	public void setMessage(Message oMsg) {
 		this.oMsg = oMsg;
 	}
-	
-	public Message getMessage() {
-		return oMsg;
-	}
+
 }

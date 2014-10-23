@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-import dao.DBDao;
+import dao.DatabaseDao;
+import dao.impl.DatabaseDaoImpl;
 
 public class ListUtil {
 	//
@@ -17,7 +18,7 @@ public class ListUtil {
 	public static ArrayList<String> createListBody(String sender, String user_name, ResourceBundle domBundle) {
 		ArrayList<String> body = new ArrayList<String>();
 		String select_query = createSelectQuery(sender, user_name);
-		DBDao dbdao = new DBDao(domBundle);
+		DatabaseDao dbdao = new DatabaseDaoImpl(domBundle);
 		ResultSet rs;
 		ArrayList<HashMap<String, String>> alist = new ArrayList<HashMap<String,String>>();
 		try {
