@@ -8,4 +8,12 @@ appender('CONSOLE', ConsoleAppender) {
     }
 }
 
-root(TRACE, ['CONSOLE'])
+appender('FILE', FileAppender) {
+	file = "rmxlog.log"
+	append = true
+	encoder(PatternLayoutEncoder) {
+		pattern = "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n"
+	}
+}
+
+root(INFO, ['CONSOLE'])
