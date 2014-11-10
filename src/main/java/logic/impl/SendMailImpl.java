@@ -19,7 +19,7 @@ import data.Message;
 /**
  * {@link SendMail}の実装
  */
-public class SendMailImpl implements SendMail {
+public class SendMailImpl implements SendMail, Runnable {
 
 	/** インプットテキストリーダ */
 	private BufferedInputStream in;
@@ -31,11 +31,19 @@ public class SendMailImpl implements SendMail {
 	private static final String CRLF = "\r\n";
 	/** RMXシステムプロパティファイル */
 	private ResourceBundle envBundle;
+	/** 送信するメール */
+	Message sMsg;
 	/** OpenPropFileImpl */
 	OpenPropFileImpl opf = OpenPropFileImpl.getInstance();
 	
-	public SendMailImpl() {
+	public SendMailImpl(Message _sMsg) {
 		envBundle = opf.getEnvBundle();
+		sMsg = _sMsg;
+	}
+	
+	@Override
+	public void run() {
+		this.send(sMsg);
 	}
 	
 	/**
@@ -53,7 +61,7 @@ public class SendMailImpl implements SendMail {
 			
 			buffer = getAck();
 			if (buffer.startsWith("220")) {
-				log.debug("C : Received : {}", buffer);
+				log.info("C : Received : {}", buffer);
 			}
 
 			// 2. Request HELO.
@@ -131,7 +139,7 @@ public class SendMailImpl implements SendMail {
 			// Check for 221.
 			buffer = getAck();
 			if (buffer.startsWith("221")) {
-				log.debug("C : Received : {}", buffer);
+				log.info("C : Received : {}", buffer);
 				mySocket.close();
 			}
 		} catch (UnknownHostException e) {
