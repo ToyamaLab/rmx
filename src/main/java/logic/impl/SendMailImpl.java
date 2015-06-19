@@ -111,6 +111,11 @@ public class SendMailImpl implements SendMail, Runnable {
 			}
 
 			// 5-1. Send the message header.
+			String subject = sMsg.getSubject();
+			if (subject != null) {
+				out.write(("Subject: " + subject + CRLF).getBytes());
+				out.flush();
+			}
 			ListIterator<String> header = sMsg.getHeader().listIterator();
 			while (header.hasNext()) {
 				out.write((header.next() + CRLF).getBytes());

@@ -8,8 +8,7 @@ import java.util.StringTokenizer;
 import logic.parse.SOP.*;
 
 public class User implements Parsable {
-
-
+	
 	/** ex) db.ics.keio.ac.jp */
 	public  String domain;
 
@@ -129,17 +128,18 @@ public class User implements Parsable {
 	public void parseStart(String recipient, ResourceBundle dom, String _domname) {
 
 		System.out.println("==== parser start ====");
+		
 		this.recipient = recipient;
 		User visitor = new User();
 		visitor.rb = dom;
 		parser parser = new parser(new StringReader(recipient));
-		ASTRecipient start;
 		try {
-			start = parser.Recipient();
+			Node start = parser.Recipient();
 			System.out.println(start.jjtAccept(visitor, null));
 		} catch (ParseException e) {
 			e.printStackTrace();
-
+		} catch (TokenMgrError e) {
+			e.printStackTrace();
 		}
 		
 		visitor.paranum.add(-1);
@@ -1128,7 +1128,7 @@ public class User implements Parsable {
 	@Override
 	public ArrayList<String> getqueries(){
 		ArrayList<String> replaced_queries = new ArrayList<String>();
-		for(int i = 0; i < queries.size(); i++){
+		for(int i = 0; i < queries.size(); i++){		
 			replaced_queries.add(this.simplereplace(queries.get(i).toString()));
 		}
 		return replaced_queries;

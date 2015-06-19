@@ -6,22 +6,11 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 
-
-
-
-
-
-
-
-
-
-
-
 /** Super OBUNAI Parser */
 import logic.parse.SOP.*;
 
 public class User1 implements Parsable {
-
+	
 	/** ex) db.ics.keio.ac.jp */
 	public  String domain;
 
@@ -148,12 +137,13 @@ public class User1 implements Parsable {
 		visitor.rb = dom;
 		visitor.domname = _domname;
 		parser parser = new parser(new StringReader(recipient));
-		ASTRecipient1 start;
 		
 		try {
-			start = parser.Recipient1();
+			Node start = parser.Recipient1();
 			System.out.println(start.jjtAccept(visitor, null));
 		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (TokenMgrError e) {
 			e.printStackTrace();
 		}
 		
@@ -787,7 +777,7 @@ public class User1 implements Parsable {
 	@Override
 	public ArrayList<String> getqueries(){
 		ArrayList<String> replaced_queries = new ArrayList<String>();
-		for(int i = 0; i < queries.size(); i++){
+		for(int i = 0; i < queries.size(); i++){	
 			replaced_queries.add(this.simplereplace(queries.get(i).toString()));
 		}
 		return replaced_queries;

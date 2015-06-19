@@ -8,6 +8,7 @@ import java.util.List;
 import logic.MakeMessage;
 import logic.Parse;
 import logic.parse.Parsable;
+import logic.authorization.*;
 import dao.DatabaseDao;
 import dao.impl.DatabaseDaoImpl;
 import data.Message;
@@ -29,7 +30,19 @@ public class MakeTransfer implements MakeMessage {
 	 */
 	@Override
 	public List<Message> make(Message oMsg, Parse parse) {
-
+		
+		ArrayList<Message> sMsgs = new ArrayList<Message>();
+		
+		// 送信許可
+		AuthorizeSender authorize = new AuthorizeSender(parse.getDomBundle());
+		if (authorize.authorizationIsOn()) {
+			ArrayList<String> unauthorizedRules = authorize.getUnauthorizedRules(parser, oMsg.getSender());
+			if (!unauthorizedRules.isEmpty()) {
+				sMsgs.add(new MakeWarning().makeWarningMassage(oMsg, unauthorizedRules));
+				return sMsgs;
+			}
+		}
+		
 		DatabaseDao db = new DatabaseDaoImpl(parse.getDomBundle());
 		ResultSet rs;
 		ArrayList<String> finalrecipients = new ArrayList<String>();
@@ -46,9 +59,8 @@ public class MakeTransfer implements MakeMessage {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		ArrayList<Message> sMsgs = new ArrayList<Message>();
-
+		
+		// 通常
 		for (int i = 0; i < finalrecipients.size(); i++) {
 			Message sMsg = new Message();
 
