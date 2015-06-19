@@ -40,7 +40,7 @@ public class IncomingImpl implements Incoming {
 	@Override
 	public void getMail(){
 		try{
-			this.sendAck("220" + connState.getServerName() + "SMTP");
+			this.sendAck("220 " + connState.getServerName() + "SMTP");
 			this.conversation();
 		} catch (IOException e) {
 			log.warn("# Error: " + e.toString());
