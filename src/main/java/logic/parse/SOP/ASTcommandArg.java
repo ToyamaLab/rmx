@@ -8,14 +8,14 @@ class ASTcommandArg extends SimpleNode {
     super(id);
   }
 
-  public ASTcommandArg(parser p, int id) {
+  public ASTcommandArg(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=9f4e965d85705f3465d15fa9b58ae1ba (do not edit this line) */
+/* JavaCC - OriginalChecksum=060728ecfada52cd67753808ed5c9096 (do not edit this line) */

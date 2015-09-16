@@ -8,14 +8,14 @@ class ASTRecipient1 extends SimpleNode {
     super(id);
   }
 
-  public ASTRecipient1(parser p, int id) {
+  public ASTRecipient1(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=22842eb741d94f50ad7dee1e2e12a7eb (do not edit this line) */
+/* JavaCC - OriginalChecksum=091682de3e521f933638c88bde2c1bbc (do not edit this line) */

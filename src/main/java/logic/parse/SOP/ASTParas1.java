@@ -8,14 +8,14 @@ class ASTParas1 extends SimpleNode {
     super(id);
   }
 
-  public ASTParas1(parser p, int id) {
+  public ASTParas1(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=d7bef46650233a1a15aa709039c3e37c (do not edit this line) */
+/* JavaCC - OriginalChecksum=5655ff0d7b572f578eb22a69ff666c4c (do not edit this line) */

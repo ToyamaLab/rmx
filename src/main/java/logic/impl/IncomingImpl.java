@@ -79,7 +79,8 @@ public class IncomingImpl implements Incoming {
 				if (line.startsWith("EHLO")) {
 					oMsg.initiate();
 					connState.setState("MAIL");
-					this.sendAck("250 " + connState.getServerName());
+					this.sendAck("250-" + connState.getServerName());
+					this.sendAck("250 SMTPUTF8");
 				}
 				
 				// 2. MAIL

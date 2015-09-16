@@ -8,14 +8,14 @@ class ASTPolimolPara extends SimpleNode {
     super(id);
   }
 
-  public ASTPolimolPara(parser p, int id) {
+  public ASTPolimolPara(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=3a8098131b86c2c8e12ce1336d553a48 (do not edit this line) */
+/* JavaCC - OriginalChecksum=a86237d713d50f31175a6c4acab9ab4e (do not edit this line) */

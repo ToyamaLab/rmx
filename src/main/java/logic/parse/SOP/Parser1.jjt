@@ -5,14 +5,14 @@ options {
   NODE_EXTENDS="BaseNode";
 }
 
-PARSER_BEGIN(parser1)
+PARSER_BEGIN(Parser1)
 
 package logic.parse.SOP;
 
-public class parser1 {
+public class Parser1 {
 }
 
-PARSER_END(parser1)
+PARSER_END(Parser1)
 
 
 SKIP :
@@ -28,7 +28,7 @@ TOKEN :
      	<MINUS: 	"-" >
     | 	<PLUS: 		"+" >
     | 	<PERIOD:	"." >
-    | 	<VIRTICAL:	"|" >
+    | 	<VERTICAL:	"|" >
     |	<COMMA:		"," >
     | 	<OP_BRACE:	"{" >
     | 	<END_BRACE:	"}" >
@@ -41,16 +41,16 @@ TOKEN :
 ASTRecipient Recipient():
 {}
 {
-	DebugExp() {return jjtThis;}	
+	PluginExp() {return jjtThis;}	
 }
 
-void DebugExp() #DebugEx(>1) :
+void PluginExp() #PluginEx(>1) :
 {}
 {
-	(Debug())? Address() 	
+	(Plugin())? Address() 	
 }
 
-void Debug() :
+void Plugin() :
 {}
 {
 	<HASH> function() (<PERIOD> alias())?  <HASH>

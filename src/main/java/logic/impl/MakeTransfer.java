@@ -9,6 +9,7 @@ import logic.MakeMessage;
 import logic.Parse;
 import logic.parse.Parsable;
 import logic.authorization.*;
+import logic.authorization.impl.*;
 import dao.DatabaseDao;
 import dao.impl.DatabaseDaoImpl;
 import data.Message;
@@ -34,13 +35,11 @@ public class MakeTransfer implements MakeMessage {
 		ArrayList<Message> sMsgs = new ArrayList<Message>();
 		
 		// 送信許可
-		AuthorizeSender authorize = new AuthorizeSender(parse.getDomBundle());
-		if (authorize.authorizationIsOn()) {
-			ArrayList<String> unauthorizedRules = authorize.getUnauthorizedRules(parser, oMsg.getSender());
-			if (!unauthorizedRules.isEmpty()) {
-				sMsgs.add(new MakeWarning().makeWarningMassage(oMsg, unauthorizedRules));
-				return sMsgs;
-			}
+		AuthorizeSender as = new AuthorizeSenderImpl(parse.getDomBundle(), parser, oMsg.getSender());
+		if (!as.isAuthorized()) {
+			MakeWarning mw = new MakeWarningImpl();
+			sMsgs.add(mw.makeWarningMessage(oMsg, as.getUnauthorizedRulesStr()));
+			return sMsgs;
 		}
 		
 		DatabaseDao db = new DatabaseDaoImpl(parse.getDomBundle());

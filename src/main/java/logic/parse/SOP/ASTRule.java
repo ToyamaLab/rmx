@@ -8,14 +8,14 @@ class ASTRule extends SimpleNode {
     super(id);
   }
 
-  public ASTRule(parser p, int id) {
+  public ASTRule(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=f70804cf9a1d906db1d0a7448b4533f9 (do not edit this line) */
+/* JavaCC - OriginalChecksum=d9182686b3f56f374b47263df130e852 (do not edit this line) */

@@ -8,14 +8,14 @@ class ASTValue extends SimpleNode {
     super(id);
   }
 
-  public ASTValue(parser p, int id) {
+  public ASTValue(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=d590bf7dc4b38798c40012181d3dd550 (do not edit this line) */
+/* JavaCC - OriginalChecksum=5079f8645d09053a0d3bae6260f4a6b0 (do not edit this line) */

@@ -8,14 +8,14 @@ class ASTUnion extends SimpleNode {
     super(id);
   }
 
-  public ASTUnion(parser p, int id) {
+  public ASTUnion(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=71bea7ad0619dabdadf958b8c512c32c (do not edit this line) */
+/* JavaCC - OriginalChecksum=75bf0b0c0b64c915178ccee0777e63c1 (do not edit this line) */

@@ -43,3 +43,13 @@
 /parser1.jj
 /parser1TreeConstants.java
 /parser1Visitor.java
+/ASTPlugin.java
+/ASTPluginEx.java
+/ASTPluginEx1.java
+/Parser.java
+/ParserConstants.java
+/ParserTokenManager.java
+/ParserTreeConstants.java
+/ParserVisitor.java
+/JJTParserState.java
+/Parser.jj

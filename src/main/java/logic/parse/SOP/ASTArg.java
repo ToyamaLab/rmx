@@ -8,14 +8,14 @@ class ASTArg extends SimpleNode {
     super(id);
   }
 
-  public ASTArg(parser p, int id) {
+  public ASTArg(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=4df6f17ebba7b4e2bdc0f5b629e96385 (do not edit this line) */
+/* JavaCC - OriginalChecksum=f9383d7be30ca3970a3d2751a87517f7 (do not edit this line) */

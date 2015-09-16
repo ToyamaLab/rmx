@@ -6,14 +6,14 @@ options {
   UNICODE_INPUT=true;
 }
 
-PARSER_BEGIN(parser)
+PARSER_BEGIN(Parser)
 
 package logic.parse.SOP;
 
-public class parser {
+public class Parser {
 }
 
-PARSER_END(parser)
+PARSER_END(Parser)
 
 
 SKIP :
@@ -29,32 +29,32 @@ TOKEN :
      	<MINUS: 	"-" >
     | 	<PLUS: 		"+" >
     | 	<PERIOD:	"." >
-    | 	<VIRTICAL:	"|" >
+    | 	<VERTICAL:	"|" >
     |	<COMMA:		"," >
     | 	<OP_BRACE:	"{" >
     | 	<END_BRACE:	"}" >
     | 	<AT:		"@" >
     | 	<HASH:		"#" >
-	| 	<ARG:		(["A"-"Z", "a"-"z", "0"-"9", "%", "\\", "*", "$"])+ >
+	| 	<ARG:		(["A"-"Z", "a"-"z", "0"-"9", "%", "\\", "*", "$", "\u3000"-"\u30FF", "\u3400"-"\u9FFF", "\uF900"-"\uFAFF"])+ >
 
 }
 
 ASTRecipient Recipient():
 {}
 {
-	DebugExp() {return jjtThis;}	
+	PluginExp() {return jjtThis;}	
 }
 
-void DebugExp() #DebugEx(>1) :
+void PluginExp() #PluginEx(>1) :
 {}
 {
-	Address() | Debug() (AddExp())? < AT > domain()
+	Address() | Plugin() (AddExp())? < AT > domain()
 }
 
-void Debug() :
+void Plugin() :
 {}
 {
-	<HASH> function() <PERIOD> command() (<PERIOD> commandArg())*  <HASH>
+	<HASH> function() <PERIOD> command() (<PERIOD> commandArg())* <HASH>
 }
 
 void Address() :
@@ -74,7 +74,7 @@ void AddExp() #void :
 {}
 {
 	MulExp() 	(<MINUS>	MulExp()#Exception(2) 
-				| <PLUS>	MulExp()#Union(2)  )*
+				| (<PLUS> | <VERTICAL>)	MulExp()#Union(2)  )*
 }
 
 void MulExp() #void :
@@ -94,7 +94,7 @@ void Paralist() #Paralis(>1):
 {}
 {
 	Para() (<PLUS > Para()
-			|<VIRTICAL > Para() )*
+			|<VERTICAL > Para() )*
 }
 
 void Para() #PolimolPara(>1):
@@ -173,13 +173,13 @@ void DomainArg() :
 ASTRecipient1 Recipient1():
 {}
 {
-	DebugExp1() {return jjtThis;}	
+	PluginExp1() {return jjtThis;}	
 }
 
-void DebugExp1() #DebugEx1(>1) :
+void PluginExp1() #PluginEx1(>1) :
 {}
 {
-	Address1() | Debug() (Paras1())? < AT > domain1()	
+	Address1() | Plugin() (Paras1())? < AT > domain1()	
 }
 
 void Address1() :
@@ -199,4 +199,3 @@ void domain1() :
 {
 	DomainArg() (<PERIOD> DomainArg())*
 }
-

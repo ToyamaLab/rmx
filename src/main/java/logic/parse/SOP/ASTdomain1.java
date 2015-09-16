@@ -8,14 +8,14 @@ class ASTdomain1 extends SimpleNode {
     super(id);
   }
 
-  public ASTdomain1(parser p, int id) {
+  public ASTdomain1(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=17e3fdca7202ef81db4545fc573d7d38 (do not edit this line) */
+/* JavaCC - OriginalChecksum=1b2251d4f61639c94d457260537e53bf (do not edit this line) */
