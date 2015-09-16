@@ -6,14 +6,14 @@ package logic.parse;
 import java.util.ResourceBundle;
 
 import logic.impl.ParseImpl;
-import logic.parse.SOP.parserVisitor;
+import logic.parse.SOP.ParserVisitor;
 
 /**
  * User, User1のstartメソッドのインターフェース。
  * これによって、{@link ParseImpl}はUserかUser1かを判断することなく、パーズできるようになる。
  * {@link parserVisitor}を継承しているのでこれを実装すればおｋ
  */
-public interface Parsable extends parserVisitor {
+public interface Parsable extends ParserVisitor {
 	
 	/**
 	 * パーズをスタートする。

@@ -8,14 +8,14 @@ class ASTException extends SimpleNode {
     super(id);
   }
 
-  public ASTException(parser p, int id) {
+  public ASTException(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=4b0135c464b4a58f9de6b2629856497c (do not edit this line) */
+/* JavaCC - OriginalChecksum=f8515672030dcbc55588d483132d0012 (do not edit this line) */

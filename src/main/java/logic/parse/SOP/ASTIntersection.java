@@ -8,14 +8,14 @@ class ASTIntersection extends SimpleNode {
     super(id);
   }
 
-  public ASTIntersection(parser p, int id) {
+  public ASTIntersection(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=c9a5937fd1c884adb24c19972ecd711e (do not edit this line) */
+/* JavaCC - OriginalChecksum=3222ed4a56d292178f4c062d473dc61a (do not edit this line) */

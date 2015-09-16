@@ -8,14 +8,14 @@ class ASTExp extends SimpleNode {
     super(id);
   }
 
-  public ASTExp(parser p, int id) {
+  public ASTExp(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=c02b1efcdab06ff3073bba717eb4052b (do not edit this line) */
+/* JavaCC - OriginalChecksum=be3c23b6b7e91c51172bc74bf5db1510 (do not edit this line) */

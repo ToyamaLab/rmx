@@ -8,14 +8,14 @@ class ASTSubdomain extends SimpleNode {
     super(id);
   }
 
-  public ASTSubdomain(parser p, int id) {
+  public ASTSubdomain(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=afe14f70422394c3447465a0bdaf109d (do not edit this line) */
+/* JavaCC - OriginalChecksum=d5b1079ee773bf66c3605af1623bbda7 (do not edit this line) */

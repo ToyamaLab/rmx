@@ -18,7 +18,7 @@ public class User implements Parsable {
 	/** front of @ ex) name{obunai}+grp{speed+wix+ssql} */
 	public  String recipient;
 
-	/** debug function name ex) event */
+	/** Plugin function name ex) event */
 	public  String function;
 	
 	/** function's command name ex) attend,absence*/
@@ -132,7 +132,7 @@ public class User implements Parsable {
 		this.recipient = recipient;
 		User visitor = new User();
 		visitor.rb = dom;
-		parser parser = new parser(new StringReader(recipient));
+		Parser parser = new Parser(new StringReader(recipient));
 		try {
 			Node start = parser.Recipient();
 			System.out.println(start.jjtAccept(visitor, null));
@@ -472,7 +472,7 @@ public class User implements Parsable {
 		return String.valueOf(name);
 	}
 
-	public Object visit(ASTDebugEx node, Object data) {
+	public Object visit(ASTPluginEx node, Object data) {
 		System.out.println("this is : " + node.toString());
 
 		int childnum = node.jjtGetNumChildren();
@@ -513,7 +513,7 @@ public class User implements Parsable {
 		}
 	}
 
-	public Object visit(ASTDebug node, Object data) {
+	public Object visit(ASTPlugin node, Object data) {
 
 		System.out.println("this is : " + node.toString());
 
@@ -1242,7 +1242,7 @@ public class User implements Parsable {
 	}
 
 	@Override
-	public Object visit(ASTDebugEx1 node, Object data) {
+	public Object visit(ASTPluginEx1 node, Object data) {
 
 		return null;
 	}

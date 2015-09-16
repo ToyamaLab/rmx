@@ -8,14 +8,14 @@ class ASTParalis extends SimpleNode {
     super(id);
   }
 
-  public ASTParalis(parser p, int id) {
+  public ASTParalis(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=52ea73e686dda62d294c11f4c8c84e8d (do not edit this line) */
+/* JavaCC - OriginalChecksum=3824c7a28d0f56d7e124f0cb53508b06 (do not edit this line) */

@@ -8,14 +8,14 @@ class ASTalias extends SimpleNode {
     super(id);
   }
 
-  public ASTalias(parser p, int id) {
+  public ASTalias(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=8740cf6deb66fee867e231c10fce18f8 (do not edit this line) */
+/* JavaCC - OriginalChecksum=bd53f74f256663a230c5aa5ce19c6eb4 (do not edit this line) */

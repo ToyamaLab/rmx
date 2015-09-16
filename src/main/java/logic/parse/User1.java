@@ -20,7 +20,7 @@ public class User1 implements Parsable {
 	/** front of @ ex) name{obunai}+grp{speed+wix+ssql} */
 	public  String recipient;
 
-	/** debug function name ex) explain, store */
+	/** Plugin function name ex) explain, store */
 	public  String function;
 	
 	/** function's command name ex) attend,absence*/
@@ -136,8 +136,7 @@ public class User1 implements Parsable {
 		User1 visitor = new User1();
 		visitor.rb = dom;
 		visitor.domname = _domname;
-		parser parser = new parser(new StringReader(recipient));
-		
+		Parser parser = new Parser(new StringReader(recipient));
 		try {
 			Node start = parser.Recipient1();
 			System.out.println(start.jjtAccept(visitor, null));
@@ -291,7 +290,7 @@ public class User1 implements Parsable {
 		return String.valueOf(name);
 	}
 
-	public Object visit(ASTDebugEx node, Object data) {
+	public Object visit(ASTPluginEx node, Object data) {
 		System.out.println("this is : " + node.toString());
 
 		int childnum = node.jjtGetNumChildren();
@@ -311,7 +310,7 @@ public class User1 implements Parsable {
 		return "#" + functionExp + "#" + address;
 	}
 
-	public Object visit(ASTDebug node, Object data) {
+	public Object visit(ASTPlugin node, Object data) {
 
 		System.out.println("this is : " + node.toString());
 
@@ -648,7 +647,7 @@ public class User1 implements Parsable {
 	}
 
 	@Override
-	public Object visit(ASTDebugEx1 node, Object data) {
+	public Object visit(ASTPluginEx1 node, Object data) {
 		System.out.println("this is : " + node.toString());
 		
 		int childnum = node.jjtGetNumChildren();

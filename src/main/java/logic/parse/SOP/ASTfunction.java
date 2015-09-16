@@ -8,14 +8,14 @@ class ASTfunction extends SimpleNode {
     super(id);
   }
 
-  public ASTfunction(parser p, int id) {
+  public ASTfunction(Parser p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(parserVisitor visitor, Object data) {
+  public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=bd784539bc659006766b589208a25653 (do not edit this line) */
+/* JavaCC - OriginalChecksum=be67593dc091c2532b3a6d428ebe9798 (do not edit this line) */
