@@ -13,7 +13,7 @@ import logic.parse.SOP.ParserVisitor;
  * これによって、{@link ParseImpl}はUserかUser1かを判断することなく、パーズできるようになる。
  * {@link parserVisitor}を継承しているのでこれを実装すればおｋ
  */
-public interface Parsable extends ParserVisitor {
+public interface Parsable extends ParserVisitor, ParserAcquisitor {
 	
 	/**
 	 * パーズをスタートする。

@@ -57,7 +57,7 @@ public class DatabaseDaoImpl implements DatabaseDao {
 					num++;
 				} else {
 					String str = params.next().toString();
-					if (!str.equalsIgnoreCase("all") && !str.equalsIgnoreCase("*")) {
+					if (!str.equalsIgnoreCase("*")) {
 						prepstmt.setString(num, str);
 					}
 					num++;
