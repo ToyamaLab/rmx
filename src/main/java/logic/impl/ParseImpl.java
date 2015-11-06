@@ -167,14 +167,17 @@ public class ParseImpl implements Parse {
 		//@より後
 		String fulldomain = recipient.substring(num_at+1);
 				
-		//accountに"."があれば分割し、無ければnullを返す.
-		if(account.contains(".")) {
+		//accountに"."があれば分割
+		if (account.contains(".")) {
 			String[] accounts = account.split("\\.");
 			rule_num = accounts.length;
 		}
-		//accountに"."が無ければルールは1つ
-		else
+		//accountが空でなく"."が無ければルールは1つ
+		else if (!account.isEmpty())
 			rule_num = 1;
+		//accountが空の場合はルールは0
+		else
+			rule_num = 0;
 				
 		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
 		int dot_num = (fulldomain.split("\\.").length)-1;//ドメインの中の"."の数
@@ -222,12 +225,14 @@ public class ParseImpl implements Parse {
 		//@より後
 		String fulldomain = recipient.substring(num_at+1);
 			
-		//accountに"."があれば分割し、無ければnullを返す.
-		if(account.contains(".")) {
+		//accountに"."があれば分割
+		if (account.contains(".")) {
 			String[] accounts = account.split("\\.");
 			rule_num = accounts.length;
-		} else
+		} else if (!account.isEmpty())
 			rule_num = 1;
+		else
+			rule_num = 0;
 			
 		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
 		int dot_num = (fulldomain.split("\\.").length)-1;//ドメインの中の"."の数
@@ -236,12 +241,13 @@ public class ParseImpl implements Parse {
 			//rule1.rule2.subdomain.domain
 			int start_num = searchChr(fulldomain, ".", rule_num);
 			int end_num = searchChr(fulldomain, ".", rule_num+1);
-			//start_numが-1でないとき
-			if(start_num>0 && end_num>start_num) {
+
+			//"start_numが-1かつrule_numが0"でないとき
+			if((rule_num == 0 || start_num >= 0) && end_num>start_num) {
 				String subdomain = fulldomain.substring(start_num+1,end_num);
 				return subdomain;
 			}
-			//start_numが-1のとき
+			//start_numが-1かつrule_numが0のとき
 			else
 				return null;
 		}

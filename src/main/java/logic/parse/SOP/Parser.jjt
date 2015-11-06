@@ -45,157 +45,129 @@ ASTRecipient Recipient():
 	PluginExp() {return jjtThis;}	
 }
 
-void PluginExp() #PluginEx(>1) :
+void PluginExp() #PluginExp(>1) :
 {}
 {
-	Address() | Plugin() (AddExp())? < AT > domain()
+	Address() | Plugin() (AddExp())? < AT > Domain()
 }
 
 void Plugin() :
 {}
 {
-	<HASH> function() <PERIOD> command() (<PERIOD> commandArg())* <HASH>
+	< HASH > function() < PERIOD > command() ( < PERIOD > commandArg() )* < HASH >
 }
 
 void Address() :
 {}
 {
-	AddExp() < AT > domain()
+	AddExp() < AT > Domain()
 }
 
-void domain():
+void Domain():
 {}
 {
-	Subdomain() (<PERIOD> DomainArg())+
+	domainArg() ( < PERIOD > domainArg() )+
 
 }
 
 void AddExp() #void :
 {}
 {
-	MulExp() 	(<MINUS>	MulExp()#Exception(2) 
-				| (<PLUS> | <VERTICAL>)	MulExp()#Union(2)  )*
+	MulExp() ( < MINUS > MulExp() #Exception(2) |
+	           (< PLUS > | < VERTICAL >) MulExp() #Union(2) )*
 }
 
 void MulExp() #void :
 {}
 {
-	Exp()	(<PERIOD>	Exp() #Intersection(2))*
+	Exp() ( < PERIOD > Exp() #Intersection(2) )*
 	
 }
 
 void Exp() :
 {}
 {
-	Rule() <OP_BRACE> Paralist() <END_BRACE>
+	rule() < OP_BRACE > (ParaList())? < END_BRACE >
 }
 
-void Paralist() #Paralis(>1):
+void ParaList() #ParaList(>1) :
 {}
 {
-	Para() (<PLUS > Para()
-			|<VERTICAL > Para() )*
+	Para() ( < PLUS > Para() |
+	         < VERTICAL > Para() )*
 }
 
-void Para() #PolimolPara(>1):
+void Para() #PolimolPara(>1) :
 {}
 {
-	Value() ( < MINUS > Value()
-			|<COMMA> Value() )*
-}
-
-void Rule() :
-
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
-void Value() :
-
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
-void Subdomain() :
-
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
-void Arg() :
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
+	value() ( < MINUS > value() |
+	          < PERIOD > value() )*
 }
 
 void function() :
 { Token t; }
 
 {
-    t=<ARG> { jjtThis.nodeValue = t.image; }
-}
-
-void alias() :
-{ Token t; }
-
-{
-    t=<ARG> { jjtThis.nodeValue = t.image; }
+    t=< ARG > { jjtThis.nodeValue = t.image; }
 }
 
 void command() :
 { Token t; }
 
 {
-    t=<ARG> { jjtThis.nodeValue = t.image; }
+    t=< ARG > { jjtThis.nodeValue = t.image; }
 }
 
 void commandArg() :
 { Token t; }
 
 {
-    t=<ARG> { jjtThis.nodeValue = t.image; }
+    t=< ARG > { jjtThis.nodeValue = t.image; }
 }
 
-void DomainArg() :
+void domainArg() :
 { Token t; }
 
 {
-    t=<ARG> { jjtThis.nodeValue = t.image; }
+    t=< ARG > { jjtThis.nodeValue = t.image; }
 }
 
-ASTRecipient1 Recipient1():
-{}
+void rule() :
+
+{ Token t; }
+
 {
-	PluginExp1() {return jjtThis;}	
+    t=< ARG > { jjtThis.nodeValue = t.image; }
 }
 
-void PluginExp1() #PluginEx1(>1) :
-{}
+void value() :
+
+{ Token t; }
+
 {
-	Address1() | Plugin() (Paras1())? < AT > domain1()	
+    t=< ARG > { jjtThis.nodeValue = t.image; }
 }
 
-void Address1() :
+ASTN_Recipient N_Recipient():
 {}
 {
-	Paras1() < AT > domain1()
+	N_PluginExp() {return jjtThis;}	
 }
 
-void Paras1() :
+void N_PluginExp() #N_PluginExp(>1) :
 {}
 {
-	Paralist() (<PERIOD> Paralist())*
+	N_Address() | Plugin() (N_Paras())? < AT > Domain()	
 }
 
-void domain1() :
+void N_Address() :
 {}
 {
-	DomainArg() (<PERIOD> DomainArg())*
+	N_Paras() < AT > Domain()
+}
+
+void N_Paras() :
+{}
+{
+	ParaList() ( < PERIOD > ParaList() )*
 }

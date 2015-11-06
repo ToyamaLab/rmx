@@ -40,30 +40,30 @@ public class User implements Parsable {
 	public  ArrayList<String> values;
 
 	/** ex) name, grp */
-	public  ArrayList<String> keys;
+	public  ArrayList<String> rules;
 
 	/** ex) obunai, speed, wix, ssql */
-	public  ArrayList<String> para;
+	public  ArrayList<String> paras;
 
 	/** count parameter for each query */
-	private ArrayList<Integer> paranum;
+	private ArrayList<Integer> paraNums;
 
 	/** ture when polymorPara*/
-	private boolean polymorflg;
+	private boolean polymorFlg;
 
 	/** query before union, intersect or except among rules
 	 *  i.g. queries.size = the number of rules */
 	private ArrayList<String> queries;
 
 	/** query before union, intersect or except
-	 * 	i.g. minimamqueries.size = the number of queries called from conf file */
-	private ArrayList<String> minimamqueries;
+	 * 	i.g. minimumQueries.size = the number of queries called from conf file */
+	private ArrayList<String> minimumQueries;
 
 	/** operateors order by appeared */
-	private ArrayList<String> operator;
+	private ArrayList<String> operators;
 
 	/** ex) (select ~) union (~) intersect (~) */
-	public  String finalquery;
+	public  String finalQuery;
 
 	/** ex) testo.properties */
 	public  ResourceBundle rb;
@@ -71,14 +71,14 @@ public class User implements Parsable {
 	/** ex) name, grp */
 	public  String rule;
 
-	/** true if address has paralist until intersection, union, except's leftnode*/
-	private boolean paralist_flg;
+	/** true if address has paraList until intersection, union, except's leftnode*/
+	private boolean paraListFlg;
 
-	/** key{paralist} */
-	private ArrayList<String> paralist;
+	/** rule{paraList} */
+	private ArrayList<String> paraList;
 
-	/** values for paralist*/
-	private ArrayList<String> tmppara;
+	/** values for paraList*/
+	private ArrayList<String> tmpParas;
 
 	/** Passed parameter index for nested query*/
 	private ArrayList<Integer> Passed_para_index;
@@ -88,9 +88,9 @@ public class User implements Parsable {
 	private boolean containsATmark;
 
 	/***/
-	public  int polymorchildnum;
+	public  int polymorChildNum;
 
-	public  int paralischildnum;
+	public  int paraListChildNum;
 
 	/** ex) gradeType = integer,String */
 	public  ArrayList<String> polyTypes;
@@ -110,19 +110,19 @@ public class User implements Parsable {
 		commandArgs = new ArrayList<String>();
 		functionTarget = new String();
 		values = new ArrayList<String>();
-		keys = new ArrayList<String>();
-		para = new ArrayList<String>();
-		paranum = new ArrayList<Integer>();
+		rules = new ArrayList<String>();
+		paras = new ArrayList<String>();
+		paraNums = new ArrayList<Integer>();
 		queries = new ArrayList<String>();
-		operator = new ArrayList<String>();
-		paralist = new ArrayList<String>();
-		tmppara = new ArrayList<String>();
+		operators = new ArrayList<String>();
+		paraList = new ArrayList<String>();
+		tmpParas = new ArrayList<String>();
 		Passed_para_index = new ArrayList<Integer>();
-		finalquery = new String();
-		polymorchildnum = 0;
-		paralischildnum = 0;
+		finalQuery = new String();
+		polymorChildNum = 0;
+		paraListChildNum = 0;
 		rule = new String();
-		minimamqueries = new ArrayList<String>();
+		minimumQueries = new ArrayList<String>();
 	}
 
 	public void parseStart(String recipient, ResourceBundle dom, String _domname) {
@@ -142,37 +142,37 @@ public class User implements Parsable {
 			e.printStackTrace();
 		}
 		
-		visitor.paranum.add(-1);
+		visitor.paraNums.add(-1);
 		System.out.println(subdomain);
 		System.out.println(domain);
 
-		operator = visitor.operator;
-		keys = visitor.keys;
+		operators = visitor.operators;
+		rules = visitor.rules;
 		domain = visitor.domain;
 		subdomain = visitor.subdomain;
 		recipient = visitor.recipient;
-		minimamqueries = visitor.minimamqueries;
-		para = visitor.para;
+		minimumQueries = visitor.minimumQueries;
+		paras = visitor.paras;
 		queries = visitor.queries;
 		this.remakepara();
-		paranum = visitor.paranum;
+		paraNums = visitor.paraNums;
 		function = visitor.function;
 		command = visitor.command;
 		commandArgs = visitor.commandArgs;
 		functionFlg = visitor.functionFlg;
 		normalFlg = visitor.normalFlg;
-		paralist = visitor.paralist;
+		paraList = visitor.paraList;
 		//		queries = visitor.queries;
 
-		for (int i = 0; i < para.size(); i++) {
-			System.out.println("para : " + para.get(i).toString());
+		for (int i = 0; i < paras.size(); i++) {
+			System.out.println("para : " + paras.get(i).toString());
 		}
 		
-		visitor.finalquery = this.simplereplace(visitor.finalquery);
-		System.out.println("final query : " + visitor.finalquery);
+		visitor.finalQuery = this.simplereplace(visitor.finalQuery);
+		System.out.println("final query : " + visitor.finalQuery);
 		this.checkATmark();
 
-		finalquery = visitor.finalquery;
+		finalQuery = visitor.finalQuery;
 
 		initPolyTypes();
 
@@ -208,22 +208,22 @@ public class User implements Parsable {
 		}
 
 		String left = node.jjtGetChild(0).jjtAccept(this, null).toString();
-		paranum.add(-1);
-		operator.add("-");
+		paraNums.add(-1);
+		operators.add("-");
 		String right = node.jjtGetChild(1).jjtAccept(this, null).toString();
 
 		System.out.println("left query : " + left);
 		System.out.println("right query : " + right);
 
-		if(!(left.contains("intersect")|left.contains("union")|left.contains("except")) | paralist_flg){
+		if(!(left.contains("intersect")|left.contains("union")|left.contains("except")) | paraListFlg){
 			//    		queries.add(left);
 			if(node.jjtGetChild(0).toString().equalsIgnoreCase("Paralis") && !node.jjtGetChild(1).toString().equalsIgnoreCase("Paralis")){
-				paralist_flg = false;		
+				paraListFlg = false;		
 			}
 		}
-		if(!(right.contains("intersect")|right.contains("union")|right.contains("except")) | paralist_flg){
+		if(!(right.contains("intersect")|right.contains("union")|right.contains("except")) | paraListFlg){
 			//    		queries.add(right);
-			paralist_flg =false;
+			paraListFlg =false;
 		}
 
 		System.out.println("");
@@ -244,22 +244,22 @@ public class User implements Parsable {
 		}
 
 		String left = node.jjtGetChild(0).jjtAccept(this, null).toString();
-		paranum.add(-1);
-		operator.add("+");
+		paraNums.add(-1);
+		operators.add("+");
 		String right = node.jjtGetChild(1).jjtAccept(this, null).toString();
 
 		System.out.println("left query : " + left);
 		System.out.println("right query : " + right);
 
-		if(!(left.contains("intersect")|left.contains("union")|left.contains("except")) | paralist_flg){
+		if(!(left.contains("intersect")|left.contains("union")|left.contains("except")) | paraListFlg){
 			//    		queries.add(left);
 			if(node.jjtGetChild(0).toString().equalsIgnoreCase("Paralis") && !node.jjtGetChild(1).toString().equalsIgnoreCase("Paralis")){
-				paralist_flg = false;		
+				paraListFlg = false;		
 			}
 		}
-		if(!(right.contains("intersect")|right.contains("union")|right.contains("except")) | paralist_flg){
+		if(!(right.contains("intersect")|right.contains("union")|right.contains("except")) | paraListFlg){
 			//    		queries.add(right);
-			paralist_flg =false;
+			paraListFlg =false;
 		} 
 
 		System.out.println("");
@@ -278,22 +278,22 @@ public class User implements Parsable {
 		}
 
 		String left = node.jjtGetChild(0).jjtAccept(this, null).toString();
-		paranum.add(-1);
-		operator.add(".");
+		paraNums.add(-1);
+		operators.add(".");
 		String right = node.jjtGetChild(1).jjtAccept(this, null).toString();
 
 		System.out.println("left query : " + left);
 		System.out.println("right query : " + right);
 
-		if(!(left.contains("intersect")|left.contains("union")|left.contains("except")) | paralist_flg){
+		if(!(left.contains("intersect")|left.contains("union")|left.contains("except")) | paraListFlg){
 			//    		queries.add(left);
 			if(node.jjtGetChild(0).toString().equalsIgnoreCase("Paralis") && !node.jjtGetChild(1).toString().equalsIgnoreCase("Paralis")){
-				paralist_flg = false;		
+				paraListFlg = false;		
 			}
 		}
-		if(!(right.contains("intersect")|right.contains("union")|right.contains("except")) | paralist_flg){
+		if(!(right.contains("intersect")|right.contains("union")|right.contains("except")) | paraListFlg){
 			//    		queries.add(right);
-			paralist_flg =false;
+			paraListFlg =false;
 		}
 
 		System.out.println("");
@@ -316,6 +316,11 @@ public class User implements Parsable {
 		if(childnum == 1){
 			//user defined no parameters
 			//i.e. rule{}@example.jp
+			paras.add("no parameters");
+			paras.add("*");
+			paraList.add("*");
+			tmpParas.clear();
+			
 			String keyquery = rule + "[" + 0 + "]";  
 			query = "(" + rb.getString(keyquery) + ")";
 
@@ -328,17 +333,19 @@ public class User implements Parsable {
 			}
 			System.out.println("count : " + count);
 
-			paranum.add(count);			
-			minimamqueries.add(query);
+			if (count > 0) {
+				paraNums.add(count);
+			}
+			minimumQueries.add(query);
 
 		}else{    		
 			
 			query = node.jjtGetChild(1).jjtAccept(this, null).toString();
 
 			if(node.jjtGetChild(1).toString().equalsIgnoreCase("Value") || node.jjtGetChild(1).toString().equalsIgnoreCase("PolimolPara") ){
-				if(tmppara.size()>0){
-					paralist.add(tmppara.get(0));
-					tmppara.clear();
+				if(tmpParas.size()>0){
+					paraList.add(tmpParas.get(0));
+					tmpParas.clear();
 				}
 			}
 		}
@@ -346,7 +353,7 @@ public class User implements Parsable {
 		System.out.println("rule : " + rule);
 		System.out.println("Expquery : " + query);
 		queries.add(query);
-		keys.add(rule);
+		rules.add(rule);
 
 		checkNest();
 
@@ -354,22 +361,22 @@ public class User implements Parsable {
 		return query;
 	}
 
-	public Object visit(ASTParalis node, Object data) {
+	public Object visit(ASTParaList node, Object data) {
 		String query = "";
 		System.out.println("this is : " + node.toString());
-		paralist_flg = true;
+		paraListFlg = true;
 
-		paralischildnum = node.jjtGetNumChildren();
-		System.out.println("paralischildnum : " + paralischildnum);
+		paraListChildNum = node.jjtGetNumChildren();
+		System.out.println("paraListChildNum : " + paraListChildNum);
 
-		for (int i = 0; i < paralischildnum; i++) {
+		for (int i = 0; i < paraListChildNum; i++) {
 			System.out.println("child [ " + i + " ] type : "
 					+ node.jjtGetChild(i).toString());
 		}
 
-		String[] tmpparalis = new String[paralischildnum];
-		tmppara.clear();		
-		for (int j = 0; j < paralischildnum; j++) {
+		String[] tmpParaList = new String[paraListChildNum];
+		tmpParas.clear();		
+		for (int j = 0; j < paraListChildNum; j++) {
 
 			String tmp = node.jjtGetChild(j).jjtAccept(this, null).toString();
 			System.out.println(tmp);
@@ -380,20 +387,20 @@ public class User implements Parsable {
 				query = query + " union " + tmp;
 			}
 
-			System.out.println("tmppara::"+tmppara.get(0));
-			tmpparalis[j] = tmppara.get(0).toString();
-			tmppara.clear();
+			System.out.println("tmpPara::"+tmpParas.get(0));
+			tmpParaList[j] = tmpParas.get(0).toString();
+			tmpParas.clear();
 		}
 
 		String tmp = new String();
-		for(int k = 0; k < paralischildnum; k++){
+		for(int k = 0; k < paraListChildNum; k++){
 			if(k==0){
-				tmp = tmpparalis[k];
+				tmp = tmpParaList[k];
 			}else{
-				tmp = tmp + "+" + tmpparalis[k];
+				tmp = tmp + "+" + tmpParaList[k];
 			}
 		}
-		paralist.add(tmp);
+		paraList.add(tmp);
 
 		System.out.println("Paralisquery : " + query);
 		System.out.println("");
@@ -404,22 +411,22 @@ public class User implements Parsable {
 		String query = "";
 		System.out.println("this is : " + node.toString());
 
-		polymorchildnum = node.jjtGetNumChildren();
-		System.out.println("polymorchildnum : " + polymorchildnum);
+		polymorChildNum = node.jjtGetNumChildren();
+		System.out.println("polymorChildNum : " + polymorChildNum);
 
 		// zonop add. if Type includes integer and String same line.
 		if (rb.getString(rule + "Type").indexOf(",") > 0) {
 			makePolyTypes();
 		}
-		polymorflg = true;
+		polymorFlg = true;
 
-		for (int i = 0; i < polymorchildnum; i++) {
+		for (int i = 0; i < polymorChildNum; i++) {
 			System.out.println("child [ " + i + " ] type : "
 					+ node.jjtGetChild(i).toString());
 			node.jjtGetChild(i).jjtAccept(this, null).toString();
 		}
 
-		polymorflg = false;
+		polymorFlg = false;
 		// zonop add. is this rule answer?
 		String str = new String();
 		try {
@@ -433,11 +440,11 @@ public class User implements Parsable {
 		if (str.equalsIgnoreCase("api")) {
 			keyquery = rule + "[" + 0 + "]";
 		} else {
-			keyquery = rule + "[" + polymorchildnum + "]";
+			keyquery = rule + "[" + polymorChildNum + "]";
 		}
 
 		query = "(" + rb.getString(keyquery) + ")";
-		minimamqueries.add(query);
+		minimumQueries.add(query);
 		System.out.println("Polymorquery" + query);
 
 		query = "(" + rb.getString(keyquery) + ")";
@@ -449,30 +456,24 @@ public class User implements Parsable {
 			count++;
 		}
 		System.out.println("count : " + count);
-		paranum.add(count);
+		paraNums.add(count);
 
 		String tmp = new String();
-		for(int i = 0; i < polymorchildnum; i++){
+		for(int i = 0; i < polymorChildNum; i++){
 			if(i==0){
-				tmp = tmppara.get(i).toString();
+				tmp = tmpParas.get(i).toString();
 			}else{
-				tmp = tmp + "-"+tmppara.get(i).toString();
+				tmp = tmp + "-"+tmpParas.get(i).toString();
 			}
 		}
-		tmppara.clear();
-		tmppara.add(tmp);
+		tmpParas.clear();
+		tmpParas.add(tmp);
 
 		System.out.println("");
 		return query;
 	}
 
-	public Object visit(ASTArg node, Object data) {
-		String name = node.nodeValue;
-
-		return String.valueOf(name);
-	}
-
-	public Object visit(ASTPluginEx node, Object data) {
+	public Object visit(ASTPluginExp node, Object data) {
 		System.out.println("this is : " + node.toString());
 
 		int childnum = node.jjtGetNumChildren();
@@ -569,13 +570,13 @@ public class User implements Parsable {
 		}
 		
 		normalFlg = true;
-		finalquery = node.jjtGetChild(0).jjtAccept(this, null).toString();
+		finalQuery = node.jjtGetChild(0).jjtAccept(this, null).toString();
 		System.out.println("domain :" + domain);
 		return ">rule{para}<" + "@" + domain;
 
 	}
 
-	public Object visit(ASTdomain node, Object data) {
+	public Object visit(ASTDomain node, Object data) {
 		System.out.println("this is : " + node.toString());
 
 		int childnum = node.jjtGetNumChildren();
@@ -604,14 +605,14 @@ public class User implements Parsable {
 	}
 
 	@Override
-	public Object visit(ASTRule node, Object data) {
+	public Object visit(ASTrule node, Object data) {
 		String name = node.nodeValue;
 		
 		return String.valueOf(name);
 	}
 
 	@Override
-	public Object visit(ASTValue node, Object data) {
+	public Object visit(ASTvalue node, Object data) {
 		String name = node.nodeValue;
 		System.out.println("Value : " + name);
 		String keyquery = new String();
@@ -624,12 +625,12 @@ public class User implements Parsable {
 			str = "false";
 		}
 
-		if (name.equals("all") | name.equals("*")) {
+		if (name.equals("*")) {
 			keyquery = rule + "[" + 0 + "]";
 		} else if (str.equalsIgnoreCase("api")) {
 			// zonop add. if answer api, get query[0]
 			keyquery = rule + "[" + 0 + "]";
-			paranum.add(1);
+			paraNums.add(1);
 		} else {
 			keyquery = rule + "[" + 1 + "]";
 		}
@@ -637,7 +638,7 @@ public class User implements Parsable {
 		String query = "";
 
 		try{
-			if(!polymorflg){
+			if(!polymorFlg){
 				query = "(" + rb.getString(keyquery) + ")";
 				int count = 0;
 				String q = query;
@@ -648,8 +649,8 @@ public class User implements Parsable {
 				}
 				System.out.println("count : " + count);
 				if(count != 0)
-					paranum.add(count);
-				minimamqueries.add(query);
+					paraNums.add(count);
+				minimumQueries.add(query);
 			}
 		}catch(Exception e){
 			query = "miss";
@@ -660,24 +661,24 @@ public class User implements Parsable {
 		System.out.println("Valuequery : " + query);
 
 		if (polyTypesNum > 0 && polyTypesPointer < polyTypesNum) {
-			para.add((String) polyTypes.get(polyTypesPointer));
+			paras.add((String) polyTypes.get(polyTypesPointer));
 			polyTypesPointer++;
 			if (polyTypesPointer == polyTypesNum) {
 				polyLastType = (String) polyTypes.get(polyTypesPointer - 1);
 			}
 		} else if (polyTypesNum > 0 && polyTypesPointer >= polyTypesNum) {
-			para.add(polyLastType);
+			paras.add(polyLastType);
 		} else if (rb.getString(rule + "Type").indexOf(",") > 0) {
 			makePolyTypes();
-			para.add((String) polyTypes.get(0));
+			paras.add((String) polyTypes.get(0));
 		} else if (rb.getString(rule + "Type").equalsIgnoreCase("integer")) {
-			para.add("integer");
+			paras.add("integer");
 		} else if (rb.getString(rule + "Type").equalsIgnoreCase("String")) {
-			para.add("String");
+			paras.add("String");
 		}
 
-		para.add(name);
-		tmppara.add(name);
+		paras.add(name);
+		tmpParas.add(name);
 
 		return query;
 	}
@@ -712,7 +713,7 @@ public class User implements Parsable {
 
 			for(int i = 0 ; i < SourcePara_Array.length; i++){
 				System.out.println(SourcePara_Array[i]);
-				String regex = new String("[" + polymorchildnum + ":");
+				String regex = new String("[" + polymorChildNum + ":");
 				//				System.out.println(regex);
 				int index = SourcePara_Array[i].indexOf(regex) + 3;
 				//				System.out.println(index);
@@ -787,13 +788,13 @@ public class User implements Parsable {
 
 				for(int i = 0 ; i < SourcePara_Array.size(); i++){
 					System.out.println(SourcePara_Array.get(i));
-					System.out.println(para.size());
+					System.out.println(paras.size());
 
 					String regex = new String();
-					if(polymorchildnum == 0 && para.size() > 0){
+					if(polymorChildNum == 0 && paras.size() > 0){
 						regex = new String("[" + 1 + ":");
 					}else{
-						regex = new String("[" + polymorchildnum + ":");
+						regex = new String("[" + polymorChildNum + ":");
 					}
 					System.out.println(regex);
 					int index = SourcePara_Array.get(i).indexOf(regex) + 3;
@@ -840,18 +841,18 @@ public class User implements Parsable {
 							
 							if(first_para.indexOf("$") > -1){
 								//if passed parameter contains $
-								//para : [String, obunai, String, matt], $2
-								//new para : [String, obunai, String, matt, String, matt]
-								para.add(para.get(Integer.parseInt(""+first_para.charAt(first_para.indexOf("$")+1))*2-2));
-								para.add(para.get(Integer.parseInt(""+first_para.charAt(first_para.indexOf("$")+1))*2-1));
+								//paras : [String, obunai, String, matt], $2
+								//new paras : [String, obunai, String, matt, String, matt]
+								paras.add(paras.get(Integer.parseInt(""+first_para.charAt(first_para.indexOf("$")+1))*2-2));
+								paras.add(paras.get(Integer.parseInt(""+first_para.charAt(first_para.indexOf("$")+1))*2-1));
 							}else{
 								//if passed parameter is constant
 								//type is nested rule's type
-								//para : [String, obunai, String, matt], yohei
-								//new para : [String, obunai, String, matt, String, yohei]
+								//paras : [String, obunai, String, matt], yohei
+								//new paras : [String, obunai, String, matt, String, yohei]
 								String Nested_para_type	= rb.getString(rule+"Type");
-								para.add(Nested_para_type);
-								para.add(first_para);
+								paras.add(Nested_para_type);
+								paras.add(first_para);
 							}
 							
 						}						
@@ -862,18 +863,18 @@ public class User implements Parsable {
 						query_key_index++;
 						if(tmp_PassedPara.indexOf("$") > -1){
 							//if passed parameter contains $
-							//para : [String, obunai, String, matt], $2
-							//new para : [String, obunai, String, matt, String, matt]
-							para.add(para.get(Integer.parseInt(""+tmp_PassedPara.charAt(tmp_PassedPara.indexOf("$")+1))*2-2));
-							para.add(para.get(Integer.parseInt(""+tmp_PassedPara.charAt(tmp_PassedPara.indexOf("$")+1))*2-1));
+							//paras : [String, obunai, String, matt], $2
+							//new paras : [String, obunai, String, matt, String, matt]
+							paras.add(paras.get(Integer.parseInt(""+tmp_PassedPara.charAt(tmp_PassedPara.indexOf("$")+1))*2-2));
+							paras.add(paras.get(Integer.parseInt(""+tmp_PassedPara.charAt(tmp_PassedPara.indexOf("$")+1))*2-1));
 						}else{
 							//if passed parameter is constant
 							//type is nested rule's type
-							//para : [String, obunai, String, matt], yohei
-							//new para : [String, obunai, String, matt, String, yohei]
+							//paras : [String, obunai, String, matt], yohei
+							//new paras : [String, obunai, String, matt, String, yohei]
 							String Nested_para_type	= rb.getString(rule+"Type");
-							para.add(Nested_para_type);
-							para.add(tmp_PassedPara);
+							paras.add(Nested_para_type);
+							paras.add(tmp_PassedPara);
 							
 						}
 					}
@@ -892,16 +893,16 @@ public class User implements Parsable {
 					count++;
 				}
 				System.out.println("count : " + count);
-				paranum.add(-1);
+				paraNums.add(-1);
 				if(count != 0)
-					paranum.add(count);
-				minimamqueries.add(Nested_query);
+					paraNums.add(count);
+				minimumQueries.add(Nested_query);
 				queries.add(Nested_query);
-				keys.add(Nested_rule);
+				rules.add(Nested_rule);
 
 				for(int i = 0; i < Passed_para_index.size(); i++){
-					para.add(para.get(Passed_para_index.get(i)*2-2));
-					para.add(para.get(Passed_para_index.get(i)*2-1));
+					paras.add(paras.get(Passed_para_index.get(i)*2-2));
+					paras.add(paras.get(Passed_para_index.get(i)*2-1));
 				}
 
 
@@ -920,21 +921,7 @@ public class User implements Parsable {
 
 
 	@Override
-	public Object visit(ASTSubdomain node, Object data) {
-		String name = node.nodeValue;
-
-		return String.valueOf(name);
-	}
-
-	@Override
 	public Object visit(ASTfunction node, Object data) {
-		String name = node.nodeValue;
-
-		return String.valueOf(name);
-	}
-
-	@Override
-	public Object visit(ASTalias node, Object data) {
 		String name = node.nodeValue;
 
 		return String.valueOf(name);
@@ -962,10 +949,10 @@ public class User implements Parsable {
 		int index;
 		int k = 0;
 		int l = 0;
-		ArrayList<String> tmppara = new ArrayList<String>();
+		ArrayList<String> tmpParas_ = new ArrayList<String>();
 		regex = "$";
 
-		System.out.println(para.size());
+		System.out.println(paras.size());
 
 		//		System.out.println(queries);
 
@@ -998,32 +985,32 @@ public class User implements Parsable {
 
 		if(need_remake){
 
-			for (int i = 0; i < minimamqueries.size(); i++ , l = 0){
-				currentquery = minimamqueries.get(i).toString();
+			for (int i = 0; i < minimumQueries.size(); i++ , l = 0){
+				currentquery = minimumQueries.get(i).toString();
 				for(int j = 1;; j++){
 					index = currentquery.indexOf(regex);
 					if(index < 0){
 						if(currentquery.indexOf("?") < 0 && currentquery.indexOf(".jar") > 0){
 							//plugin
-							tmppara.add(para.get(k++));
-							tmppara.add(para.get(k++));
+							tmpParas_.add(paras.get(k++));
+							tmpParas_.add(paras.get(k++));
 							break;
 						}else{
 							//rule[0]
 							break;
 						}					
 					}else if(String.valueOf(currentquery.charAt(index+1)).equals(Integer.toString(j))){
-						tmppara.add(para.get(k++));
-						tmppara.add(para.get(k++));
+						tmpParas_.add(paras.get(k++));
+						tmpParas_.add(paras.get(k++));
 						l = l + 2;
 						currentquery = currentquery.replaceFirst("\\$", "?");
 					}else if(String.valueOf(currentquery.charAt(index+1)).equals("s")){
-						tmppara.add("String");
-						tmppara.add("sender");
+						tmpParas_.add("String");
+						tmpParas_.add("sender");
 						currentquery = currentquery.replaceFirst("\\$", "?");
 					}else if(String.valueOf(currentquery.charAt(index+1)).equals("r")){
-						tmppara.add("String");
-						tmppara.add("recipient");
+						tmpParas_.add("String");
+						tmpParas_.add("recipient");
 						currentquery = currentquery.replaceFirst("\\$", "?");
 					}else{
 						if (String.valueOf(currentquery.charAt(index+1)).matches("[^0-9]")){
@@ -1038,11 +1025,11 @@ public class User implements Parsable {
 			}
 		}
 		System.out.println("this is remakepara2");
-		for(int i = 0; i < tmppara.size(); i++){
-			System.out.println("tmppara : " +tmppara.get(i));
+		for(int i = 0; i < tmpParas_.size(); i++){
+			System.out.println("tmpPara : " +tmpParas_.get(i));
 		}
-		if(!tmppara.isEmpty()){
-			para = tmppara;	
+		if(!tmpParas_.isEmpty()){
+			paras = tmpParas_;	
 		}
 
 	}
@@ -1068,17 +1055,17 @@ public class User implements Parsable {
 	}
 
 	public void checkATmark(){
-		for(int i = 0; i < para.size(); i ++){
-			if(para.get(i).equals("sender")){
+		for(int i = 0; i < paras.size(); i ++){
+			if(paras.get(i).equals("sender")){
 				containsATmark = true;
-			}else if (para.get(i).equals("recipient")){
+			}else if (paras.get(i).equals("recipient")){
 				containsATmark = true;
 			}
 		}
 	}
 
 	@Override
-	public Object visit(ASTDomainArg node, Object data) {
+	public Object visit(ASTdomainArg node, Object data) {
 		String name = node.nodeValue;
 
 		return String.valueOf(name);
@@ -1109,24 +1096,24 @@ public class User implements Parsable {
 	}
 	
 	@Override
-	public ArrayList<String> getparalist(){
-		return paralist;
+	public ArrayList<String> getParaList(){
+		return paraList;
 	}
 	
 	@Override
 	public ArrayList<String> getValues() {
 		/*
-		 * zonop add. make values from para. para : String, zonop+obunai,
+		 * zonop add. make values from paras. paras : String, zonop+obunai,
 		 * integer, 4 values : zonop+obunai, 4
 		 */
-		for (int i = 1; i < para.size(); i += 2) {
-			values.add(para.get(i));
+		for (int i = 1; i < paras.size(); i += 2) {
+			values.add(paras.get(i));
 		}
 		return values;
 	}
 
 	@Override
-	public ArrayList<String> getqueries(){
+	public ArrayList<String> getQueries(){
 		ArrayList<String> replaced_queries = new ArrayList<String>();
 		for(int i = 0; i < queries.size(); i++){		
 			replaced_queries.add(this.simplereplace(queries.get(i).toString()));
@@ -1134,19 +1121,19 @@ public class User implements Parsable {
 		return replaced_queries;
 	}
 	
-	public ArrayList<String> getminimamqueries(){
+	public ArrayList<String> getminimumQueries(){
 
-		return minimamqueries;
+		return minimumQueries;
 	}
 
 	@Override
-	public ArrayList<String> getoperator(){
-		return operator;
+	public ArrayList<String> getOperators(){
+		return operators;
 	}
 
 	@Override
-	public ArrayList<String> getKeys() {
-		return keys;
+	public ArrayList<String> getRules() {
+		return rules;
 	}
 	
 	@Override
@@ -1199,22 +1186,22 @@ public class User implements Parsable {
 	}
 	
 	@Override
-	public ArrayList<String> getPara() {
-		return para;
+	public ArrayList<String> getParas() {
+		return paras;
 	}
 	
 	@Override
-	public ArrayList<Integer> getParanum(){
-		return paranum;
+	public ArrayList<Integer> getParaNums(){
+		return paraNums;
 	}
 
 	@Override
 	public String getQuery() {
-		return finalquery;
+		return finalQuery;
 	}
 
 	@Override
-	public String getfulldomain(){
+	public String getFullDomain(){
 		return subdomain + "." + domain; 
 	}
 
@@ -1225,8 +1212,8 @@ public class User implements Parsable {
 	public ArrayList<String> getExps(){
 		ArrayList<String> Exps = new ArrayList<String>();
 		
-		for(int i = 0; i < keys.size(); i++){
-			Exps.add(keys.get(i) + "{" + paralist.get(i) + "}");
+		for(int i = 0; i < rules.size(); i++){
+			Exps.add(rules.get(i) + "{" + paraList.get(i) + "}");
 		}
 		
 		return Exps;
@@ -1236,31 +1223,25 @@ public class User implements Parsable {
 	
 	/** used only in 1st Exp */
 	@Override
-	public Object visit(ASTRecipient1 node, Object data) {
+	public Object visit(ASTN_Recipient node, Object data) {
 
 		return null;
 	}
 
 	@Override
-	public Object visit(ASTPluginEx1 node, Object data) {
+	public Object visit(ASTN_PluginExp node, Object data) {
 
 		return null;
 	}
 
 	@Override
-	public Object visit(ASTAddress1 node, Object data) {
+	public Object visit(ASTN_Address node, Object data) {
 
 		return null;
 	}
 
 	@Override
-	public Object visit(ASTParas1 node, Object data) {
-
-		return null;
-	}
-
-	@Override
-	public Object visit(ASTdomain1 node, Object data) {
+	public Object visit(ASTN_Paras node, Object data) {
 
 		return null;
 	}

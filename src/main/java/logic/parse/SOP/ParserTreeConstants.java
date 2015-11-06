@@ -4,7 +4,7 @@ package logic.parse.SOP;
 public interface ParserTreeConstants
 {
   public int JJTRECIPIENT = 0;
-  public int JJTPLUGINEX = 1;
+  public int JJTPLUGINEXP = 1;
   public int JJTPLUGIN = 2;
   public int JJTADDRESS = 3;
   public int JJTDOMAIN = 4;
@@ -13,51 +13,43 @@ public interface ParserTreeConstants
   public int JJTUNION = 7;
   public int JJTINTERSECTION = 8;
   public int JJTEXP = 9;
-  public int JJTPARALIS = 10;
+  public int JJTPARALIST = 10;
   public int JJTPOLIMOLPARA = 11;
-  public int JJTRULE = 12;
-  public int JJTVALUE = 13;
-  public int JJTSUBDOMAIN = 14;
-  public int JJTARG = 15;
-  public int JJTFUNCTION = 16;
-  public int JJTALIAS = 17;
-  public int JJTCOMMAND = 18;
-  public int JJTCOMMANDARG = 19;
-  public int JJTDOMAINARG = 20;
-  public int JJTRECIPIENT1 = 21;
-  public int JJTPLUGINEX1 = 22;
-  public int JJTADDRESS1 = 23;
-  public int JJTPARAS1 = 24;
-  public int JJTDOMAIN1 = 25;
+  public int JJTFUNCTION = 12;
+  public int JJTCOMMAND = 13;
+  public int JJTCOMMANDARG = 14;
+  public int JJTDOMAINARG = 15;
+  public int JJTRULE = 16;
+  public int JJTVALUE = 17;
+  public int JJTN_RECIPIENT = 18;
+  public int JJTN_PLUGINEXP = 19;
+  public int JJTN_ADDRESS = 20;
+  public int JJTN_PARAS = 21;
 
 
   public String[] jjtNodeName = {
     "Recipient",
-    "PluginEx",
+    "PluginExp",
     "Plugin",
     "Address",
-    "domain",
+    "Domain",
     "void",
     "Exception",
     "Union",
     "Intersection",
     "Exp",
-    "Paralis",
+    "ParaList",
     "PolimolPara",
-    "Rule",
-    "Value",
-    "Subdomain",
-    "Arg",
     "function",
-    "alias",
     "command",
     "commandArg",
-    "DomainArg",
-    "Recipient1",
-    "PluginEx1",
-    "Address1",
-    "Paras1",
-    "domain1",
+    "domainArg",
+    "rule",
+    "value",
+    "N_Recipient",
+    "N_PluginExp",
+    "N_Address",
+    "N_Paras",
   };
 }
-/* JavaCC - OriginalChecksum=1866434470da18b91e8fdde858f53029 (do not edit this line) */
+/* JavaCC - OriginalChecksum=b1faaa425d0de11d83d646cd732b774c (do not edit this line) */

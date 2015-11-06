@@ -55,18 +55,18 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 	private ArrayList<String> getUnauthorizedRules(Parsable parser, String sender) {
 		ArrayList<String> unauthorizedRules = new ArrayList<String>();
 		
-		ArrayList<String> paralist = parser.getparalist();
-		ArrayList<String> queries = parser.getqueries();
-		ArrayList<String> operator = parser.getoperator();
-		ArrayList<String> keys = parser.getKeys();
-		ArrayList<String> para = parser.getPara();
-		ArrayList<Integer> paranum = parser.getParanum();
+		ArrayList<String> paraList = parser.getParaList();
+		ArrayList<String> queries = parser.getQueries();
+		ArrayList<String> operators = parser.getOperators();
+		ArrayList<String> rules = parser.getRules();
+		ArrayList<String> paras = parser.getParas();
+		ArrayList<Integer> paraNums = parser.getParaNums();
 
 		ArrayList<String> appliedRules = applyRules(sender);
 		ArrayList<String> defaultQueries = constructDefaultQueries(appliedRules);
 
 		/* 各々のルール（集合）の判定 */
-		for (int keyIndex1 = 0, paraIndex1 = 0, paranumIndex1 = 0; keyIndex1 < keys.size(); ) {
+		for (int ruleIndex1 = 0, paraIndex1 = 0, paranumIndex1 = 0; ruleIndex1 < rules.size(); ) {
 			String rule = new String();
 			String deliQuery = new String();
 			ArrayList<String> tmppara = new ArrayList<String>();
@@ -76,24 +76,23 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 			while (true) {
 				// 配送ルールのクエリ取得
 				if (deliQuery.isEmpty())
-					deliQuery = queries.get(keyIndex1);
+					deliQuery = queries.get(ruleIndex1);
 				else
-					deliQuery = "(" + deliQuery + ") intersect (" + queries.get(keyIndex1) +")";
+					deliQuery = "(" + deliQuery + ") intersect (" + queries.get(ruleIndex1) +")";
 				// 配送ルールのパラメータ取得
-				if (para.get(paraIndex1 + 1).equalsIgnoreCase("all") || para.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
-					tmppara.add(para.get(paraIndex1++));
-					tmppara.add(para.get(paraIndex1++));
+				if (paras.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
+					paraIndex1 += 2;
 					paranumIndex1++;
-				} else while (paranum.get(paranumIndex1++) != -1) {
-					tmppara.add(para.get(paraIndex1++));
-					tmppara.add(para.get(paraIndex1++));
+				} else while (paraNums.get(paranumIndex1++) != -1) {
+					tmppara.add(paras.get(paraIndex1++));
+					tmppara.add(paras.get(paraIndex1++));
 				}
 				// アドレス上の記述配送ルール・パラメータの取得
-				rule = rule.concat(keys.get(keyIndex1) + "{" + paralist.get(keyIndex1) + "}");
+				rule = rule.concat(rules.get(ruleIndex1) + "{" + paraList.get(ruleIndex1) + "}");
 				
 				// 配送別許可ルールの取得
 				if (!localQuery.equalsIgnoreCase("null")) {
-					String tmpLocalQuery = constructLocalQuery(keys.get(keyIndex1), defaultQueries, appliedRules);
+					String tmpLocalQuery = constructLocalQuery(rules.get(ruleIndex1), defaultQueries, appliedRules);
 					if (tmpLocalQuery.equalsIgnoreCase("null"))
 						localQuery = tmpLocalQuery;
 					else if (localQuery.equalsIgnoreCase("all")) {
@@ -109,13 +108,13 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 					}
 				}
 				
-				// すべてのkeyを見たらwhileを抜ける
-				if (keyIndex1 == keys.size() - 1) {
-					keyIndex1++;
+				// すべてのruleを見たらwhileを抜ける
+				if (ruleIndex1 == rules.size() - 1) {
+					ruleIndex1++;
 					break;
 				}
 				// 積集合を取るルールが無ければwhileを抜ける
-				if (!operator.get(keyIndex1++).equalsIgnoreCase(".")) {
+				if (!operators.get(ruleIndex1++).equalsIgnoreCase(".")) {
 					break;
 				}
 				
@@ -123,61 +122,59 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 			}	/* end while */
 
 			/* 取得配送ルール以降のexceptルールの取得 */
-			for (int keyIndex2 = keyIndex1, paraIndex2 = paraIndex1, paranumIndex2 = paranumIndex1; keyIndex2 < keys.size(); ) {
-				if (operator.get(keyIndex2 - 1).equalsIgnoreCase("-")) {
-					String exceptQuery = queries.get(keyIndex2++);
-					if (para.get(paraIndex2 + 1).equalsIgnoreCase("all") || para.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
-						tmppara.add(para.get(paraIndex2++));
-						tmppara.add(para.get(paraIndex2++));
+			for (int ruleIndex2 = ruleIndex1, paraIndex2 = paraIndex1, paranumIndex2 = paranumIndex1; ruleIndex2 < rules.size(); ) {
+				if (operators.get(ruleIndex2 - 1).equalsIgnoreCase("-")) {
+					String exceptQuery = queries.get(ruleIndex2++);
+					if (paras.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
+						paraIndex2 += 2;
 						paranumIndex2++;
-					} else while (paranum.get(paranumIndex2++) != -1) {
-						tmppara.add(para.get(paraIndex2++));
-						tmppara.add(para.get(paraIndex2++));
+					} else while (paraNums.get(paranumIndex2++) != -1) {
+						tmppara.add(paras.get(paraIndex2++));
+						tmppara.add(paras.get(paraIndex2++));
 					}
-					while (keyIndex2 < keys.size()) {
-						if (!operator.get(keyIndex2 - 1).equalsIgnoreCase("."))
+					while (ruleIndex2 < rules.size()) {
+						if (!operators.get(ruleIndex2 - 1).equalsIgnoreCase("."))
 							break;
-						exceptQuery = "(" + exceptQuery + ") intersect (" + queries.get(keyIndex2++) + ")";
-						if (para.get(paraIndex2 + 1).equalsIgnoreCase("all") || para.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
-							tmppara.add(para.get(paraIndex2++));
-							tmppara.add(para.get(paraIndex2++));
+						exceptQuery = "(" + exceptQuery + ") intersect (" + queries.get(ruleIndex2++) + ")";
+						if (paras.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
+							paraIndex2 += 2;
 							paranumIndex2++;
-						} else while (paranum.get(paranumIndex2++) != -1) {
-							tmppara.add(para.get(paraIndex2++));
-							tmppara.add(para.get(paraIndex2++));
+						} else while (paraNums.get(paranumIndex2++) != -1) {
+							tmppara.add(paras.get(paraIndex2++));
+							tmppara.add(paras.get(paraIndex2++));
 						}
 					}
 					deliQuery = "(" + deliQuery + ") except (" + exceptQuery + ")";
 				} else {
-					keyIndex2++;
-					if (para.get(paraIndex2 + 1).equalsIgnoreCase("all") || para.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
-						paraIndex2 = paraIndex2 + 2;
+					ruleIndex2++;
+					if (paras.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
+						paraIndex2 += 2;
 						paranumIndex2++;
-					} else while (paranum.get(paranumIndex2++) != -1) {
-						paraIndex2 = paraIndex2 + 2;
+					} else while (paraNums.get(paranumIndex2++) != -1) {
+						paraIndex2 += 2;
 					}
 				}
 			}
 			/* exceptルールは直接チェックしないためスキップ */
-			while (keyIndex1 < keys.size()) {
-				if (!operator.get(keyIndex1 - 1).equalsIgnoreCase("-"))
+			while (ruleIndex1 < rules.size()) {
+				if (!operators.get(ruleIndex1 - 1).equalsIgnoreCase("-"))
 					break;
-				keyIndex1++;
-				if (para.get(paraIndex1 + 1).equalsIgnoreCase("all") || para.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
-					paraIndex1 = paraIndex1 + 2;
+				ruleIndex1++;
+				if (paras.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
+					paraIndex1 += 2;
 					paranumIndex1++;
-				} else while (paranum.get(paranumIndex1++) != -1) {
-					paraIndex1 = paraIndex1 + 2;
+				} else while (paraNums.get(paranumIndex1++) != -1) {
+					paraIndex1 += 2;
 				}
-				while (keyIndex1 < keys.size()) {
-					if (!operator.get(keyIndex1 - 1).equalsIgnoreCase("."))
+				while (ruleIndex1 < rules.size()) {
+					if (!operators.get(ruleIndex1 - 1).equalsIgnoreCase("."))
 						break;
-					keyIndex1++;
-					if (para.get(paraIndex1 + 1).equalsIgnoreCase("all") || para.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
-						paraIndex1 = paraIndex1 + 2;
+					ruleIndex1++;
+					if (paras.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
+						paraIndex1 += 2;
 						paranumIndex1++;
-					} else while (paranum.get(paranumIndex1++) != -1) {
-						paraIndex1 = paraIndex1 + 2;
+					} else while (paraNums.get(paranumIndex1++) != -1) {
+						paraIndex1 += 2;
 					}
 				}
 			}
@@ -396,7 +393,7 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 	}
 	
 	/* 許可判定 */
-	private boolean judgeRuleAuthorized(String deliQuery, ArrayList<String> para, String localQuery) {
+	private boolean judgeRuleAuthorized(String deliQuery, ArrayList<String> paras, String localQuery) {
 		boolean authFlag = false;
 		
 		if (localQuery.equalsIgnoreCase("null")) {
@@ -408,7 +405,7 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 			String checkQuery = "( " + deliQuery + " ) except ( " + localQuery + " )";
 			System.out.println("[checkQuery] " + checkQuery);	//
 			
-			ListIterator<String> params = para.listIterator();
+			ListIterator<String> params = paras.listIterator();
 			DatabaseDao db = new DatabaseDaoImpl(domconfBundle);
 			ResultSet rs;
 			try {
