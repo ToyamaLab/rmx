@@ -60,7 +60,7 @@ public class MakeFunction implements MakeMessage {
 			try{
 				DatabaseDao db = new DatabaseDaoImpl(domBundle);
 				ResultSet rs;
-				rs = db.read(funcparser.getQuery(), funcparser.getPara().listIterator());
+				rs = db.read(funcparser.getQuery(), funcparser.getParas().listIterator());
 				while (rs.next())
 					recipients.add(rs.getString(1));
 				rs.close();

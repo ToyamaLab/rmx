@@ -33,9 +33,9 @@ public class MakeMessageSelectorImpl implements MakeMessageSelector {
 	public MakeMessage select(Parsable parser, ResourceBundle domBundle) {
 		
 		if (parser.getNormalFlg()) {
-			transfer = this.checkForTransfer(parser.getKeys(), domBundle);
-			answer = this.checkForAnswer(parser.getKeys(), domBundle);
-			mixture = this.checkForMixture(parser.getKeys(), domBundle);
+			transfer = this.checkForTransfer(parser.getRules(), domBundle);
+			answer = this.checkForAnswer(parser.getRules(), domBundle);
+			mixture = this.checkForMixture(parser.getRules(), domBundle);
 		} else if (parser.getFunctionFlg()) {
 			function = true;
 		}
