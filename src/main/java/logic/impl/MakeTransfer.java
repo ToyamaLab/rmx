@@ -46,7 +46,7 @@ public class MakeTransfer implements MakeMessage {
 		ResultSet rs;
 		ArrayList<String> finalrecipients = new ArrayList<String>();
 		try {
-			rs = db.read(parser.getQuery(), parser.getPara().listIterator());
+			rs = db.read(parser.getQuery(), parser.getParas().listIterator());
 
 			while (rs.next())
 				finalrecipients.add(rs.getString(1));
