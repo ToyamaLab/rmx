@@ -407,7 +407,7 @@ public class User implements Parsable {
 		return query;
 	}
 
-	public Object visit(ASTPolimolPara node, Object data) {
+	public Object visit(ASTPolimorPara node, Object data) {
 		String query = "";
 		System.out.println("this is : " + node.toString());
 
@@ -1038,9 +1038,9 @@ public class User implements Parsable {
 		String regex;
 		for(int i = 1; ;i++){
 			regex = "$"+Integer.toString(i);
-			System.out.println("regex : " + regex);
 			if(q.indexOf(regex) < 0)
 				break;
+			System.out.println("regex : " + regex);
 			q = q.replaceAll("\\$" + Integer.toString(i), "?");
 		}
 		
@@ -1242,6 +1242,18 @@ public class User implements Parsable {
 
 	@Override
 	public Object visit(ASTN_Paras node, Object data) {
+
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTN_ParaList node, Object data) {
+
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTN_PolimorPara node, Object data) {
 
 		return null;
 	}

@@ -14,7 +14,7 @@ public interface ParserTreeConstants
   public int JJTINTERSECTION = 8;
   public int JJTEXP = 9;
   public int JJTPARALIST = 10;
-  public int JJTPOLIMOLPARA = 11;
+  public int JJTPOLIMORPARA = 11;
   public int JJTFUNCTION = 12;
   public int JJTCOMMAND = 13;
   public int JJTCOMMANDARG = 14;
@@ -25,6 +25,8 @@ public interface ParserTreeConstants
   public int JJTN_PLUGINEXP = 19;
   public int JJTN_ADDRESS = 20;
   public int JJTN_PARAS = 21;
+  public int JJTN_PARALIST = 22;
+  public int JJTN_POLIMORPARA = 23;
 
 
   public String[] jjtNodeName = {
@@ -39,7 +41,7 @@ public interface ParserTreeConstants
     "Intersection",
     "Exp",
     "ParaList",
-    "PolimolPara",
+    "PolimorPara",
     "function",
     "command",
     "commandArg",
@@ -50,6 +52,8 @@ public interface ParserTreeConstants
     "N_PluginExp",
     "N_Address",
     "N_Paras",
+    "N_ParaList",
+    "N_PolimorPara",
   };
 }
-/* JavaCC - OriginalChecksum=b1faaa425d0de11d83d646cd732b774c (do not edit this line) */
+/* JavaCC - OriginalChecksum=0aca809bfab128aa451fb621fcf0a810 (do not edit this line) */

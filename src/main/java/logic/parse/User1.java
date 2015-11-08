@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
-
 /** Super OBUNAI Parser */
 import logic.parse.SOP.*;
 
@@ -75,7 +74,7 @@ public class User1 implements Parsable {
 
 	/** ex) testo.properties */
 	public  ResourceBundle rb;
-
+	
 	/** ex) name, grp */
 	public  String rule;
 
@@ -178,7 +177,7 @@ public class User1 implements Parsable {
 
 	}
 
-	public Object visit(ASTParaList node, Object data) {
+	public Object visit(ASTN_ParaList node, Object data) {
 
 		String query = "";
 		System.out.println("this is : " + node.toString());
@@ -218,7 +217,7 @@ public class User1 implements Parsable {
 		return query;
 	}
 
-	public Object visit(ASTPolimolPara node, Object data) {
+	public Object visit(ASTN_PolimorPara node, Object data) {
 		String query = "";
 		System.out.println("this is : " + node.toString());
 		polymorChildNum = node.jjtGetNumChildren();
@@ -382,7 +381,7 @@ public class User1 implements Parsable {
 		}
 		
 		System.out.println("count : " + count);
-		if(count != 0)
+		if(count != 0 && !polymorFlg)
 			paraNums.add(count);
 
 		if(!polymorFlg){
@@ -497,9 +496,9 @@ public class User1 implements Parsable {
 		String regex;
 		for(int i = 1; ;i++){
 			regex = "$"+Integer.toString(i);
-			System.out.println("regex : " + regex);
 			if(q.indexOf(regex) < 0)
 				break;
+			System.out.println("regex : " + regex);
 			q = q.replaceAll("\\$" + Integer.toString(i), "?");
 		}
 		
@@ -604,7 +603,8 @@ public class User1 implements Parsable {
 			String tmp = node.jjtGetChild(i).jjtAccept(this, null).toString();
 			queries.add(tmp);
 			paraNums.add(-1);
-			operators.add(".");
+			if (i != childnum -1)
+				operators.add(".");
 			if (i == 0) {
 				query = tmp;
 			} else {
@@ -655,7 +655,7 @@ public class User1 implements Parsable {
 					.toString();
 			
 					
-			recipient = node.jjtGetChild(2).jjtAccept(this, null).toString();
+			recipient = functionDomain;
 					
 			System.out.println("functionExp :" + functionExp);
 			System.out.println("recipient :" + recipient);
@@ -667,7 +667,7 @@ public class User1 implements Parsable {
 			String functionDomain = node.jjtGetChild(1).jjtAccept(this, null)
 					.toString();
 					
-			recipient = node.jjtGetChild(1).jjtAccept(this, null).toString();
+			recipient = functionDomain;
 					
 			System.out.println("functionExp :" + functionExp);
 			System.out.println("recipient :" + recipient);
@@ -864,6 +864,18 @@ public class User1 implements Parsable {
 		String name = node.nodeValue;
 
 		return String.valueOf(name);
+	}
+
+	@Override
+	public Object visit(ASTPolimorPara node, Object data) {
+
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTParaList node, Object data) {
+		
+		return null;
 	}
 
 }

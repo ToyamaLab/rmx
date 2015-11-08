@@ -206,7 +206,6 @@ void Domain():
           }
         }
 /*@egen*/
-
 }
 
 void AddExp()       :
@@ -300,8 +299,7 @@ void MulExp()       :
                                jjtree.closeNodeScope(jjtn001,  2);
                              }
                            }
-/*@egen*/                  )*
-	
+/*@egen*/                  )*	
 }
 
 void Exp() :
@@ -370,12 +368,12 @@ void ParaList()               :
 }
 
 void Para()                  :
-{/*@bgen(jjtree) #PolimolPara(> 1) */
-  ASTPolimolPara jjtn000 = new ASTPolimolPara(JJTPOLIMOLPARA);
+{/*@bgen(jjtree) #PolimorPara(> 1) */
+  ASTPolimorPara jjtn000 = new ASTPolimorPara(JJTPOLIMORPARA);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) #PolimolPara(> 1) */
+{/*@bgen(jjtree) #PolimorPara(> 1) */
         try {
 /*@egen*/
 	value() ( < MINUS > value() |
@@ -658,7 +656,7 @@ void N_Paras() :
 {/*@bgen(jjtree) N_Paras */
         try {
 /*@egen*/
-	ParaList() ( < PERIOD > ParaList() )*/*@bgen(jjtree)*/
+	N_ParaList() ( < PERIOD > N_ParaList() )*/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -676,6 +674,71 @@ void N_Paras() :
         } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void N_ParaList()                 :
+{/*@bgen(jjtree) #N_ParaList(> 1) */
+  ASTN_ParaList jjtn000 = new ASTN_ParaList(JJTN_PARALIST);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) #N_ParaList(> 1) */
+        try {
+/*@egen*/
+	N_Para() ( < PLUS > N_Para() |
+	         < VERTICAL > N_Para() )*/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+          }
+        }
+/*@egen*/
+}
+
+void N_Para()                    :
+{/*@bgen(jjtree) #N_PolimorPara(> 1) */
+  ASTN_PolimorPara jjtn000 = new ASTN_PolimorPara(JJTN_POLIMORPARA);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) #N_PolimorPara(> 1) */
+        try {
+/*@egen*/
+	value() ( < MINUS > value() )*/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
           }
         }
 /*@egen*/
