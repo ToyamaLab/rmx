@@ -67,7 +67,6 @@ void Domain():
 {}
 {
 	domainArg() ( < PERIOD > domainArg() )+
-
 }
 
 void AddExp() #void :
@@ -80,8 +79,7 @@ void AddExp() #void :
 void MulExp() #void :
 {}
 {
-	Exp() ( < PERIOD > Exp() #Intersection(2) )*
-	
+	Exp() ( < PERIOD > Exp() #Intersection(2) )*	
 }
 
 void Exp() :
@@ -97,7 +95,7 @@ void ParaList() #ParaList(>1) :
 	         < VERTICAL > Para() )*
 }
 
-void Para() #PolimolPara(>1) :
+void Para() #PolimorPara(>1) :
 {}
 {
 	value() ( < MINUS > value() |
@@ -169,5 +167,18 @@ void N_Address() :
 void N_Paras() :
 {}
 {
-	ParaList() ( < PERIOD > ParaList() )*
+	N_ParaList() ( < PERIOD > N_ParaList() )*
+}
+
+void N_ParaList() #N_ParaList(>1) :
+{}
+{
+	N_Para() ( < PLUS > N_Para() |
+	         < VERTICAL > N_Para() )*
+}
+
+void N_Para() #N_PolimorPara(>1) :
+{}
+{
+	value() ( < MINUS > value() )*
 }

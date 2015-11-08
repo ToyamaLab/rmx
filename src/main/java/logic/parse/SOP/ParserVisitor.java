@@ -14,7 +14,7 @@ public interface ParserVisitor
   public Object visit(ASTIntersection node, Object data);
   public Object visit(ASTExp node, Object data);
   public Object visit(ASTParaList node, Object data);
-  public Object visit(ASTPolimolPara node, Object data);
+  public Object visit(ASTPolimorPara node, Object data);
   public Object visit(ASTfunction node, Object data);
   public Object visit(ASTcommand node, Object data);
   public Object visit(ASTcommandArg node, Object data);
@@ -25,5 +25,7 @@ public interface ParserVisitor
   public Object visit(ASTN_PluginExp node, Object data);
   public Object visit(ASTN_Address node, Object data);
   public Object visit(ASTN_Paras node, Object data);
+  public Object visit(ASTN_ParaList node, Object data);
+  public Object visit(ASTN_PolimorPara node, Object data);
 }
-/* JavaCC - OriginalChecksum=0cf5492e6a52e56424f88e79ffd7e63a (do not edit this line) */
+/* JavaCC - OriginalChecksum=3d96219ff750154c1ebf2f690130fe20 (do not edit this line) */
