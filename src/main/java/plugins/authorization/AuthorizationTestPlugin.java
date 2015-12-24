@@ -42,8 +42,14 @@ public class AuthorizationTestPlugin implements PluginInterface{
 			if (as.isAuthorized())
 				sMsg.addBody(testAddress + " is authorized.");
 			else {
+				ArrayList<String> unauthorizedRules = as.getUnauthorizedRules();
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < unauthorizedRules.size(); i++)
+					sb.append(" " + unauthorizedRules.get(i));
+				String rulesStr = new String(sb);
+					
 				sMsg.addBody(testAddress + " is NOT authorized.");
-				sMsg.addBody("Unauthorized Rule: " + as.getUnauthorizedRulesStr());
+				sMsg.addBody("Unauthorized Rule:" + rulesStr);
 			}
 			sMsg.addBody(".");
 			for (int j = 0; j < oMsg.getHeader().size(); j++) {

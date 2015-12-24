@@ -6,42 +6,49 @@ public interface ParserTreeConstants
   public int JJTRECIPIENT = 0;
   public int JJTPLUGINEXP = 1;
   public int JJTPLUGIN = 2;
-  public int JJTADDRESS = 3;
-  public int JJTDOMAIN = 4;
-  public int JJTVOID = 5;
-  public int JJTEXCEPTION = 6;
-  public int JJTUNION = 7;
-  public int JJTINTERSECTION = 8;
-  public int JJTEXP = 9;
-  public int JJTPARALIST = 10;
-  public int JJTPOLIMORPARA = 11;
-  public int JJTFUNCTION = 12;
-  public int JJTCOMMAND = 13;
-  public int JJTCOMMANDARG = 14;
-  public int JJTDOMAINARG = 15;
-  public int JJTRULE = 16;
-  public int JJTVALUE = 17;
-  public int JJTN_RECIPIENT = 18;
-  public int JJTN_PLUGINEXP = 19;
-  public int JJTN_ADDRESS = 20;
-  public int JJTN_PARAS = 21;
-  public int JJTN_PARALIST = 22;
-  public int JJTN_POLIMORPARA = 23;
+  public int JJTCOMMANDTARGET = 3;
+  public int JJTVOID = 4;
+  public int JJTCOMMANDEXP = 5;
+  public int JJTCOMMANDPARA = 6;
+  public int JJTADDRESS = 7;
+  public int JJTDOMAIN = 8;
+  public int JJTEXCEPTION = 9;
+  public int JJTUNION = 10;
+  public int JJTINTERSECTION = 11;
+  public int JJTEXP = 12;
+  public int JJTPARALIST = 13;
+  public int JJTPOLYMORPARA = 14;
+  public int JJTFUNCTION = 15;
+  public int JJTCOMMAND = 16;
+  public int JJTCOMMANDARG = 17;
+  public int JJTDOMAINARG = 18;
+  public int JJTRULE = 19;
+  public int JJTVALUE = 20;
+  public int JJTN_RECIPIENT = 21;
+  public int JJTN_PLUGINEXP = 22;
+  public int JJTN_ADDRESS = 23;
+  public int JJTN_DOMAIN = 24;
+  public int JJTN_PARAS = 25;
+  public int JJTN_PARALIST = 26;
+  public int JJTN_POLYMORPARA = 27;
 
 
   public String[] jjtNodeName = {
     "Recipient",
     "PluginExp",
     "Plugin",
+    "CommandTarget",
+    "void",
+    "CommandExp",
+    "CommandPara",
     "Address",
     "Domain",
-    "void",
     "Exception",
     "Union",
     "Intersection",
     "Exp",
     "ParaList",
-    "PolimorPara",
+    "PolymorPara",
     "function",
     "command",
     "commandArg",
@@ -51,9 +58,10 @@ public interface ParserTreeConstants
     "N_Recipient",
     "N_PluginExp",
     "N_Address",
+    "N_Domain",
     "N_Paras",
     "N_ParaList",
-    "N_PolimorPara",
+    "N_PolymorPara",
   };
 }
-/* JavaCC - OriginalChecksum=0aca809bfab128aa451fb621fcf0a810 (do not edit this line) */
+/* JavaCC - OriginalChecksum=6a415fcc96c253e6f4e71bea842c80c8 (do not edit this line) */

@@ -8,10 +8,8 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import logic.Parse;
-import logic.ParserSelector;
 import logic.parse.Parsable;
-import logic.parse.User;
-import logic.parse.User1;
+import logic.parse.ParseAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,23 +51,27 @@ public class ParseImpl implements Parse {
 	 */
 	@Override
 	public Parsable getParser() {
-
-		ParserSelector ps = new ParserSelectorImpl();
-		Parsable parser = ps.select(recipient);
-		this.setField(parser);
+		this.setField();
+		Parsable parser = new ParseAddress();
 		parser.parseStart(recipient, domBundle, domain);
 		return parser;
 	}
 	
-	private void setField(Parsable _parser){
-		if(_parser instanceof User) {
+	private void setField(){
+		String target = recipient.substring(recipient.indexOf("#", 1) + 1);
+		
+		if (target.contains("{") && target.contains("}")) {
 			domain = this.getDomainOfFunctional(recipient);
 			subdomain = this.getSubdomainOfFunctional(recipient);
-		} else if (_parser instanceof User1) {
+		} else {
 			domain = this.getDomainOfNatural(recipient);
 			subdomain = this.getSubdomainOfNatural(recipient);
 		}
 		propfile = this.getPropfileName(domain, subdomain, domainsMaps);
+		if (propfile.equalsIgnoreCase("default") && !subdomain.equalsIgnoreCase("default")) {
+			domain = subdomain + "." + domain;
+			subdomain = "default";
+		}
 		domBundle = this.searchDomBundle(domain, subdomain, domBundles);
 		
 		return;
@@ -83,12 +85,12 @@ public class ParseImpl implements Parse {
 	 */
 	private String getDomainOfFunctional(String recipient) {
 		// 1. @以降を切り取る
-		int num_at = recipient.indexOf("@");
-		String fulldomain = recipient.substring(num_at + 1);
+		int atIndex = recipient.indexOf("@");
+		String fullDomain = recipient.substring(atIndex + 1);
 
 		// 2. 最初の"."より後を切り取る
-		int num_dot = fulldomain.indexOf(".");
-		String domain = fulldomain.substring(num_dot + 1);
+		int firstDotIndex = fullDomain.indexOf(".");
+		String domain = fullDomain.substring(firstDotIndex + 1);
 
 		return domain;
 	}
@@ -101,14 +103,117 @@ public class ParseImpl implements Parse {
 	 * */
 	private String getSubdomainOfFunctional(String recipient) {
 		// 1. @以降を切り取る
-		int num_at = recipient.indexOf("@");
-		String fulldomain = recipient.substring(num_at + 1);
+		int atIndex = recipient.indexOf("@");
+		String fullDomain = recipient.substring(atIndex + 1);
 
 		// 2. 最初の"."より前を切り取る
-		int num_dot = fulldomain.indexOf(".");
-		String subdomain = fulldomain.substring(0, num_dot);
+		int firstDotIndex = fullDomain.indexOf(".");
+		String subdomain = fullDomain.substring(0, firstDotIndex);
 
 		return subdomain;
+	}
+	
+	/**
+	 *自然形式の宛先のドメイン名を得る.(ex)rmx@team.testk.keio.com=>keio.com
+	 *@oaram recipient 自然形式の宛先
+	 *@return ドメイン名
+	 * */
+	private String getDomainOfNatural(String _recipient) {
+		String recipient = new String();
+		//2つの#が含まれていれば,その間の文字列を取り除く
+		int lastSharpIndex = _recipient.lastIndexOf("#");
+		if (lastSharpIndex > 0)
+			recipient = _recipient.substring(lastSharpIndex + 1);
+		else if (lastSharpIndex < 0)
+			recipient = _recipient;
+		else
+			return null;
+		
+		//ルールの数
+		int ruleNum;
+		
+		int atIndex = recipient.indexOf("@");
+		//@より前
+		String account = recipient.substring(0, atIndex);
+		//@より後
+		String fullDomain = recipient.substring(atIndex + 1);
+				
+		//accountに"."があれば分割
+		if (account.contains(".")) {
+			String[] accounts = account.split("\\.");
+			ruleNum = accounts.length;
+		}
+		//accountが空でなく"."が無ければルールは1つ
+		else if (!account.isEmpty())
+			ruleNum = 1;
+		//accountが空の場合はルールは0
+		else
+			ruleNum = 0;
+				
+		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
+		int dotNum = fullDomain.split("\\.").length - 1;//ドメインの中の"."の数
+		if (dotNum > ruleNum) {
+			//ex)ルール数が2なら3つめの"."以降がドメイン名である.
+			//rule1.rule2.subdomain.domain
+			int startIndex = searchChr(fullDomain, ".", ruleNum + 1);
+			if (startIndex > 0) {
+				String domain = fullDomain.substring(startIndex + 1);
+				return domain;
+			} else 
+				return null;
+		} else 
+			return null; 
+	}
+	
+	/**
+	 *自然形式の宛先のサブドメイン名を得る.(ex)rmx@team.testk.keio.com=>testk
+	 *@oaram recipient 自然形式の宛先
+	 *@return サブドメイン名
+	 * */
+	private String getSubdomainOfNatural(String _recipient) {
+		String recipient = new String();
+		//2つの#が含まれていれば,その間の文字列を取り除く
+		int lastSharpIndex = _recipient.lastIndexOf("#");
+		if (lastSharpIndex > 0)
+			recipient = _recipient.substring(lastSharpIndex + 1);
+		else if (lastSharpIndex < 0)
+			recipient = _recipient;
+		else
+			return null;
+		
+		//ルールの数
+		int ruleNum;
+		
+		int atIndex = recipient.indexOf("@");
+		//@より前
+		String account = recipient.substring(0, atIndex);
+		//@より後
+		String fullDomain = recipient.substring(atIndex + 1);
+			
+		//accountに"."があれば分割
+		if (account.contains(".")) {
+			String[] accounts = account.split("\\.");
+			ruleNum = accounts.length;
+		} else if (!account.isEmpty())
+			ruleNum = 1;
+		else
+			ruleNum = 0;
+			
+		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
+		int dotNum = (fullDomain.split("\\.").length) - 1;	//ドメインの中の"."の数
+		if (dotNum > ruleNum) {
+			//ex)ルール数が2なら3つめの"."以降がドメイン名である.
+			//rule1.rule2.subdomain.domain
+			int startIndex = searchChr(fullDomain, ".", ruleNum) + 1;
+			int endIndex = searchChr(fullDomain, ".", ruleNum + 1);
+
+			if ((ruleNum == 0 || startIndex > 0) && endIndex > startIndex) {
+				String subdomain = fullDomain.substring(startIndex, endIndex);
+				return subdomain;
+			} else
+				return null;
+		} else
+			return null; 
 	}
 	
 	/**
@@ -119,13 +224,21 @@ public class ParseImpl implements Parse {
 	 * @return ファイル名 
 	 * */
 	private String getPropfileName(String domain, String subdomain, ArrayList<HashMap<String, String>> domainsMaps) {
-		for(int i=0;i<domainsMaps.size();i++) {
+		boolean applyDefault = false;
+		for (int i = 0; i < domainsMaps.size(); i++) {
 			HashMap<String, String> domainsMap = domainsMaps.get(i);
-			if(domainsMap.get("domain").equalsIgnoreCase(domain) && domainsMap.get("subdomain").equalsIgnoreCase(subdomain)) 
-				return domainsMap.get("propfile");		
+			if (domainsMap.get("domain").equalsIgnoreCase(domain) && domainsMap.get("subdomain").equalsIgnoreCase(subdomain)) 
+				return domainsMap.get("propfile");
+			else if (!applyDefault && (domainsMap.get("domain").equalsIgnoreCase(subdomain + "." + domain)))
+				applyDefault = true;
 		}
-		log.error("it is not a suitable domain. ");
-		return null;
+		if (applyDefault) {
+			log.warn("default.properties will be applied.");
+			return "default";
+		} else {
+			log.error("domain is not a suitable.");
+			return null;
+		}
 	}
 
 	/**
@@ -135,125 +248,14 @@ public class ParseImpl implements Parse {
 	 * @param domBundles env.propertiesから得られたdomBundleの集合
 	 * @return ドメイン名とサブドメイン名に対応したdomBundle
 	 * */
-	private ResourceBundle searchDomBundle(String domain, String subdomian, HashMap<String, ResourceBundle> domBundles){
-		String fullDomain = subdomian+"."+domain;
-		return domBundles.get(fullDomain);
-	}
-	
-	/**
-	 *関数形式の宛先のドメイン名を得る.(ex)rmx@team.testk.keio.com=>keio.com
-	 *@oaram recipient 関数形式の宛先
-	 *@return ドメイン名
-	 * */
-	private String getDomainOfNatural(String _recipient) {
-		String recipient = new String();
-		//2つの#が含まれていれば,その間の文字列を取り除く
-		if(_recipient.contains("#")) {
-			int sharp_last_num = _recipient.lastIndexOf("#");
-			if (sharp_last_num>0)
-				recipient = _recipient.substring(sharp_last_num+1);
-			else 
-				return null;
-		}else 
-			recipient = _recipient;
-			
-		//ルールの数
-		int rule_num;
-		//宛先に#が存在しないとき
-			
-		int num_at = recipient.indexOf("@");
-		//@より前
-		String account = recipient.substring(0, num_at);
-		//@より後
-		String fulldomain = recipient.substring(num_at+1);
-				
-		//accountに"."があれば分割
-		if (account.contains(".")) {
-			String[] accounts = account.split("\\.");
-			rule_num = accounts.length;
-		}
-		//accountが空でなく"."が無ければルールは1つ
-		else if (!account.isEmpty())
-			rule_num = 1;
-		//accountが空の場合はルールは0
+	private ResourceBundle searchDomBundle(String domain, String subdomian, HashMap<String, ResourceBundle> domBundles) {
+		ResourceBundle tmpBundle;
+		if (subdomain.equalsIgnoreCase("default"))
+			tmpBundle = domBundles.get("default");
 		else
-			rule_num = 0;
-				
-		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
-		int dot_num = (fulldomain.split("\\.").length)-1;//ドメインの中の"."の数
-		if (dot_num>rule_num) {
-			//ex)ルール数が2なら3つめの"."以降がドメイン名である.
-			//rule1.rule2.subdomain.domain
-			int start_num = searchChr(fulldomain, ".", rule_num+1);
-			//start_numが-1でないとき
-			if (start_num>0) {
-				String domain = fulldomain.substring(start_num+1);
-				return domain;
-			}
-			//start_numが-1のとき
-			else 
-				return null;
-		}
-		//ドメインに含まれる"."の数がルール数以下のとき
-		else 
-			return null; 
-	}
-	
-	/**
-	 *関数形式の宛先のサブドメイン名を得る.(ex)rmx@team.testk.keio.com=>testk
-	 *@oaram recipient 関数形式の宛先
-	 *@return サブドメイン名
-	 * */
-	private String getSubdomainOfNatural(String _recipient) {
-		String recipient = new String();
-		//2つの#が含まれていれば,その間の文字列を取り除く
-		if(_recipient.contains("#")) {
-			int sharp_last_num = _recipient.lastIndexOf("#");
-			if (sharp_last_num>0)
-				recipient = _recipient.substring(sharp_last_num+1);
-			else 
-				return null;
-		} else 
-			recipient = _recipient;
+			tmpBundle = domBundles.get(subdomain + "." + domain);
 		
-		//ルールの数
-		int rule_num;
-		
-		int num_at = recipient.indexOf("@");
-		//@より前
-		String account = recipient.substring(0, num_at);
-		//@より後
-		String fulldomain = recipient.substring(num_at+1);
-			
-		//accountに"."があれば分割
-		if (account.contains(".")) {
-			String[] accounts = account.split("\\.");
-			rule_num = accounts.length;
-		} else if (!account.isEmpty())
-			rule_num = 1;
-		else
-			rule_num = 0;
-			
-		//ドメインの中の"."の数はルール数より大きくなければいけない.そうでなければnullを返す
-		int dot_num = (fulldomain.split("\\.").length)-1;//ドメインの中の"."の数
-		if (dot_num>rule_num) {
-			//ex)ルール数が2なら3つめの"."以降がドメイン名である.
-			//rule1.rule2.subdomain.domain
-			int start_num = searchChr(fulldomain, ".", rule_num);
-			int end_num = searchChr(fulldomain, ".", rule_num+1);
-
-			//"start_numが-1かつrule_numが0"でないとき
-			if((rule_num == 0 || start_num >= 0) && end_num>start_num) {
-				String subdomain = fulldomain.substring(start_num+1,end_num);
-				return subdomain;
-			}
-			//start_numが-1かつrule_numが0のとき
-			else
-				return null;
-		}
-		//ドメインに含まれる"."の数がルール数以下のとき
-		else
-			return null; 
+		return tmpBundle;
 	}
 	
 	/**
@@ -264,11 +266,10 @@ public class ParseImpl implements Parse {
 	 * @return n番目のstr2の位置
 	 * */
 	private int searchChr(String str1, String str2, int n) {
-		int return_num = -1;
-		for (int i=0;i<n;i++) {
-			return_num = str1.indexOf(str2, return_num+1);
-		}
-		return return_num;
+		int index = -1;
+		for (int i = 0; i < n; i++)
+			index = str1.indexOf(str2, index + 1);
+		return index;
 	}
 
 	@Override

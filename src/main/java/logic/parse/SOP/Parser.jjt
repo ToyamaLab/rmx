@@ -54,7 +54,31 @@ void PluginExp() #PluginExp(>1) :
 void Plugin() :
 {}
 {
-	< HASH > function() < PERIOD > command() ( < PERIOD > commandArg() )* < HASH >
+	< HASH > function() < PERIOD > command() ( < PERIOD > CommandTarget() )* < HASH >
+}
+
+void CommandTarget() #CommandTarget(>1) :
+{}
+{
+	CommandTargetElement() ( < PLUS > CommandTargetElement() )*
+}
+
+void CommandTargetElement() #void :
+{}
+{
+	LOOKAHEAD(2) CommandExp() | CommandPara()
+}
+
+void CommandExp() :
+{}
+{
+	commandArg() < OP_BRACE > ( commandArg() ( (< MINUS > | < PERIOD >) commandArg())* )? < END_BRACE >
+}
+
+void CommandPara() #CommandPara(>1) :
+{}
+{
+	commandArg() ( < MINUS > commandArg() )*
 }
 
 void Address() :
@@ -95,7 +119,7 @@ void ParaList() #ParaList(>1) :
 	         < VERTICAL > Para() )*
 }
 
-void Para() #PolimorPara(>1) :
+void Para() #PolymorPara(>1) :
 {}
 {
 	value() ( < MINUS > value() |
@@ -155,13 +179,19 @@ ASTN_Recipient N_Recipient():
 void N_PluginExp() #N_PluginExp(>1) :
 {}
 {
-	N_Address() | Plugin() (N_Paras())? < AT > Domain()	
+	N_Address() | Plugin() (N_Paras())? < AT > N_Domain()	
 }
 
 void N_Address() :
 {}
 {
-	N_Paras() < AT > Domain()
+	N_Paras() < AT > N_Domain()
+}
+
+void N_Domain():
+{}
+{
+	domainArg() ( < PERIOD > domainArg() )+
 }
 
 void N_Paras() :
@@ -177,7 +207,7 @@ void N_ParaList() #N_ParaList(>1) :
 	         < VERTICAL > N_Para() )*
 }
 
-void N_Para() #N_PolimorPara(>1) :
+void N_Para() #N_PolymorPara(>1) :
 {}
 {
 	value() ( < MINUS > value() )*

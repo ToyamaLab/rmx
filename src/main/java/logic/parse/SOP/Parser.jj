@@ -121,7 +121,7 @@ void Plugin() :
 {/*@bgen(jjtree) Plugin */
         try {
 /*@egen*/
-	< HASH > function() < PERIOD > command() ( < PERIOD > commandArg() )* < HASH >/*@bgen(jjtree)*/
+	< HASH > function() < PERIOD > command() ( < PERIOD > CommandTarget() )* < HASH >/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -139,6 +139,108 @@ void Plugin() :
         } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void CommandTarget()                    :
+{/*@bgen(jjtree) #CommandTarget(> 1) */
+  ASTCommandTarget jjtn000 = new ASTCommandTarget(JJTCOMMANDTARGET);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) #CommandTarget(> 1) */
+        try {
+/*@egen*/
+	CommandTargetElement() ( < PLUS > CommandTargetElement() )*/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+          }
+        }
+/*@egen*/
+}
+
+void CommandTargetElement()       :
+{}
+{
+	LOOKAHEAD(2) CommandExp() | CommandPara()
+}
+
+void CommandExp() :
+{/*@bgen(jjtree) CommandExp */
+  ASTCommandExp jjtn000 = new ASTCommandExp(JJTCOMMANDEXP);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) CommandExp */
+        try {
+/*@egen*/
+	commandArg() < OP_BRACE > ( commandArg() ( (< MINUS > | < PERIOD >) commandArg())* )? < END_BRACE >/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void CommandPara()                  :
+{/*@bgen(jjtree) #CommandPara(> 1) */
+  ASTCommandPara jjtn000 = new ASTCommandPara(JJTCOMMANDPARA);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) #CommandPara(> 1) */
+        try {
+/*@egen*/
+	commandArg() ( < MINUS > commandArg() )*/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
           }
         }
 /*@egen*/
@@ -368,12 +470,12 @@ void ParaList()               :
 }
 
 void Para()                  :
-{/*@bgen(jjtree) #PolimorPara(> 1) */
-  ASTPolimorPara jjtn000 = new ASTPolimorPara(JJTPOLIMORPARA);
+{/*@bgen(jjtree) #PolymorPara(> 1) */
+  ASTPolymorPara jjtn000 = new ASTPolymorPara(JJTPOLYMORPARA);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) #PolimorPara(> 1) */
+{/*@bgen(jjtree) #PolymorPara(> 1) */
         try {
 /*@egen*/
 	value() ( < MINUS > value() |
@@ -592,7 +694,7 @@ void N_PluginExp()                  :
 {/*@bgen(jjtree) #N_PluginExp(> 1) */
         try {
 /*@egen*/
-	N_Address() | Plugin() (N_Paras())? < AT > Domain()/*@bgen(jjtree)*/
+	N_Address() | Plugin() (N_Paras())? < AT > N_Domain()/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -624,7 +726,39 @@ void N_Address() :
 {/*@bgen(jjtree) N_Address */
         try {
 /*@egen*/
-	N_Paras() < AT > Domain()/*@bgen(jjtree)*/
+	N_Paras() < AT > N_Domain()/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void N_Domain():
+{/*@bgen(jjtree) N_Domain */
+  ASTN_Domain jjtn000 = new ASTN_Domain(JJTN_DOMAIN);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) N_Domain */
+        try {
+/*@egen*/
+	domainArg() ( < PERIOD > domainArg() )+/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -713,12 +847,12 @@ void N_ParaList()                 :
 }
 
 void N_Para()                    :
-{/*@bgen(jjtree) #N_PolimorPara(> 1) */
-  ASTN_PolimorPara jjtn000 = new ASTN_PolimorPara(JJTN_POLIMORPARA);
+{/*@bgen(jjtree) #N_PolymorPara(> 1) */
+  ASTN_PolymorPara jjtn000 = new ASTN_PolymorPara(JJTN_POLYMORPARA);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) #N_PolimorPara(> 1) */
+{/*@bgen(jjtree) #N_PolymorPara(> 1) */
         try {
 /*@egen*/
 	value() ( < MINUS > value() )*/*@bgen(jjtree)*/

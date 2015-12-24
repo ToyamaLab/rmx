@@ -33,21 +33,16 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 			return false;
 	}
 	
-	public String getUnauthorizedRulesStr() {
-		String rulesStr = new String();
-		
-		if (!isAuthorized()) {
-			for (int i = 0; i < unauthorizedRulesList.size(); i++)
-				rulesStr = rulesStr.concat(unauthorizedRulesList.get(i) + " ");
-		}
-		
-		return rulesStr;
+	public ArrayList<String> getUnauthorizedRules() {
+		return unauthorizedRulesList;
 	}
 	
 	private boolean authorizationIsOn() {
-		if (domconfBundle.containsKey("AUTHORIZATION")) {
+		try {
 			if (domconfBundle.getString("AUTHORIZATION").equalsIgnoreCase("ON"))
 				return true;
+		} catch (Exception e) {
+			return false;
 		}
 		return false;
 	}
@@ -66,7 +61,7 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 		ArrayList<String> defaultQueries = constructDefaultQueries(appliedRules);
 
 		/* 各々のルール（集合）の判定 */
-		for (int ruleIndex1 = 0, paraIndex1 = 0, paranumIndex1 = 0; ruleIndex1 < rules.size(); ) {
+		for (int ruleIndex1 = 0, paraIndex1 = 0, paraNumIndex1 = 0; ruleIndex1 < rules.size(); ) {
 			String rule = new String();
 			String deliQuery = new String();
 			ArrayList<String> tmppara = new ArrayList<String>();
@@ -80,12 +75,16 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 				else
 					deliQuery = "(" + deliQuery + ") intersect (" + queries.get(ruleIndex1) +")";
 				// 配送ルールのパラメータ取得
-				if (paras.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
-					paraIndex1 += 2;
-					paranumIndex1++;
-				} else while (paraNums.get(paranumIndex1++) != -1) {
-					tmppara.add(paras.get(paraIndex1++));
-					tmppara.add(paras.get(paraIndex1++));
+				while (paraNums.get(paraNumIndex1++) != -1) {
+					int paraNum = paraNums.get(paraNumIndex1 - 1);
+					if (paraNum == 0 && paras.get(paraIndex1 + 1).equalsIgnoreCase("*"))
+						paraIndex1 += 2;
+					else for (int i = 0; i < paraNum; i++) {
+						while (paras.get(paraIndex1 + 1).equalsIgnoreCase("*"))
+							paraIndex1 += 2;
+						tmppara.add(paras.get(paraIndex1++));
+						tmppara.add(paras.get(paraIndex1++));
+					}
 				}
 				// アドレス上の記述配送ルール・パラメータの取得
 				rule = rule.concat(rules.get(ruleIndex1) + "{" + paraList.get(ruleIndex1) + "}");
@@ -122,36 +121,49 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 			}	/* end while */
 
 			/* 取得配送ルール以降のexceptルールの取得 */
-			for (int ruleIndex2 = ruleIndex1, paraIndex2 = paraIndex1, paranumIndex2 = paranumIndex1; ruleIndex2 < rules.size(); ) {
+			for (int ruleIndex2 = ruleIndex1, paraIndex2 = paraIndex1, paraNumIndex2 = paraNumIndex1; ruleIndex2 < rules.size(); ) {
 				if (operators.get(ruleIndex2 - 1).equalsIgnoreCase("-")) {
 					String exceptQuery = queries.get(ruleIndex2++);
-					if (paras.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
-						paraIndex2 += 2;
-						paranumIndex2++;
-					} else while (paraNums.get(paranumIndex2++) != -1) {
-						tmppara.add(paras.get(paraIndex2++));
-						tmppara.add(paras.get(paraIndex2++));
+					while (paraNums.get(paraNumIndex2++) != -1) {
+						int paraNum = paraNums.get(paraNumIndex2 - 1);
+						if (paraNum == 0 && paras.get(paraIndex2 + 1).equalsIgnoreCase("*"))
+							paraIndex2 += 2;
+						else for (int i = 0; i < paraNum; i++) {
+							while (paras.get(paraIndex2 + 1).equalsIgnoreCase("*"))
+								paraIndex2 += 2;
+							tmppara.add(paras.get(paraIndex2++));
+							tmppara.add(paras.get(paraIndex2++));
+						}
 					}
+					
 					while (ruleIndex2 < rules.size()) {
 						if (!operators.get(ruleIndex2 - 1).equalsIgnoreCase("."))
 							break;
 						exceptQuery = "(" + exceptQuery + ") intersect (" + queries.get(ruleIndex2++) + ")";
-						if (paras.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
-							paraIndex2 += 2;
-							paranumIndex2++;
-						} else while (paraNums.get(paranumIndex2++) != -1) {
-							tmppara.add(paras.get(paraIndex2++));
-							tmppara.add(paras.get(paraIndex2++));
+						while (paraNums.get(paraNumIndex2++) != -1) {
+							int paraNum = paraNums.get(paraNumIndex2 - 1);
+							if (paraNum == 0 && paras.get(paraIndex2 + 1).equalsIgnoreCase("*"))
+								paraIndex2 += 2;
+							else for (int i = 0; i < paraNum; i++) {
+								while (paras.get(paraIndex2 + 1).equalsIgnoreCase("*"))
+									paraIndex2 += 2;
+								tmppara.add(paras.get(paraIndex2++));
+								tmppara.add(paras.get(paraIndex2++));
+							}
 						}
 					}
 					deliQuery = "(" + deliQuery + ") except (" + exceptQuery + ")";
 				} else {
 					ruleIndex2++;
-					if (paras.get(paraIndex2 + 1).equalsIgnoreCase("*")) {
-						paraIndex2 += 2;
-						paranumIndex2++;
-					} else while (paraNums.get(paranumIndex2++) != -1) {
-						paraIndex2 += 2;
+					while (paraNums.get(paraNumIndex2++) != -1) {
+						int paraNum = paraNums.get(paraNumIndex2 - 1);
+						if (paraNum == 0 && paras.get(paraIndex2 + 1).equalsIgnoreCase("*"))
+							paraIndex2 += 2;
+						else for (int i = 0; i < paraNum; i++) {
+							while (paras.get(paraIndex2 + 1).equalsIgnoreCase("*"))
+								paraIndex2 += 2;
+							paraIndex2 += 2;
+						}
 					}
 				}
 			}
@@ -160,21 +172,29 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 				if (!operators.get(ruleIndex1 - 1).equalsIgnoreCase("-"))
 					break;
 				ruleIndex1++;
-				if (paras.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
-					paraIndex1 += 2;
-					paranumIndex1++;
-				} else while (paraNums.get(paranumIndex1++) != -1) {
-					paraIndex1 += 2;
+				while (paraNums.get(paraNumIndex1++) != -1) {
+					int paraNum = paraNums.get(paraNumIndex1 - 1);
+					if (paraNum == 0 && paras.get(paraIndex1 + 1).equalsIgnoreCase("*"))
+						paraIndex1 += 2;
+					else for (int i = 0; i < paraNum; i++) {
+						while (paras.get(paraIndex1 + 1).equalsIgnoreCase("*"))
+							paraIndex1 += 2;
+						paraIndex1 += 2;
+					}
 				}
 				while (ruleIndex1 < rules.size()) {
 					if (!operators.get(ruleIndex1 - 1).equalsIgnoreCase("."))
 						break;
 					ruleIndex1++;
-					if (paras.get(paraIndex1 + 1).equalsIgnoreCase("*")) {
-						paraIndex1 += 2;
-						paranumIndex1++;
-					} else while (paraNums.get(paranumIndex1++) != -1) {
-						paraIndex1 += 2;
+					while (paraNums.get(paraNumIndex1++) != -1) {
+						int paraNum = paraNums.get(paraNumIndex1 - 1);
+						if (paraNum == 0 && paras.get(paraIndex1 + 1).equalsIgnoreCase("*"))
+							paraIndex1 += 2;
+						else for (int i = 0; i < paraNum; i++) {
+							while (paras.get(paraIndex1 + 1).equalsIgnoreCase("*"))
+								paraIndex1 += 2;
+							paraIndex1 += 2;
+						}
 					}
 				}
 			}
