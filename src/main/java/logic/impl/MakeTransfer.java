@@ -38,10 +38,11 @@ public class MakeTransfer implements MakeMessage {
 		AuthorizeSender as = new AuthorizeSenderImpl(parse.getDomBundle(), parser, oMsg.getSender());
 		if (!as.isAuthorized()) {
 			MakeWarning mw = new MakeWarningImpl();
-			sMsgs.add(mw.makeWarningMessage(oMsg, as.getUnauthorizedRulesStr()));
+			sMsgs.add(mw.makeWarningMessage(oMsg, as.getUnauthorizedRules()));
 			return sMsgs;
 		}
 		
+		// 通常
 		DatabaseDao db = new DatabaseDaoImpl(parse.getDomBundle());
 		ResultSet rs;
 		ArrayList<String> finalrecipients = new ArrayList<String>();
@@ -59,7 +60,6 @@ public class MakeTransfer implements MakeMessage {
 			e.printStackTrace();
 		}
 		
-		// 通常
 		for (int i = 0; i < finalrecipients.size(); i++) {
 			Message sMsg = new Message();
 

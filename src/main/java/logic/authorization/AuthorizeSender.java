@@ -1,9 +1,11 @@
 package logic.authorization;
 
+import java.util.ArrayList;
+
 public interface AuthorizeSender {
 	
 	public boolean isAuthorized();
 	
-	public String getUnauthorizedRulesStr();
+	public ArrayList<String> getUnauthorizedRules();
 	
 }

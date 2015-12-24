@@ -8,7 +8,6 @@ import java.util.ResourceBundle;
 
 import logic.MakeMessage;
 import logic.Parse;
-import logic.ParserSelector;
 import logic.interfaces.PluginInterface;
 import logic.parse.Parsable;
 import logic.plugin.PluginsHolder;
@@ -26,7 +25,6 @@ public class MakeFunction implements MakeMessage {
 	private ResourceBundle domBundle;
 	private ResourceBundle envBundle;
 	private String propfile;
-	private String domain;
 	
 	public MakeFunction(Parsable _parser, ResourceBundle _domBundle) {
 		parser = _parser;
@@ -46,21 +44,18 @@ public class MakeFunction implements MakeMessage {
 		String command = parser.getCommand();
 		List<String> commandArgs = parser.getCommandArgs();
 		
-		// 2. 2つめの#以降を切り取り、targetがあれば再びパースし、そうでなければ送信者が宛先になる
+		// 2. 2つめの#以降を切り取り、targetがなければ送信者が宛先になる
 		// (ex)#~#team{rmx}@keio.com -> team{rmx}@keio.com
 		// (ex)#~#@keio.com -> @keio.com
 		List<String> recipients = new ArrayList<String>();
 		String target = parser.getTarget();
-		if (target.indexOf("@") == 0)
+		if (target.indexOf("@") == 0) {
 			recipients.add(oMsg.getSender());
-		else {
-			ParserSelector ps = new ParserSelectorImpl();
-			Parsable funcparser = ps.select(target);
-			funcparser.parseStart(target, domBundle, domain);
+		} else {
 			try{
 				DatabaseDao db = new DatabaseDaoImpl(domBundle);
 				ResultSet rs;
-				rs = db.read(funcparser.getQuery(), funcparser.getParas().listIterator());
+				rs = db.read(parser.getQuery(), parser.getParas().listIterator());
 				while (rs.next())
 					recipients.add(rs.getString(1));
 				rs.close();
