@@ -38,7 +38,7 @@ public class SystemControllerImpl implements SystemController {
 	public void startSystem() {
 		opf.open();
 		if (!opf.getDomBundles().isEmpty()) {
-			pool = Executors.newFixedThreadPool(Integer.parseInt(opf.getEnvBundle().getString("max_receive_socket")));
+			pool = Executors.newFixedThreadPool(Integer.parseInt(opf.getEnvBundle().getString("max_receive_socket").trim()));
 			this.listen();
 			System.exit(0);
 		} else {
@@ -50,7 +50,7 @@ public class SystemControllerImpl implements SystemController {
 	private void listen() {
 		ResourceBundle envBundle = opf.getEnvBundle();
 		try {
-			sSocket = new ServerSocket(Integer.parseInt(envBundle.getString("receive_port")));
+			sSocket = new ServerSocket(Integer.parseInt(envBundle.getString("receive_port").trim()));
 			log.info("RMX System START on Port " + envBundle.getString("receive_port"));
 			while (true) {
 				cSocket = sSocket.accept();

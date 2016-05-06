@@ -36,7 +36,6 @@ TOKEN :
     | 	<AT:		"@" >
     | 	<HASH:		"#" >
 	| 	<ARG:		(["A"-"Z", "a"-"z", "0"-"9", "%", "\\", "*", "$", "\u3000"-"\u30FF", "\u3400"-"\u9FFF", "\uF900"-"\uFAFF"])+ >
-
 }
 
 ASTRecipient Recipient():

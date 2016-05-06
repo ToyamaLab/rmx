@@ -75,7 +75,7 @@ public class MakeMessageSelectorImpl implements MakeMessageSelector {
 			for (int i = 0; i < keys.size(); i++) {
 				String key = (String) keys.get(i);
 				try {
-					if (domBundle.getString(key).equalsIgnoreCase("generate")) {
+					if (domBundle.getString(key).trim().equalsIgnoreCase("generate")) {
 						if(keys.size()>1)
 							key_answer_flg[i] = true;
 						AnswerFlag = true;
@@ -155,7 +155,7 @@ public class MakeMessageSelectorImpl implements MakeMessageSelector {
 			for (int i = 0; i < keys.size(); i++) {
 				String key = (String) keys.get(i);
 				try {
-					if (domBundle.getString(key).equalsIgnoreCase("generate")){
+					if (domBundle.getString(key).trim().equalsIgnoreCase("generate")){
 						if(keys.size()>1)
 							key_answer_flg[i] = true;
 						AnswerFlag = true;
@@ -229,7 +229,7 @@ public class MakeMessageSelectorImpl implements MakeMessageSelector {
 			key_answer_flg = new boolean[keys.size()];
 			for (int i = 0; i < keys.size(); i++) {
 				String key = (String) keys.get(i);
-				if (domBundle.getString(key).equalsIgnoreCase("generate"))
+				if (domBundle.getString(key).trim().equalsIgnoreCase("generate"))
 					key_answer_flg[i] = true;
 				else 
 					key_answer_flg[i] = false;

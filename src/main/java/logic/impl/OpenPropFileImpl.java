@@ -67,7 +67,7 @@ public final class OpenPropFileImpl implements OpenPropFile {
 			log.error("not exists domain-key at env.properties");
 			return null;
 		}		
-		String domainNames = envBundle.getString("domain");
+		String domainNames = envBundle.getString("domain").trim();
 		
 		// 2. domain-valueに記述されていない or ","から始まるときはnullを返す.
 		if (domainNames.length()==0 || domainNames.startsWith(",")) {
@@ -94,15 +94,15 @@ public final class OpenPropFileImpl implements OpenPropFile {
 			
 			// 6. domainNameを":"で分割
 			String[] propertiesAndAddress = domainName[i].split(":");
-			String formerDomainName = propertiesAndAddress[0];
-			String latterDomainName = propertiesAndAddress[1];
+			String formerDomainName = propertiesAndAddress[0].trim();
+			String latterDomainName = propertiesAndAddress[1].trim();
 			
 			// 7. formerDomainNameがkeyとして存在しないときは格納しない。
 			if (!envBundle.containsKey(formerDomainName)) {
 				log.warn("not exists "+formerDomainName+"-key at env.properties");
 				continue;
 			}
-			String properties = envBundle.getString(formerDomainName);
+			String properties = envBundle.getString(formerDomainName).trim();
 			
 			// 8. propertiesが","で始まるか終わるときnullを返す
 			if (properties.startsWith(",") || properties.endsWith(",")) {
@@ -116,9 +116,10 @@ public final class OpenPropFileImpl implements OpenPropFile {
 			// 10. propertyの数だけループ
 			for (int j = 0; j < property.length; j++){
 				// 11. formerDomainName_propertyがdomBundlesにあるかチェック
-				if (isExist(formerDomainName + "_" + property[j]))
+				String propName = property[j].trim();
+				if (isExist(formerDomainName + "_" + propName))
 					// 12. domBundlesに格納."fulldomain"->"propfile"
-					domBundles.put(property[j] + "." + latterDomainName, pfd.read(formerDomainName + "_" + property[j]));
+					domBundles.put(propName + "." + latterDomainName, pfd.read(formerDomainName + "_" + propName));
 			}
 		}
 		// 13. default.propertiesを追加
@@ -146,7 +147,7 @@ public final class OpenPropFileImpl implements OpenPropFile {
 		}
 		
 		// 3. env.propertiesのdomainから値を取得
-		String domainName = envBundle.getString("domain");
+		String domainName = envBundle.getString("domain").trim();
 		
 		// 4. domain-valueに記述されていない. or ","から始まるときはnullを返す.
 		if (domainName.length()==0 || domainName.startsWith(",")) {
@@ -190,7 +191,7 @@ public final class OpenPropFileImpl implements OpenPropFile {
 				continue;
 			}
 			
-			String property = envBundle.getString(firstDomainName);
+			String property = envBundle.getString(firstDomainName).trim();
 			// 12. propertiesが","で始まるか終わるときnullを返す
 			if(property.startsWith(",") || property.endsWith(",")) {
 				log.error("incorrect location ',' "+firstDomainName+"-key at env.properties");

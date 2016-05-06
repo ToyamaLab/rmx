@@ -33,7 +33,7 @@ public class LogicControllerImpl implements LogicController {
 
 	public LogicControllerImpl(Socket _cSocket) {
 		cSocket = _cSocket;
-		sending = Executors.newFixedThreadPool(Integer.parseInt(OpenPropFileImpl.getInstance().getEnvBundle().getString("max_send_socket")));
+		sending = Executors.newFixedThreadPool(Integer.parseInt(OpenPropFileImpl.getInstance().getEnvBundle().getString("max_send_socket").trim()));
 	}
 
 	@Override

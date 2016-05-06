@@ -655,10 +655,10 @@ public class ParseAddress implements Parsable {
 			paras.add(polyTypes.get(0));
 			initPolyTypes();
 			
-		} else if (domBundle.getString(rule + "Type").equalsIgnoreCase("integer")) {
+		} else if (domBundle.getString(rule + "Type").trim().equalsIgnoreCase("integer")) {
 			paras.add("integer");
 			
-		} else if (domBundle.getString(rule + "Type").equalsIgnoreCase("String")) {
+		} else if (domBundle.getString(rule + "Type").trim().equalsIgnoreCase("String")) {
 			paras.add("String");
 		
 		} else {
@@ -1199,7 +1199,7 @@ public class ParseAddress implements Parsable {
 		String nestedRule = new String();
 		try {
 			// nested rule : defined Source in transfer rule
-			nestedRuleSource = domBundle.getString(rule + "Source");
+			nestedRuleSource = domBundle.getString(rule + "Source").trim();
 			if (nestedRuleSource.indexOf("[") > 0)
 				nestedRule = nestedRuleSource.substring(0, nestedRuleSource.indexOf("["));
 			else
@@ -1291,7 +1291,7 @@ public class ParseAddress implements Parsable {
 								//type is nested rule's type
 								//paras : [String, obunai, String, matt], firstPara : yohei
 								//new paras : [String, obunai, String, matt, String, yohei]
-								String nestedParaType = domBundle.getString(rule+"Type");
+								String nestedParaType = domBundle.getString(rule+"Type").trim();
 								paras.add(nestedParaType);
 								paras.add(firstPara);
 							}
@@ -1319,7 +1319,7 @@ public class ParseAddress implements Parsable {
 							//type is nested rule's type
 							//paras : [String, obunai, String, matt], yohei
 							//new paras : [String, obunai, String, matt, String, yohei]
-							String nestedParaType = domBundle.getString(rule+"Type");
+							String nestedParaType = domBundle.getString(rule+"Type").trim();
 							paras.add(nestedParaType);
 							paras.add(tmpPassedPara);
 						}
