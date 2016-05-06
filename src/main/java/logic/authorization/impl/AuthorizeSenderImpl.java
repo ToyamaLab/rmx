@@ -39,7 +39,7 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 	
 	private boolean authorizationIsOn() {
 		try {
-			if (domconfBundle.getString("AUTHORIZATION").equalsIgnoreCase("ON"))
+			if (domconfBundle.getString("AUTHORIZATION").trim().equalsIgnoreCase("ON"))
 				return true;
 		} catch (Exception e) {
 			return false;
@@ -237,7 +237,7 @@ public class AuthorizeSenderImpl implements AuthorizeSender{
 				try {
 					rs = db.read(selectQuery, new ArrayList<String>().listIterator());
 					if (rs.next()) {
-						appliedRules.add(domconfBundle.getString("Apply["+index+"]"));
+						appliedRules.add(domconfBundle.getString("Apply["+index+"]").trim());
 						if (nullFlag)
 							nullFlag = false;
 					}

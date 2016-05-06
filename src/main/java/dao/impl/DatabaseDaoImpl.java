@@ -24,10 +24,10 @@ public class DatabaseDaoImpl implements DatabaseDao {
 	
 	//コンストラクタ
 	public DatabaseDaoImpl(ResourceBundle domconfBundle) {
-		this.driver = domconfBundle.getString("DB_DRIVER");
-		this.url = domconfBundle.getString("DB_URL");
-		this.user = domconfBundle.getString("DB_ID");
-		this.pass = domconfBundle.getString("DB_PASSWORD");
+		this.driver = domconfBundle.getString("DB_DRIVER").trim();
+		this.url = domconfBundle.getString("DB_URL").trim();
+		this.user = domconfBundle.getString("DB_ID").trim();
+		this.pass = domconfBundle.getString("DB_PASSWORD").trim();
 	}
 	
 	//

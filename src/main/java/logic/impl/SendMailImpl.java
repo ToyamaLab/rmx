@@ -116,14 +116,21 @@ public class SendMailImpl implements SendMail, Runnable {
 			out.write(("X-RMX-Version: 1.0.0" + CRLF).getBytes());
 			out.flush();
 			String subject = sMsg.getSubject();
-			boolean needsChanging = (subject != null) ? true : false;
+			boolean needsSubjectChange = (subject != null) ? true : false;
 			ListIterator<String> header = sMsg.getHeader().listIterator();
 			while (header.hasNext()) {
 				String next = header.next();
-				if (next.startsWith("Subject") && needsChanging) {
+				if (next.startsWith("Subject") && needsSubjectChange) {
 					out.write(("Subject: " + subject + CRLF).getBytes());
 					out.flush();
-				} else if (!header.hasNext() && needsChanging) {
+					needsSubjectChange = false;
+					while (header.hasNext()) {
+                        if (!header.next().startsWith(" =?")) {
+                                header.previous();
+                                break;
+                        }
+					}
+				} else if (!header.hasNext() && needsSubjectChange) {
 					out.write(("Subject: " + subject + CRLF).getBytes());
 					out.flush();
 					out.write((next + CRLF).getBytes());

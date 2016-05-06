@@ -109,17 +109,22 @@ public class IncomingImpl implements Incoming {
 				if (line.equals("DATA")) {
 					if (connState.getState().equals("DATA")) {
 						this.sendAck("354 go ahead");
+						StringBuilder subject = new StringBuilder();
 						// ヘッダーの読み込み
 						while (true) {
 							line = in.readLine();
 							oMsg.addHeader(line);
 							//subjectをヘッダーから取り出す
-							if(line.contains("Subject:"))
-								oMsg.setSubject(checkSubject(line));
+							if (line.contains("Subject:")) {
+								subject.append(checkSubject(line));
+							} else if (subject.length() > 0 && line.startsWith(" =?")) {
+								subject.append(CRLF + line);
 							// The message header ends with "\r\n", whose length
 							// becomes zero in Java strings.
-							if (line.length() == 0)
+							} else if (line.length() == 0) {
+								oMsg.setSubject(subject.toString());
 								break;
+							}
 						}
 
 						// 本文の読み込み
