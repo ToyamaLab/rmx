@@ -7,22 +7,24 @@ import java.util.List;
 
 import logic.MakeMessage;
 import logic.Parse;
+import logic.authorization.AuthorizeSender;
+import logic.authorization.MakeWarning;
+import logic.authorization.impl.AuthorizeSenderImpl;
+import logic.authorization.impl.MakeWarningImpl;
 import logic.parse.Parsable;
-import logic.authorization.*;
-import logic.authorization.impl.*;
 import dao.DatabaseDao;
 import dao.impl.DatabaseDaoImpl;
 import data.Message;
 
 /**
  * {@link MakeMessage}の実装
- * Transferのみのルールのとき、この具象クラスを用いる。
+ * Deliveryのみのルールのとき、この具象クラスを用いる。
  */
-public class MakeTransfer implements MakeMessage {
+public class MakeDelivery implements MakeMessage {
 
 	private Parsable parser;
 
-	public MakeTransfer(Parsable _parser) {
+	public MakeDelivery(Parsable _parser) {
 		parser = _parser;
 	}
 
@@ -34,7 +36,7 @@ public class MakeTransfer implements MakeMessage {
 		
 		ArrayList<Message> sMsgs = new ArrayList<Message>();
 		
-		// 送信許可
+	    // 送信許可
 		AuthorizeSender as = new AuthorizeSenderImpl(parse.getDomBundle(), parser, oMsg.getSender());
 		if (!as.isAuthorized()) {
 			MakeWarning mw = new MakeWarningImpl();
