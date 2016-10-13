@@ -49,8 +49,17 @@ public class ParseAddress implements Parsable {
 	/** query for getting final recipients */
 	public String finalQuery;
 	
-	public boolean normalFlg;
+	/** rule, paras, query, etc. corresponding to generate rule */
+	public ArrayList<String> generateRules;
+	public ArrayList<String> generateParas;
+	public ArrayList<Integer> generateParaNums;
+	public ArrayList<String> generateParaList;
+	public ArrayList<String> generateQueries;
 	
+	private ArrayList<String> ruleTypeList;
+	
+	public boolean deliveryFlg;
+	public boolean generateFlg;
 	public boolean functionFlg;
 	
 	/** plugin's function name e.g.) event */
@@ -65,13 +74,11 @@ public class ParseAddress implements Parsable {
 	/** temporal variable */
 	private String rule;
 	private ArrayList<String> tmpParas;
+	private boolean isGenerate;
 	
 	/** temporal variable for polymorphic */
 	private boolean polymorFlg;
 	private int polymorChildNum;
-	private ArrayList<String> polyTypes;
-	private int polyTypesPointer;
-	private String polyLastType;
 	
 	public ParseAddress() {
 		recipient = new String();
@@ -85,8 +92,14 @@ public class ParseAddress implements Parsable {
 		queries = new ArrayList<String>();
 		minimumQueries = new ArrayList<String>();
 		finalQuery = new String();
-		normalFlg = false;
-		
+		generateRules = new ArrayList<String>();
+		generateParas = new ArrayList<String>();
+		generateParaNums = new ArrayList<Integer>();
+		generateParaList = new ArrayList<String>();
+		generateQueries = new ArrayList<String>();
+		ruleTypeList = new ArrayList<String>();
+		deliveryFlg = false;
+		generateFlg = false;
 		functionFlg = false;
 		function = new String();
 		command = new String();
@@ -94,10 +107,10 @@ public class ParseAddress implements Parsable {
 		
 		rule = new String();
 		tmpParas = new ArrayList<String>();
+		isGenerate = false;
 		
 		polymorFlg = false;
 		polymorChildNum = 0;
-		initPolyTypes();
 	}
 
 	public void parseStart(String _recipient, ResourceBundle _domBundle, String _domName) {
@@ -119,6 +132,31 @@ public class ParseAddress implements Parsable {
 			e.printStackTrace();
 		}
 		
+		if (visitor.generateFlg) {
+			generateRules = visitor.generateRules;
+			generateParas = visitor.generateParas;
+			generateParaNums = visitor.generateParaNums;
+			generateParaList = visitor.generateParaList;
+			generateQueries = visitor.generateQueries;
+			if (visitor.deliveryFlg && !visitor.functionFlg) {
+				String newRecipient = reformRecipient(recipient, visitor);
+				visitor = new ParseAddress();
+				visitor.domBundle = _domBundle;
+				visitor.domName = _domName;
+				visitor.generateFlg = true;
+				try {
+					Node start = selectStartNode(newRecipient);
+					System.out.println(start.jjtAccept(visitor, null));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				} catch (TokenMgrError e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		visitor.finalQuery = simpleReplace(visitor.finalQuery);
 		finalQuery = visitor.finalQuery;
 		domain = visitor.domain;
@@ -130,19 +168,26 @@ public class ParseAddress implements Parsable {
 		paraList = visitor.paraList;
 		paras = visitor.paras;
 		paraNums = visitor.paraNums;
-		normalFlg = visitor.normalFlg;
+		deliveryFlg = visitor.deliveryFlg;
+		generateFlg = visitor.generateFlg;
 		functionFlg = visitor.functionFlg;
 		function = visitor.function;
 		command = visitor.command;
 		commandArgs = visitor.commandArgs;
 		
-		remakeParas();
+		if (deliveryFlg) {
+			paras = remakeParas(paras, queries, minimumQueries);
+			for (int i = 0; i < paras.size(); i++)
+				System.out.println("para : " + paras.get(i));
+		}
+		if (generateFlg) {
+			generateParas = remakeParas(generateParas, generateQueries, generateQueries);
+			for (int i = 0; i < generateParas.size(); i++)
+				System.out.println("generatePara : " + generateParas.get(i));
+		}
 		
 		System.out.println("subDomain : " + subDomain);
 		System.out.println("domain : " + domain);
-
-		for (int i = 0; i < paras.size(); i++)
-			System.out.println("para : " + paras.get(i));
 		
 		System.out.println("final query : " + finalQuery);
 		System.out.println("==== parser end ====");
@@ -289,7 +334,7 @@ public class ParseAddress implements Parsable {
 				else
 					sb.append("-" + tmp);
 			}
-			String tmpPara = new String();
+			String tmpPara = new String(sb);
 			
 			commandExp = commandExp + "{" + tmpPara + "}";
 		}
@@ -334,7 +379,6 @@ public class ParseAddress implements Parsable {
 			System.out.println("child [ " + i + " ] type : " + node.jjtGetChild(i).toString());
 		}
 
-		normalFlg = true;
 		finalQuery = node.jjtGetChild(0).jjtAccept(this, null).toString();
 		String tmpDomain = node.jjtGetChild(1).jjtAccept(this, null).toString();
 
@@ -391,7 +435,7 @@ public class ParseAddress implements Parsable {
 		operators.add("-");
 		String right = node.jjtGetChild(1).jjtAccept(this, null).toString();
 		String query = " ( " + left + " ) " + " except " + " ( " + right + " ) ";
-
+		
 		System.out.println("query : " + query);
 		System.out.println("END OF : " + node.toString());
 
@@ -413,7 +457,7 @@ public class ParseAddress implements Parsable {
 		operators.add("+");
 		String right = node.jjtGetChild(1).jjtAccept(this, null).toString();
 		String query = " ( " + left + " ) " + " union " + " ( " + right + " ) ";
-
+		
 		System.out.println("query : " + query);
 		System.out.println("END OF : " + node.toString());
 
@@ -435,7 +479,7 @@ public class ParseAddress implements Parsable {
 		operators.add(".");
 		String right = node.jjtGetChild(1).jjtAccept(this, null).toString();
 		String query = " ( " + left + " ) " + " intersect " + " ( " + right + " ) ";
-
+		
 		System.out.println("query : " + query);
 		System.out.println("END OF : " + node.toString());
 
@@ -453,14 +497,25 @@ public class ParseAddress implements Parsable {
 		}
 
 		rule = node.jjtGetChild(0).jjtAccept(this, null).toString();
+		try {
+			if (domBundle.getString(rule).equalsIgnoreCase("generate")) {
+				ruleTypeList.add("generate");
+				generateFlg = true;
+				isGenerate = true;
+			} else {
+				ruleTypeList.add("delivery");
+				deliveryFlg = true;
+			}
+		} catch (Exception e) {
+			ruleTypeList.add("delivery");
+			deliveryFlg = true;
+		}
+		
 		String query = new String();
 		
 		if (childNum == 1) {
 			// user defined no parameters
 			// i.e. rule{}@test.krmx.jp
-			paras.add("no parameter");
-			paras.add("*");
-			paraList.add("*");
 			tmpParas.clear();
 			
 			String queryKey = rule + "[" + 0 + "]";  
@@ -473,25 +528,45 @@ public class ParseAddress implements Parsable {
 				count++;
 			}
 			System.out.println("count : " + count);
-
-			paraNums.add(count);
-			minimumQueries.add(query);
+			
+			if (!isGenerate) {
+				paras.add("*");
+				paraList.add("*");
+				paraNums.add(count);
+				minimumQueries.add(query);
+			} else {
+				generateParas.add("*");
+				generateParaList.add("*");
+				generateParaNums.add(count);
+			}
 
 		} else {    		
 			query = node.jjtGetChild(1).jjtAccept(this, null).toString();
 
-			if((node.jjtGetChild(1).toString().equalsIgnoreCase("value") || node.jjtGetChild(1).toString().equalsIgnoreCase("PolymorPara")) && tmpParas.size() > 0){
-				paraList.add(tmpParas.get(0));
+			if ((node.jjtGetChild(1).toString().equalsIgnoreCase("value") || node.jjtGetChild(1).toString().equalsIgnoreCase("PolymorPara")) && tmpParas.size() > 0){
+				if (!isGenerate)
+					paraList.add(tmpParas.get(0));
+				else
+					generateParaList.add(tmpParas.get(0));
+				
 				tmpParas.clear();
 			}
 		}
 		
-		rules.add(rule);
-		queries.add(query);
 		System.out.println("rule : " + rule);
 		System.out.println("ExpQuery : " + query);
-
-		checkNest();
+		
+		if (!isGenerate) {
+			rules.add(rule);
+			queries.add(query);
+			
+			checkNest();
+		} else {
+			generateRules.add(rule);
+			generateQueries.add(query);
+			generateParaNums.add(-1);
+			isGenerate = false;
+		}
 
 		System.out.println("END OF : " + node.toString());
 		return query;
@@ -542,7 +617,10 @@ public class ParseAddress implements Parsable {
 				sb.append("+" + tmpPara[k]);
 		}
 		String tmpParaList = new String(sb);
-		paraList.add(tmpParaList);
+		if (!isGenerate)
+			paraList.add(tmpParaList);
+		else
+			generateParaList.add(tmpParaList);
 
 		System.out.println("ParaListQuery : " + query);
 		System.out.println("END OF : " + node.toString());
@@ -558,9 +636,6 @@ public class ParseAddress implements Parsable {
 		System.out.println("polymorChildNum : " + polymorChildNum);
 
 		// zonop add. if Type includes integer and String same line.
-		if (domBundle.getString(rule + "Type").indexOf(",") > 0) {
-			makePolyTypes();
-		}
 		polymorFlg = true;
 
 		for (int i = 0; i < polymorChildNum; i++) {
@@ -571,7 +646,8 @@ public class ParseAddress implements Parsable {
 		
 		String queryKey = rule + "[" + polymorChildNum + "]";
 		String query = "(" + domBundle.getString(queryKey) + ")";
-		minimumQueries.add(query);
+		if (!isGenerate)
+			minimumQueries.add(query);
 		System.out.println("PolymorQuery : " + query);
 
 		String regex = "$";
@@ -580,7 +656,10 @@ public class ParseAddress implements Parsable {
 		for (int j = tmpQuery.indexOf(regex); j > 0; j = tmpQuery.indexOf(regex, j + 1)) {
 			count++;
 		}
-		paraNums.add(count);
+		if (!isGenerate)
+			paraNums.add(count);
+		else
+			generateParaNums.add(count);
 		System.out.println("count : " + count);
 
 		StringBuilder sb = new StringBuilder();
@@ -595,7 +674,6 @@ public class ParseAddress implements Parsable {
 		tmpParas.add(tmpPolymorPara);
 		
 		polymorChildNum = 0;
-		initPolyTypes();
 
 		System.out.println("END OF : " + node.toString());
 		return query;
@@ -629,42 +707,24 @@ public class ParseAddress implements Parsable {
 				for (int i = tmpQuery.indexOf(regex); i > 0; i = tmpQuery.indexOf(regex, i + 1)) {
 					count++;
 				}
-				paraNums.add(count);
+				if (!isGenerate) {
+					paraNums.add(count);
+					minimumQueries.add(query);
+				} else {
+					generateParaNums.add(count);
+				}
 				System.out.println("count : " + count);
-				minimumQueries.add(query);
 				System.out.println("ValueQuery : " + query);
 			}
 		} catch(Exception e) {
 			query = "miss";
 			return query;
 		}
-
-		// zonop add. if Type includes integer and String same line.
-		int polyTypesNum = polyTypes.size();
-		if (polyTypesNum > 0 && polyTypesPointer < polyTypesNum) {
-			paras.add(polyTypes.get(polyTypesPointer));
-			polyTypesPointer++;
-			if (polyTypesPointer == polyTypesNum)
-				polyLastType = polyTypes.get(polyTypesPointer - 1);
-			
-		} else if (polyTypesNum > 0 && polyTypesPointer >= polyTypesNum) {
-			paras.add(polyLastType);
-			
-		} else if (domBundle.getString(rule + "Type").indexOf(",") > 0) {
-			makePolyTypes();
-			paras.add(polyTypes.get(0));
-			initPolyTypes();
-			
-		} else if (domBundle.getString(rule + "Type").trim().equalsIgnoreCase("integer")) {
-			paras.add("integer");
-			
-		} else if (domBundle.getString(rule + "Type").trim().equalsIgnoreCase("String")) {
-			paras.add("String");
+		if (!isGenerate)
+			paras.add(arg);
+		else
+			generateParas.add(arg);
 		
-		} else {
-			paras.add("unknown");
-		}
-		paras.add(arg);
 		tmpParas.add(arg);
 		
 		System.out.println("END OF : " + node.toString());
@@ -762,7 +822,6 @@ public class ParseAddress implements Parsable {
 			System.out.println("child [ " + i + " ] type : " + node.jjtGetChild(i).toString());
 		}
 		
-		normalFlg = true;
 		String tmpDomain = node.jjtGetChild(1).jjtAccept(this, null).toString();
 		finalQuery = node.jjtGetChild(0).jjtAccept(this, null).toString();
 		
@@ -825,17 +884,41 @@ public class ParseAddress implements Parsable {
 		for (int j = 0; j < childNum; j++) {
 			rule = rules.get(j);
 			System.out.println("rule : " + rule);
-			String tmpQuery = node.jjtGetChild(j).jjtAccept(this, null).toString();
-			queries.add(tmpQuery);
-			paraNums.add(-1);
-			if (j != childNum -1)
-				operators.add(".");
+			try {
+				if (domBundle.getString(rule).equalsIgnoreCase("generate")) {
+					ruleTypeList.add("generate");
+					generateFlg = true;
+					isGenerate = true;
+				} else {
+					ruleTypeList.add("delivery");
+					deliveryFlg = true;
+					isGenerate = false;
+				}
+			} catch(Exception e) {
+				ruleTypeList.add("delivery");
+				deliveryFlg = true;
+				isGenerate = false;
+			}
 			
-			if (j == 0)
-				query = tmpQuery;
-			else
-				query = "( " + query + " )" + " intersect " + "( " + tmpQuery + " )";
-			paraList.add(tmpParas.get(0));
+			String tmpQuery = node.jjtGetChild(j).jjtAccept(this, null).toString();
+			if (!isGenerate) {
+				queries.add(tmpQuery);
+				paraNums.add(-1);
+				if (j != childNum -1)
+					operators.add(".");
+				
+				if (j == 0)
+					query = tmpQuery;
+				else
+					query = "( " + query + " )" + " intersect " + "( " + tmpQuery + " )";
+				paraList.add(tmpParas.get(0));
+				
+			} else {
+				generateQueries.add(tmpQuery);
+				generateParaNums.add(-1);
+				generateParaList.add(tmpParas.get(0));
+			}
+			
 			tmpParas.clear();
 		}
 		
@@ -894,8 +977,6 @@ public class ParseAddress implements Parsable {
 		System.out.println("polymorChildNum : " + polymorChildNum);
 
 		// zonop add. if Type includes integer and String same line.
-		if (domBundle.getString(rule + "Type").indexOf(",") > 0)
-			makePolyTypes();
 		polymorFlg = true;
 		
 		StringBuilder sb = new StringBuilder();
@@ -915,7 +996,8 @@ public class ParseAddress implements Parsable {
 		
 		String queryKey = rule + "[" + polymorChildNum + "]";
 		String query = "(" + domBundle.getString(queryKey) + ")";
-		minimumQueries.add(query);
+		if (!isGenerate)
+			minimumQueries.add(query);
 		System.out.println("PolymorQuery : " + query);
 		
 		String regex = "$";
@@ -924,11 +1006,13 @@ public class ParseAddress implements Parsable {
 		for (int j = tmpQuery.indexOf(regex); j > 0; j = tmpQuery.indexOf(regex, j + 1)) {
 			count++;
 		}
-		paraNums.add(count);
+		if (!isGenerate)
+			paraNums.add(count);
+		else
+			generateParaNums.add(count);
 		System.out.println("count : " + count);
 		
 		polymorChildNum = 0;
-		initPolyTypes();
 		
 		System.out.println("END OF : " + node.toString());
 		return query;
@@ -946,7 +1030,10 @@ public class ParseAddress implements Parsable {
 	
 	@Override
 	public String getFullDomain() {
-		return subDomain + "." + domain;
+		if (subDomain.isEmpty())
+			return domain;
+		else
+			return subDomain + "." + domain;
 	}
 	
 	@Override
@@ -1000,22 +1087,42 @@ public class ParseAddress implements Parsable {
 	}
 
 	@Override
-	public ArrayList<String> getValues() {
-		/*
-		 * zonop add. make values from paras.
-		 * paras : String, zonop+obunai, integer, 4
-		 * values : zonop+obunai, 4
-		 */
-		ArrayList<String> values = new ArrayList<String>();
-		for (int i = 1; i < paras.size(); i += 2) {
-			values.add(paras.get(i));
-		}
-		return values;
+	public ArrayList<String> getGeneQueries() {
+		ArrayList<String> replacedQueries = new ArrayList<String>();
+		for (int i = 0; i < generateQueries.size(); i++)
+			replacedQueries.add(simpleReplace(generateQueries.get(i)));
+		
+		return replacedQueries;
 	}
 
 	@Override
-	public boolean getNormalFlg() {
-		return normalFlg;
+	public ArrayList<String> getGeneRules() {
+		return generateRules;
+	}
+
+	@Override
+	public ArrayList<String> getGeneParaList() {
+		return generateParaList;
+	}
+
+	@Override
+	public ArrayList<String> getGeneParas() {
+		return generateParas;
+	}
+
+	@Override
+	public ArrayList<Integer> getGeneParaNums() {
+		return generateParaNums;
+	}
+	
+	@Override
+	public boolean getDeliveryFlg() {
+		return deliveryFlg;
+	}
+	
+	@Override
+	public boolean getGenerateFlg() {
+		return generateFlg;
 	}
 	
 	@Override
@@ -1054,27 +1161,11 @@ public class ParseAddress implements Parsable {
 			if (paras.get(i).equals("$sender") || paras.get(i).equals("$recipient"))
 				return true;
 		}
-		return false;
-	}
-
-	private void makePolyTypes() {
-		String[] polyType = domBundle.getString(rule + "Type").split(",");
-		for (int i = 0; i < polyType.length; i++) {
-			String type = polyType[i].trim();
-			if (type.equalsIgnoreCase("integer"))
-				polyTypes.add("integer");
-			else if (type.equalsIgnoreCase("String"))
-				polyTypes.add("String");
-			else
-				polyTypes.add("unknown");
+		for (int i = 0; i < generateParas.size(); i++) {
+			if (generateParas.get(i).equals("$sender") || generateParas.get(i).equals("$recipient"))
+				return true;
 		}
-		System.out.println("polyTypesNum : " + polyTypes.size());
-	}
-	
-	private void initPolyTypes() {
-		polyTypes = new ArrayList<String>();
-		polyTypesPointer = 0;
-		polyLastType = new String();
+		return false;
 	}
 	
 	private String simpleReplace(String query) {
@@ -1099,7 +1190,7 @@ public class ParseAddress implements Parsable {
 		return query;
 	}
 	
-	private void remakeParas() {
+	private ArrayList<String> remakeParas(ArrayList<String> paras, ArrayList<String> queries, ArrayList<String> minimumQueries) {
 		System.out.println("THIS IS remakeParas1");
 		System.out.println("size : " + paras.size());
 
@@ -1140,8 +1231,7 @@ public class ParseAddress implements Parsable {
 					int index = currentQuery.indexOf("$");
 					if (index < 0) {
 						// there is no $
-						if (paraIndex < paras.size() - 1 && paras.get(paraIndex + 1).equalsIgnoreCase("*")) {
-							tmpParas_.add(paras.get(paraIndex++));
+						if (paraIndex < paras.size() - 1 && paras.get(paraIndex).equalsIgnoreCase("*")) {
 							tmpParas_.add(paras.get(paraIndex++));
 						}
 						break;
@@ -1150,26 +1240,21 @@ public class ParseAddress implements Parsable {
 						String placeHolder = String.valueOf(currentQuery.charAt(index + 1));
 						if (placeHolder.equals(Integer.toString(placeHolderNum))) {
 							tmpParas_.add(paras.get(paraIndex++));
-							tmpParas_.add(paras.get(paraIndex++));
 							currentQuery = currentQuery.replaceFirst("\\$", "?");
 							placeHolderNum++;
 						} else if (placeHolder.equals("s")) {
-							tmpParas_.add("String");
-							tmpParas_.add("$sender");
+							tmpParas_.add("'$sender'");
 							currentQuery = currentQuery.replaceFirst("\\$", "?");
 						} else if (placeHolder.equals("r")) {
-							tmpParas_.add("String");
-							tmpParas_.add("$recipient");
+							tmpParas_.add("'$recipient'");
 							currentQuery = currentQuery.replaceFirst("\\$", "?");
 						} else {
 							if (placeHolder.matches("^[1-9][0-9]*$")) {
 								int nowPlaceHolder = Integer.valueOf(placeHolder);
 								if (nowPlaceHolder <= placeHolderNum) {
-									tmpParas_.add(paras.get(paraIndex - (placeHolderNum - nowPlaceHolder) * 2));
-									tmpParas_.add(paras.get(paraIndex - (placeHolderNum - nowPlaceHolder) * 2 + 1));
+									tmpParas_.add(paras.get(paraIndex - (placeHolderNum - nowPlaceHolder)));
 								} else {
-									tmpParas_.add(paras.get(paraIndex + (nowPlaceHolder - placeHolderNum) * 2));
-									tmpParas_.add(paras.get(paraIndex + (nowPlaceHolder - placeHolderNum) * 2 + 1));									
+									tmpParas_.add(paras.get(paraIndex + (nowPlaceHolder - placeHolderNum)));
 								}
 								currentQuery = currentQuery.replaceFirst("\\$", "?");
 							} else {
@@ -1190,6 +1275,7 @@ public class ParseAddress implements Parsable {
 		}
 		
 		System.out.println();
+		return paras;
 	}
 	
 	private void checkNest() {
@@ -1204,23 +1290,21 @@ public class ParseAddress implements Parsable {
 				nestedRule = nestedRuleSource.substring(0, nestedRuleSource.indexOf("["));
 			else
 				nestedRule = nestedRuleSource;
-		} catch (Exception e) {
-			nestedRule = "no nest";
-		}
+		} catch (Exception e) {}
 		System.out.println("nestedRule : "+ nestedRule);
 
-		if (nestedRule.equalsIgnoreCase("no nest")) {
+		if (nestedRule.isEmpty()) {
 			System.out.println("it doesn't use nest");
 		} else {
+			generateFlg = true;
+			
 			String passedPara = new String();
+			int refNum = 0;
 			try {
 				String sourcePara = new String();
 				if (nestedRuleSource.indexOf("[") > 0) {
-					sourcePara = nestedRuleSource.substring(nestedRuleSource.indexOf("["));
-					sourcePara = sourcePara.replaceAll(" ", "");
-				}
+					sourcePara = nestedRuleSource.substring(nestedRuleSource.indexOf("[")).replaceAll(" ", "");
 
-				if (!sourcePara.isEmpty()) {
 					ArrayList<String> sourceParaList = new ArrayList<String>(); 
 					if (sourcePara.indexOf(",") < 0) {
 						sourceParaList.add(sourcePara);
@@ -1228,15 +1312,16 @@ public class ParseAddress implements Parsable {
 						String[] sourceParas = sourcePara.split(",");
 						for (int i = 0; i < sourceParas.length; i++) {
 							if (!sourceParas[i].isEmpty())
-								sourceParaList.add(sourceParas[i].trim());
+								sourceParaList.add(sourceParas[i]);
 						}
 					}
-
-					String regex = new String();
-					if (polymorChildNum == 0 && !paras.get(paras.size() - 2).equalsIgnoreCase("*"))
-						regex = new String("[" + 1 + ":");
+					
+					int paraNum = paraNums.get(paraNums.size() - 1);
+					if (paraNum == 0 && !paras.get(paras.size() - 1).equalsIgnoreCase("*"))
+						refNum = 1;
 					else
-						regex = new String("[" + polymorChildNum + ":");
+						refNum = paraNum;
+					String regex = new String("[" + refNum + ":");
 					System.out.println("index : " + regex);
 					
 					for (int j = 0; j < sourceParaList.size(); j++) {
@@ -1244,12 +1329,14 @@ public class ParseAddress implements Parsable {
 						System.out.println(tmpSourcePara);
 						
 						int beginIndex = tmpSourcePara.indexOf(regex);
-						if (beginIndex > 0) {
+						if (beginIndex >= 0) {
 							int endIndex = tmpSourcePara.indexOf("]");
 							passedPara = tmpSourcePara.substring(beginIndex + 3, endIndex);
 							break;
 						}
 					}
+				} else {
+					passedPara = "*";
 				}
 			} catch(Exception e) {}
 			System.out.println("passedPara : " + passedPara);
@@ -1259,13 +1346,20 @@ public class ParseAddress implements Parsable {
 			try {
 				int queryKeyIndex = 0;
 
-				if (!passedPara.isEmpty()) {
+				if (passedPara.isEmpty()) {
+					throw new Exception();
+					
+				} else if (passedPara.equalsIgnoreCase("*")) {
+					generateParas.add(passedPara);
+					generateParaList.add(passedPara);
+					
+				} else {
 					String tmpPassedPara = passedPara;
+					StringBuilder tmpParaList = new StringBuilder();
 					
 					if (tmpPassedPara.indexOf("-") > 0) {
 						//number of passed parameter is more than 1
 						String firstPara = new String();
-						String tmpParaList = new String();
 						for (; !tmpPassedPara.isEmpty(); queryKeyIndex++) {
 							//tmpPassedPara : $1-obunai-$2
 							//firstPara : $1
@@ -1280,28 +1374,26 @@ public class ParseAddress implements Parsable {
 							
 							if (firstPara.indexOf("$") >= 0) {
 								//passed parameter contains $
-								//paras : […, String, obunai, String, matt], firstPara : $2
-								//new paras : […, String, obunai, String, matt, String, matt]
-								
-								int paraIndex = paras.size() - (polymorChildNum - Character.getNumericValue(firstPara.charAt(firstPara.indexOf("$") + 1)) + 1) * 2;
-								paras.add(paras.get(paraIndex));
-								paras.add(paras.get(paraIndex + 1));
+								//paras : […, obunai, matt], firstPara : $2
+								//new paras : […, obunai, matt, matt]
+								int paraIndex = paras.size() - (refNum - Character.getNumericValue(firstPara.charAt(firstPara.indexOf("$") + 1)) + 1);
+								generateParas.add(paras.get(paraIndex));
+								if (tmpParaList.length() == 0)
+									tmpParaList.append(paras.get(paraIndex));
+								else
+									tmpParaList.append("-" + paras.get(paraIndex));
 							} else {
 								//passed parameter is constant
 								//type is nested rule's type
-								//paras : [String, obunai, String, matt], firstPara : yohei
-								//new paras : [String, obunai, String, matt, String, yohei]
-								String nestedParaType = domBundle.getString(rule+"Type").trim();
-								paras.add(nestedParaType);
-								paras.add(firstPara);
+								//paras : [obunai, matt], firstPara : yohei
+								//new paras : [obunai, matt, yohei]
+								generateParas.add(firstPara);
+								if (tmpParaList.length() == 0)
+									tmpParaList.append(firstPara);
+								else
+									tmpParaList.append("-" + firstPara);
 							}
-							
-							if (tmpParaList.isEmpty())
-								tmpParaList = paras.get(paras.size() - 1);
-							else
-								tmpParaList = tmpParaList.concat("-" + paras.get(paras.size() - 1));
 						}
-						paraList.add(tmpParaList);
 						
 					} else {
 						//number of passed parameter is 1
@@ -1311,20 +1403,26 @@ public class ParseAddress implements Parsable {
 							//passed parameter contains $
 							//paras : […, String, obunai, String, matt], tmpPassedPara : $2
 							//new paras : […, String, obunai, String, matt, String, matt]
-							int paraIndex = paras.size() - (polymorChildNum - Character.getNumericValue(tmpPassedPara.charAt(tmpPassedPara.indexOf("$") + 1)) + 1) * 2;
-							paras.add(paras.get(paraIndex));
-							paras.add(paras.get(paraIndex + 1));
+							int paraIndex = paras.size() - (refNum - Character.getNumericValue(tmpPassedPara.charAt(tmpPassedPara.indexOf("$") + 1)) + 1);
+							generateParas.add(paras.get(paraIndex));
+							if (tmpParaList.length() == 0)
+								tmpParaList.append(paras.get(paraIndex));
+							else
+								tmpParaList.append("-" + paras.get(paraIndex));
 						} else {
 							//if passed parameter is constant
 							//type is nested rule's type
 							//paras : [String, obunai, String, matt], yohei
 							//new paras : [String, obunai, String, matt, String, yohei]
-							String nestedParaType = domBundle.getString(rule+"Type").trim();
-							paras.add(nestedParaType);
-							paras.add(tmpPassedPara);
+							generateParas.add(tmpPassedPara);
+							if (tmpParaList.length() == 0)
+								tmpParaList.append(tmpPassedPara);
+							else
+								tmpParaList.append("-" + tmpPassedPara);
 						}
-						paraList.add(paras.get(paras.size() - 1));
 					}
+					
+					generateParaList.add(tmpParaList.toString());
 				}
 
 				String nestedQueryKey = nestedRule + "[" + queryKeyIndex + "]";
@@ -1338,12 +1436,12 @@ public class ParseAddress implements Parsable {
 					count++;
 				}
 				System.out.println("count : " + count);
-				paraNums.add(-1);
-				paraNums.add(count);
+				generateParaNums.add(count);
+				generateParaNums.add(-1);
+
 				
-				minimumQueries.add(nestedQuery);
-				queries.add(nestedQuery);
-				rules.add(nestedRule);
+				generateQueries.add(nestedQuery);
+				generateRules.add(nestedRule);
 
 			} catch(Exception e) {
 				nestedQuery = "miss";
@@ -1361,6 +1459,42 @@ public class ParseAddress implements Parsable {
 			return parser.Recipient();
 		else
 			return parser.N_Recipient();
+	}
+	
+	private String reformRecipient(String recipient, ParseAddress visitor) {
+		ArrayList<String> rules = visitor.rules;
+		ArrayList<String> paraList = visitor.paraList;
+		ArrayList<String> operators = visitor.operators;
+		ArrayList<String> ruleTypeList = visitor.ruleTypeList; 
+
+		String newRecipient = new String();
+		if (recipient.contains("{") && recipient.contains("}")) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0, j = 0; i < ruleTypeList.size(); i++) {
+				if (ruleTypeList.get(i).equalsIgnoreCase("delivery")) {
+					if (i != 0 && sb.length() != 0)
+						sb.append(operators.get(i - 1));
+					sb.append(rules.get(j) + "{" + paraList.get(j++) + "}");
+				}
+			}
+			newRecipient = sb.toString() + "@" + visitor.getFullDomain();
+		} else {
+			StringBuilder sb1 = new StringBuilder();
+			StringBuilder sb2 = new StringBuilder();
+			for (int i = 0, j = 0; i < ruleTypeList.size(); i++) {
+				if (ruleTypeList.get(i).equalsIgnoreCase("delivery")) {
+					if (i != 0) {
+						sb1.append(".");
+						sb2.append(".");
+					}
+					sb1.append(paraList.get(j));
+					sb2.append(rules.get(j++));
+				}
+			}
+			newRecipient = sb1.toString() + "@" + sb2.toString() + "." + visitor.getFullDomain();
+		}
+		
+		return newRecipient;
 	}
 
 }

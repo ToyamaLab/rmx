@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
@@ -34,6 +35,9 @@ public class DatabaseDaoImpl implements DatabaseDao {
 	@Override
 	public ResultSet read(String query, ListIterator<String> params) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
+		ArrayList<String> paraList = new ArrayList<String>(); 
+		ArrayList<String> typeList = new ArrayList<String>();
+		
 		//ユーザ名とパスワードのチェック
 		if (user != null && pass != null) {
 			conn = DriverManager.getConnection(url, user, pass);
@@ -43,32 +47,43 @@ public class DatabaseDaoImpl implements DatabaseDao {
 						ResultSet.TYPE_SCROLL_SENSITIVE,
 						ResultSet.CONCUR_UPDATABLE
 						);
-			} else prepstmt = conn.prepareStatement(query);
-		} else System.out.println("DBに接続できません。");
-		
-		if(prepstmt != null) {
-			int num=1;
-			while (params.hasNext()) {
-				String testpara = params.next().toString();
-				if (testpara.toString().equalsIgnoreCase("integer")) {
-					int temp;
-					temp = Integer.parseInt((params.next().toString()));
-					prepstmt.setInt(num, temp);
-					num++;
-				} else {
-					String str = params.next().toString();
-					if (!str.equalsIgnoreCase("*")) {
-						prepstmt.setString(num, str);
-						num++;
+			} else {
+				int holderIndex = -1;
+				while (params.hasNext()) {
+					String para = params.next().toString();
+					if (para.equalsIgnoreCase("*"))
+						continue;
+					
+					holderIndex = query.indexOf("?", holderIndex + 1);
+					if (holderIndex == -1)
+						break;
+					
+					paraList.add(para);
+					if (String.valueOf(query.charAt(holderIndex - 1)).equals("'") && String.valueOf(query.charAt(holderIndex + 1)).equals("'")) {
+						query = query.replaceFirst("'\\?'", "?");
+						typeList.add("String");
+					} else {
+						typeList.add("int");
 					}
 				}
+				prepstmt = conn.prepareStatement(query);
+			}
+		} else System.out.println("DBに接続できません。");
+		
+		if (prepstmt != null) {
+			for (int i = 0; i < paraList.size(); i++) {
+				if (typeList.get(i).equalsIgnoreCase("String"))
+					prepstmt.setString(i + 1, paraList.get(i));
+				else
+					prepstmt.setInt(i + 1, Integer.parseInt(paraList.get(i)));
 			}
 			resultSet = prepstmt.executeQuery();
-		} else if (stmt!=null){
+		} else if (stmt != null) {
 			stmt.executeUpdate("SET enable_seqscan = false");
 			resultSet = stmt.executeQuery(query);
 		}
 		return resultSet;
+		
 	}
 	
 	@Override

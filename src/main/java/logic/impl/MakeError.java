@@ -49,6 +49,9 @@ public class MakeError implements MakeMessage {
 			case "nonerecipient":
 				sMsg = this.noneRecipientError(sMsg);
 				break;
+			case "semantic":
+				sMsg = this.semanticErrorMail(sMsg);
+				break;
 		}
 		
 		return sMsg;
@@ -81,5 +84,16 @@ public class MakeError implements MakeMessage {
 		noneRecipientErrorMsg.addBody(".");
 		
 		return noneRecipientErrorMsg;
+	}
+	
+	private Message semanticErrorMail(Message semanticErrorMsg) {
+		//シンタックスエラーメール作成
+		
+		semanticErrorMsg.setSubject("FROM:RMX MTA");
+		semanticErrorMsg.addBody("semantic errors can be recognized.");
+		semanticErrorMsg.addBody("Please check your mail address." );
+		semanticErrorMsg.addBody(".");
+		
+		return semanticErrorMsg;
 	}
 }

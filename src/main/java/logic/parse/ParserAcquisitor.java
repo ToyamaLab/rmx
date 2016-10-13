@@ -15,8 +15,13 @@ public interface ParserAcquisitor {
 	public ArrayList<String> getParaList();
 	public ArrayList<String> getParas();
 	public ArrayList<Integer> getParaNums();
-	public ArrayList<String> getValues();
-	public boolean getNormalFlg();
+	public ArrayList<String> getGeneQueries();
+	public ArrayList<String> getGeneRules();
+	public ArrayList<String> getGeneParaList();
+	public ArrayList<String> getGeneParas();
+	public ArrayList<Integer> getGeneParaNums();
+	public boolean getDeliveryFlg();
+	public boolean getGenerateFlg();
 	public boolean getFunctionFlg();
 	public String getFunction();
 	public String getCommand();
