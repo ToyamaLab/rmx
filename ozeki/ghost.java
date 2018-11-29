@@ -180,21 +180,24 @@ public class dbtest {
             ArrayList<TableInfo> tables = new ArrayList<TableInfo>();
             ArrayList<String> columnName = new ArrayList<String>();
             ArrayList<String> checkColumnName = new ArrayList<String>();
+
             for(int i = 0; i < rset.getMetaData().getColumnCount(); i++) {
+            	System.out.println("i = " + i + " " + rset.getMetaData().getColumnCount());
             		columnName.add(rset.getMetaData().getColumnName(i + 1));
-             	System.out.println(columnName.get(i));
-             	if(columnName.get(i).contains("prov_public_") && columnName.get(i).contains("_1_")) {
+             	System.out.println("AAA " + columnName.get(i));
+             	//if(columnName.get(i).contains("prov_public_") && columnName.get(i).contains("_1_")) {
+             	if(columnName.get(i).contains("prov_public_") && columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
+             		System.out.println("HIT");
              		String tableName = getTableName(columnName.get(i));
              		if(isExist(tables, tableName)) {
              			System.out.println("Exist");
-             		}
-             		else {
+             		}else {
              			System.out.println("Not Exist");
              			TableInfo table = new TableInfo(tableName);
              			DatabaseMetaData dbmd = conn.getMetaData();
              			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
              			//ResultSet rs2 = dbmd.getPrimaryKeys(null, conn.getSchema(), tableName);
-             			try {
+             			//try {
              				while (rs2.next()) {
              					/*String kname = rs2.getString("PK_NAME");
              					String cname = rs2.getString("COLUMN_NAME");
@@ -207,20 +210,22 @@ public class dbtest {
              					System.out.println(Arrays.toString(
              						new Object[] { cname, pseud, scope }
              					));
+             					System.out.println("BBB");
              					table.addCheckColumn(cname);
+             					System.out.println("ABC");
              				}
-             			} finally {
-             				rs2.close();
-             			}
+
+             			//} finally {
+             			//	rs2.close();
+             			//}
              			/*System.out.println("RS2 : " + rs2);
              			while(rs2.next()) {
-
              				System.out.println("ADD " + table.getTableName());
              				System.out.println(rs2.getString("COLUMN_NAME"));
              				tables.add(table);
              			}*/
              		}
-             		checkColumnName.add(columnName.get(i));
+             		//checkColumnName.add(columnName.get(i));
              	}
             }
             // 3. 結果の表示
@@ -230,7 +235,7 @@ public class dbtest {
             			if(i != 0) res += ", ";
             			res += rset.getString(columnName.get(i));
             		}
-            		System.out.println(res);
+            		System.out.println("RES" + res);
             }
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
@@ -249,7 +254,6 @@ public class dbtest {
                 	 inputQuery();
                 }
             }
-
         }
     }
 }
@@ -260,10 +264,13 @@ class TableInfo{
 
 	public TableInfo(String s) {
 		name = s;
+		checkColumns = new ArrayList<String>();
 	}
 
 	public void addCheckColumn(String s) {
-		checkColumns.add(s);
+		System.out.println("ADD Be");
+		this.checkColumns.add(s);
+		System.out.println("ADD Af");
 	}
 
 	public String getTableName() {
