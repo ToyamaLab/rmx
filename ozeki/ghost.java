@@ -197,7 +197,7 @@ public class dbtest {
              			DatabaseMetaData dbmd = conn.getMetaData();
              			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
              			//ResultSet rs2 = dbmd.getPrimaryKeys(null, conn.getSchema(), tableName);
-             			//try {
+             			try {
              				while (rs2.next()) {
              					/*String kname = rs2.getString("PK_NAME");
              					String cname = rs2.getString("COLUMN_NAME");
@@ -214,10 +214,10 @@ public class dbtest {
              					table.addCheckColumn(cname);
              					System.out.println("ABC");
              				}
-
-             			//} finally {
-             			//	rs2.close();
-             			//}
+             				checkColumnName.add(table.getCheckColumn());
+             			} finally {
+             				rs2.close();
+             			}
              			/*System.out.println("RS2 : " + rs2);
              			while(rs2.next()) {
              				System.out.println("ADD " + table.getTableName());
@@ -225,7 +225,7 @@ public class dbtest {
              				tables.add(table);
              			}*/
              		}
-             		//checkColumnName.add(columnName.get(i));
+
              	}
             }
             // 3. 結果の表示
@@ -236,6 +236,12 @@ public class dbtest {
             			res += rset.getString(columnName.get(i));
             		}
             		System.out.println("RES" + res);
+            		String res2 = new String();
+            		for(int i = 0; i < checkColumnName.size(); i++) {
+            			if(i != 0) res2 += ", ";
+            			res2 += rset.getString(checkColumnName.get(i));
+            		}
+            		System.out.println("RES" + res2);
             }
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
@@ -261,24 +267,27 @@ public class dbtest {
 class TableInfo{
 	private String name;
 	private ArrayList<String> checkColumns;
+	private String checkColumn;
 
 	public TableInfo(String s) {
 		name = s;
 		checkColumns = new ArrayList<String>();
+		checkColumn = new String();
 	}
 
 	public void addCheckColumn(String s) {
-		System.out.println("ADD Be");
-		this.checkColumns.add(s);
-		System.out.println("ADD Af");
+		//System.out.println("ADD Be");
+		//this.checkColumns.add(s);
+		checkColumn = s;
+		//System.out.println("ADD Af");
 	}
 
 	public String getTableName() {
 		return name;
 	}
 
-	public ArrayList<String> getCheckColumn() {
-		return checkColumns;
+	public String getCheckColumn() {
+		return checkColumn;
 	}
 }
 //select * from artist;
