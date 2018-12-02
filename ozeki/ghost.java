@@ -143,6 +143,14 @@ public class dbtest {
     		return name;
     }
 
+    public static String getColumnName(String s) {
+    		int last = s.lastIndexOf("_");
+    		int next = s.lastIndexOf("__");
+    		if(last - next < 1);
+    		String name = s.substring(12, last);
+    		return name;
+    }
+
     public static String getPColumn(String s) {
 
     		return s;
@@ -150,10 +158,19 @@ public class dbtest {
 
     public static boolean isExist(ArrayList<TableInfo> ar, String s) {
     		for(int i = 0; i < ar.size(); i++) {
-    			if(s.matches(ar.get(i).getTableName())) return true;
+    			if(s.equals(ar.get(i).getTableName())) return true;
     		}
     		return false;
     }
+
+    public static int getTableIndex(ArrayList<TableInfo> ar, String s) {
+    		for(int i = 0; i < ar.size(); i++) {
+			if(s.equals(ar.get(i).getTableName())) return i;
+		}
+		return -1;
+    }
+
+
 
     public static void connectpsql(String q) {
     		System.out.println(q);
@@ -185,48 +202,77 @@ public class dbtest {
             	System.out.println("i = " + i + " " + rset.getMetaData().getColumnCount());
             		columnName.add(rset.getMetaData().getColumnName(i + 1));
              	System.out.println("AAA " + columnName.get(i));
-             	//if(columnName.get(i).contains("prov_public_") && columnName.get(i).contains("_1_")) {
-             	if(columnName.get(i).contains("prov_public_") && columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
-             		System.out.println("HIT");
+
+             	if(columnName.get(i).contains("prov_public_")) {
              		String tableName = getTableName(columnName.get(i));
              		if(isExist(tables, tableName)) {
-             			System.out.println("Exist");
-             		}else {
-             			System.out.println("Not Exist");
+             			int tableIndex = getTableIndex(tables, tableName);
+             			if(tableIndex < 0) System.out.println("Not correct tableIndex");
+             			if(columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
+             				String cname = getColumnName(columnName.get(i));
+             				if(cname.equals(tables.get(tableIndex).getCheckColumn())) {
+             					tables.get(tableIndex).addCheckColumns(columnName.get(i));
+             				}
+             			}
+             		} else {
              			TableInfo table = new TableInfo(tableName);
              			DatabaseMetaData dbmd = conn.getMetaData();
              			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
-             			//ResultSet rs2 = dbmd.getPrimaryKeys(null, conn.getSchema(), tableName);
              			try {
              				while (rs2.next()) {
-             					/*String kname = rs2.getString("PK_NAME");
              					String cname = rs2.getString("COLUMN_NAME");
-             					short seq = rs2.getShort("KEY_SEQ");
-
-             					System.out.println("Check : " + cname + "\t" + seq + "\t" + kname);*/
-             					String cname = rs2.getString("COLUMN_NAME");
-             					short  pseud = rs2.getShort("PSEUDO_COLUMN");
-             					short  scope = rs2.getShort("SCOPE");
              					System.out.println(Arrays.toString(
-             						new Object[] { cname, pseud, scope }
+             						new Object[] {cname}
              					));
-             					System.out.println("BBB");
              					table.addCheckColumn(cname);
-             					System.out.println("ABC");
              				}
-             				checkColumnName.add(table.getCheckColumn());
+             				table.addCheckColumns(columnName.get(i));
              			} finally {
              				rs2.close();
              			}
-             			/*System.out.println("RS2 : " + rs2);
-             			while(rs2.next()) {
-             				System.out.println("ADD " + table.getTableName());
-             				System.out.println(rs2.getString("COLUMN_NAME"));
-             				tables.add(table);
-             			}*/
              		}
-
              	}
+//             	if(columnName.get(i).contains("prov_public_") && columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
+//             		System.out.println("HIT");
+//             		String tableName = getTableName(columnName.get(i));
+//             		if(isExist(tables, tableName)) {
+//             			System.out.println("Exist");
+//             		}else {
+//             			System.out.println("Not Exist");
+//             			TableInfo table = new TableInfo(tableName);
+//             			DatabaseMetaData dbmd = conn.getMetaData();
+//             			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
+//             			//ResultSet rs2 = dbmd.getPrimaryKeys(null, conn.getSchema(), tableName);
+//             			try {
+//             				while (rs2.next()) {
+//             					/*String kname = rs2.getString("PK_NAME");
+//             					String cname = rs2.getString("COLUMN_NAME");
+//             					short seq = rs2.getShort("KEY_SEQ");
+//
+//             					System.out.println("Check : " + cname + "\t" + seq + "\t" + kname);*/
+//             					String cname = rs2.getString("COLUMN_NAME");
+//             					short  pseud = rs2.getShort("PSEUDO_COLUMN");
+//             					short  scope = rs2.getShort("SCOPE");
+//             					System.out.println(Arrays.toString(
+//             						new Object[] { cname, pseud, scope }
+//             					));
+//             					System.out.println("BBB");
+//             					table.addCheckColumn(cname);
+//             					System.out.println("ABC");
+//             				}
+//             				table.addCheckColumns(columnName.get(i));
+//             			} finally {
+//             				rs2.close();
+//             			}
+//             			/*System.out.println("RS2 : " + rs2);
+//             			while(rs2.next()) {
+//             				System.out.println("ADD " + table.getTableName());
+//             				System.out.println(rs2.getString("COLUMN_NAME"));
+//             				tables.add(table);
+//             			}*/
+//             		}
+//
+//             	}
             }
             // 3. 結果の表示
             while (rset.next()) {
@@ -236,10 +282,13 @@ public class dbtest {
             			res += rset.getString(columnName.get(i));
             		}
             		System.out.println("RES" + res);
+
+
             		String res2 = new String();
             		for(int i = 0; i < checkColumnName.size(); i++) {
             			if(i != 0) res2 += ", ";
-            			res2 += rset.getString(checkColumnName.get(i));
+            			//res2 += rset.getString(checkColumnName.get(i));
+            			res2 += rset.getString("prov_public_*");
             		}
             		System.out.println("RES" + res2);
             }
@@ -268,18 +317,31 @@ class TableInfo{
 	private String name;
 	private ArrayList<String> checkColumns;
 	private String checkColumn;
+	boolean check;
 
 	public TableInfo(String s) {
 		name = s;
 		checkColumns = new ArrayList<String>();
 		checkColumn = new String();
+		check = false;
+	}
+
+	public boolean checkable() {
+		return check;
 	}
 
 	public void addCheckColumn(String s) {
 		//System.out.println("ADD Be");
-		//this.checkColumns.add(s);
 		checkColumn = s;
+		if(this.name.contains("_")) this.name.replace("_", "__");
+		if(s.contains("_")) s.replace("_", "__");
+		String column = "prov_public_" + this.name + "_" + s;
+		checkColumns.add(column);
 		//System.out.println("ADD Af");
+	}
+
+	public void addCheckColumns(String s) {
+		checkColumns.add(s);
 	}
 
 	public String getTableName() {
@@ -289,11 +351,15 @@ class TableInfo{
 	public String getCheckColumn() {
 		return checkColumn;
 	}
+
+	public ArrayList<String> getCheckColumns(){
+		return checkColumns;
+	}
 }
 //select * from artist;
 //select provenance a from x;
 /*
 select provenance p.name
 from person p, sigmod s, y2000 y
-where s.name = y.name and p.name = s.name and p.sex = 'F';
+where s.name = y.name and p.name = s.name;
 */
