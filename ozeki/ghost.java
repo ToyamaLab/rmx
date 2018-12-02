@@ -1,4 +1,3 @@
-//package jp.co.bbreak.sokusen._3._4;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,91 +19,6 @@ public class dbtest {
 		inputQuery();
 		return;
 	}
-
-	public static void connectDoc() {
-		//String[] com = new String[] {"/usr/local/bin/docker", "hello-world"};
-		String[] com = new String[] {"/usr/local/bin/psql", "-U", "perm", "-d", "testdb", "-p", "5432", "-h", "localhost", "-c", "select provenance a from x;"};
-		//String[] com = new String[]{"/usr/local/bin/docker", "exec", "-ti", "myperm2", "/home/perm/install/bin/psql", "-U", "perm", "-d", "testdb", "-c", "\"select a from x;\""};
-//		try {
-//			// -c "select~"
-//			//String[] com = new String[] {"docker", "hello-world"};
-//			//String[] com = new String[]{"docker", "exec", "-ti", "myperm2", "/home/perm/install/bin/psql", "-U", "perm", "-d", "testdb", "-c", "\"select a from x;\""};
-//			//Process p = Runtime.getRuntime().exec(com);
-//			//Process p = Runtime.getRuntime().exec(new String[] {"psql", "-U", "perm", "-d", "testdb", "-p", "5432", "-h", "localhost", "-c", "\"select", "a", "from", "x;\""});
-//			Process p = Runtime.getRuntime().exec(new String[] {"pwd"});
-//			int ret = p.waitFor();
-//			//System.out.println(ret);
-////			String[] outs = new String[3];
-////			InputStream in = null;
-////			BufferedReader br = null;
-//
-//
-//
-//			InputStream is = p.getInputStream(); // プロセスの結果を変数に格納する
-//	        BufferedReader br = new BufferedReader(new InputStreamReader(is)); // テキスト読み込みを行えるようにする
-//
-//	        while (true) {
-//	            String line = br.readLine();
-//	            if (line == null) {
-//	                break; // 全ての行を読み切ったら抜ける
-//	            } else {
-//	                System.out.println("line : " + line); // 実行結果を表示
-//	            }
-//	        }
-//
-
-
-//			in = p.getInputStream();
-//			StringBuffer out = new StringBuffer();
-//			br = new BufferedReader(new InputStreamReader(in));
-//			outs[0] = out.toString();
-//			br.close();
-//			in.close();
-			//System.out.println("KK");
-//			System.out.println(outs[0].length());
-//			System.out.println(outs[0]);
-
-			//Process p = Runtime.getRuntime().exec("docker exec -ti myperm /home/perm/install/bin/psql ts -U ozeki");
-//		} catch (IOException | InterruptedException e) {
-//			// TODO 自動生成された catch ブロック
-//			e.printStackTrace();
-//		}
-	      ProcessBuilder pb = new ProcessBuilder(com);
-		try {
-            //コマンド実行
-            Process process = pb.start();
-
-            //コマンド実行の結果を待機
-            int ret = process.waitFor();
-
-            //標準出力
-            InputStream is = process.getInputStream();
-            printInputStream(is);
-
-            //標準エラー
-            InputStream es = process.getErrorStream();
-            printInputStream(es);
-
-        }
-        catch (Exception e) {
-            System.out.print(e);
-
-        }
-
-        //return true;
-    }
-	public static void printInputStream(InputStream is) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        try {
-            for (;;) {
-                String line = br.readLine();
-                if (line == null) break;
-                System.out.println(line);
-            }
-        } finally {
-            br.close();
-        }
-    }
 
 
     public static void inputQuery() {
@@ -232,47 +146,6 @@ public class dbtest {
              			}
              		}
              	}
-//             	if(columnName.get(i).contains("prov_public_") && columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
-//             		System.out.println("HIT");
-//             		String tableName = getTableName(columnName.get(i));
-//             		if(isExist(tables, tableName)) {
-//             			System.out.println("Exist");
-//             		}else {
-//             			System.out.println("Not Exist");
-//             			TableInfo table = new TableInfo(tableName);
-//             			DatabaseMetaData dbmd = conn.getMetaData();
-//             			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
-//             			//ResultSet rs2 = dbmd.getPrimaryKeys(null, conn.getSchema(), tableName);
-//             			try {
-//             				while (rs2.next()) {
-//             					/*String kname = rs2.getString("PK_NAME");
-//             					String cname = rs2.getString("COLUMN_NAME");
-//             					short seq = rs2.getShort("KEY_SEQ");
-//
-//             					System.out.println("Check : " + cname + "\t" + seq + "\t" + kname);*/
-//             					String cname = rs2.getString("COLUMN_NAME");
-//             					short  pseud = rs2.getShort("PSEUDO_COLUMN");
-//             					short  scope = rs2.getShort("SCOPE");
-//             					System.out.println(Arrays.toString(
-//             						new Object[] { cname, pseud, scope }
-//             					));
-//             					System.out.println("BBB");
-//             					table.addCheckColumn(cname);
-//             					System.out.println("ABC");
-//             				}
-//             				table.addCheckColumns(columnName.get(i));
-//             			} finally {
-//             				rs2.close();
-//             			}
-//             			/*System.out.println("RS2 : " + rs2);
-//             			while(rs2.next()) {
-//             				System.out.println("ADD " + table.getTableName());
-//             				System.out.println(rs2.getString("COLUMN_NAME"));
-//             				tables.add(table);
-//             			}*/
-//             		}
-//
-//             	}
             }
             // 3. 結果の表示
             while (rset.next()) {
