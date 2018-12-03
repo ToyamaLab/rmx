@@ -15,11 +15,9 @@ import java.util.Scanner;
 
 public class dbtest {
 	public static void main(String[] args) {
-		//connectDoc();
 		inputQuery();
 		return;
 	}
-
 
     public static void inputQuery() {
     	   boolean flag = false;
@@ -37,7 +35,6 @@ public class dbtest {
     			   //if(tmp.contains("select")) query += " PROVENANCE";
     			   if(tmp.contains(";")) {
     				   flag = true;
-    				   //scanner.close();
     				   break;
     			   }
     			   //System.out.println(query);
@@ -47,13 +44,12 @@ public class dbtest {
     	   //System.out.println("End");
     	   flag = false;
     	   connectpsql(query);
-
     }
 
     public static String getTableName(String s) {
     		System.out.println("column name " + s);
-		String name = s.substring(12, s.indexOf("_", 13));
-		System.out.println("table name " + name);
+				String name = s.substring(12, s.indexOf("_", 13));
+				System.out.println("table name " + name);
     		return name;
     }
 
@@ -66,7 +62,6 @@ public class dbtest {
     }
 
     public static String getPColumn(String s) {
-
     		return s;
     }
 
@@ -79,12 +74,10 @@ public class dbtest {
 
     public static int getTableIndex(ArrayList<TableInfo> ar, String s) {
     		for(int i = 0; i < ar.size(); i++) {
-			if(s.equals(ar.get(i).getTableName())) return i;
-		}
-		return -1;
+					if(s.equals(ar.get(i).getTableName())) return i;
+				}
+				return -1;
     }
-
-
 
     public static void connectpsql(String q) {
     		System.out.println(q);
