@@ -117,10 +117,12 @@ public class dbtest {
              				System.out.println("MATCH");
              				String cname = getColumnName(columnName.get(i));
              				System.out.println(cname);
-             				if(cname.equals(tables.get(tableIndex).getCheckColumn())) {
-             					System.out.println("MATCH2");
-             					tables.get(tableIndex).setTrue();
-             					tables.get(tableIndex).addCheckColumns(columnName.get(i));
+             				for(int j = 0; j < tables.get(tableIndex).getCheckColumn().size(); j++) {
+             					if(cname.equals(tables.get(tableIndex).getCheckColumn().get(j))) {
+                 					System.out.println("MATCH2");
+                 					tables.get(tableIndex).setTrue();
+                 					tables.get(tableIndex).addCheckColumns(columnName.get(i));
+                 				}
              				}
              			}
              		} else {
@@ -141,6 +143,13 @@ public class dbtest {
              				table.addCheckColumns(columnName.get(i));
              			} finally {
              				rs2.close();
+             			}
+             			if(table.getCheckColumn().isEmpty()) {
+             				rs2 = dbmd.getColumns(null, conn.getSchema(), tableName, "%");
+             				while(rs2.next()) {
+             					table.addCheckColumn(rs2.getString("COLUMN_NAME"));
+             				}
+             				System.out.println("Identifier column names --- " + table.getCheckColumn());
              			}
              		}
              	}
@@ -176,13 +185,22 @@ public class dbtest {
             		System.out.println("RES " + res);
 
 
-            		String res2 = new String();
-            		for(int i = 0; i < checkColumnName.size(); i++) {
-            			if(i != 0) res2 += ", ";
-            			res2 += rset.getString(checkColumnName.get(i));
+
+            		for(int i = 0; i < tables.size(); i++) {
+            			String res2 = new String();
+            			String res3 = new String();
+            			ArrayList<String> checks = tables.get(i).getCheckColumns();
+            			for(int j = 0; j < checks.size(); j++) {
+            				if(j != 0) res2 += ", ";
+            				if(j != 0) res3 += ", ";
+            				res2 += rset.getString(checks.get(j));
+            				res3 += checks.get(j);
+            			}
+            				System.out.println("RES2 (" + res3 + ")  (" + res2 + ")");
+
             			//res2 += rset.getString("prov_public_*");
             		}
-            		System.out.println("RES2 " + res2);
+
             }
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
@@ -208,13 +226,13 @@ public class dbtest {
 class TableInfo{
 	private String name;
 	private ArrayList<String> checkColumns;
-	private String checkColumn;
+	private ArrayList<String> checkColumn;
 	private boolean check;
 
 	public TableInfo(String s) {
 		name = s;
 		checkColumns = new ArrayList<String>();
-		checkColumn = new String();
+		checkColumn = new ArrayList<String>();
 		check = false;
 	}
 
@@ -235,9 +253,14 @@ class TableInfo{
 
 	public void addCheckColumn(String s) {
 		//System.out.println("ADD Be");
-		checkColumn = s;
-		if(this.name.contains("_")) this.name.replace("_", "__");
-		if(s.contains("_")) s.replace("_", "__");
+
+		//if(this.name.contains("_")) this.name.replace("_", "__");
+		if(s.contains("_")) {
+			System.out.println("contain _");
+			s = s.replace("_", "__");
+			System.out.println(s);
+		}
+		checkColumn.add(s);
 		String column = "prov_public_" + this.name + "_" + s;
 		//checkColumns.add(column);
 		//System.out.println("ADD Af");
@@ -251,7 +274,7 @@ class TableInfo{
 		return name;
 	}
 
-	public String getCheckColumn() {
+	public ArrayList<String> getCheckColumn() {
 		return checkColumn;
 	}
 
