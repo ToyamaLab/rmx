@@ -124,6 +124,11 @@ public class dbtest {
                  					tables.get(tableIndex).addCheckColumns(columnName.get(i));
                  				}
              				}
+
+             				int x = tables.get(tableIndex).checksIndex(cname);
+             				if(x != -1) {
+             					tables.get(tableIndex).addCheck(x, columnName.get(i));
+             				}
              			}
              		} else {
              			System.out.println(tableName + " is NOT Exist");
@@ -139,8 +144,11 @@ public class dbtest {
              						new Object[] {cname}
              					));
              					table.addCheckColumn(cname);
+             					table.addNewCheck(cname, columnName.get(i));
+
              				}
              				table.addCheckColumns(columnName.get(i));
+             				//table.addCheck(0, columnName.get(i));
              			} finally {
              				rs2.close();
              			}
@@ -148,6 +156,7 @@ public class dbtest {
              				rs2 = dbmd.getColumns(null, conn.getSchema(), tableName, "%");
              				while(rs2.next()) {
              					table.addCheckColumn(rs2.getString("COLUMN_NAME"));
+             					table.addNewCheck(rs2.getString("COLUMN_NAME"), columnName.get(i));
              				}
              				System.out.println("Identifier column names --- " + table.getCheckColumn());
              			}
@@ -167,6 +176,12 @@ public class dbtest {
                 		}
             		}else continue;
             }
+            System.out.println("----checks----");
+            for(int i = 0; i < tables.size(); i++) {
+        		if(tables.get(i).checkable()) {
+        			System.out.println(new Object[]{tables.get(i).getChecks()});
+        		}else continue;
+        }
 
             //-----For Debug---------------------------------------
             System.out.println("---- Check Column Name ----");
@@ -198,7 +213,24 @@ public class dbtest {
             			}
             				System.out.println("RES2 (" + res3 + ")  (" + res2 + ")");
 
-            			//res2 += rset.getString("prov_public_*");
+            		}
+
+            		for(int i = 0; i < tables.size(); i++) {
+
+            			ArrayList<ArrayList<String>> checks = tables.get(i).getChecks();
+            			for(int j = 0; j < checks.size(); j++) {
+            				String res2 = new String();
+                			String res3 = new String();
+            				for(int k = 1; k < checks.get(j).size(); k++) {
+            					if(k != 1) res2 += ", ";
+                				if(k != 1) res3 += ", ";
+                				res2 += rset.getString(checks.get(j).get(k));
+                				res3 += checks.get(j).get(k);
+            				}
+            				System.out.println("RES3 (" + res3 + ")  (" + res2 + ")");
+            			}
+
+
             		}
 
             }
@@ -227,6 +259,7 @@ class TableInfo{
 	private String name;
 	private ArrayList<String> checkColumns;
 	private ArrayList<String> checkColumn;
+	private ArrayList<ArrayList<String>> checks;
 	private boolean check;
 
 	public TableInfo(String s) {
@@ -234,6 +267,8 @@ class TableInfo{
 		checkColumns = new ArrayList<String>();
 		checkColumn = new ArrayList<String>();
 		check = false;
+
+		checks= new ArrayList<ArrayList<String>>();
 	}
 
 	public void seeAll() {
@@ -241,6 +276,9 @@ class TableInfo{
 		System.out.println("checkcolumn : " + checkColumn);
 		System.out.println("checkcolumns : " + checkColumns);
 		System.out.println("check : " + check);
+
+		System.out.println("checks : " + checks);
+
 	}
 
 	public boolean checkable() {
@@ -281,6 +319,39 @@ class TableInfo{
 	public ArrayList<String> getCheckColumns(){
 		return checkColumns;
 	}
+
+	public ArrayList<ArrayList<String>> getchecks(){
+		return checks;
+	}
+
+	public void addNewCheck(String s, String c) {
+		ArrayList<String> n = new ArrayList<String>();
+		if(s.contains("_")) {
+			System.out.println("contain _");
+			s = s.replace("_", "__");
+			System.out.println(s);
+		}
+		n.add(s);
+		n.add("prov_public_" + name + "_" + s);
+		checks.add(n);
+	}
+
+	public int checksIndex(String s) {
+		for(int i = 0; i < checks.size(); i++) {
+			if(s.equals(checks.get(i).get(0))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public void addCheck(int x, String s) {
+		checks.get(x).add(s);
+	}
+
+	public ArrayList<ArrayList<String>> getChecks(){
+		return checks;
+	}
 }
 //select * from artist;
 //select provenance a from x;
@@ -288,4 +359,26 @@ class TableInfo{
 select provenance p.name
 from person p, sigmod s, y2000 y
 where s.name = y.name and p.name = s.name;
+*/
+/*
+ name
+ prov_public_person_id  prov_public_person_1_id  prov_public_person_2_id
+ prov_public_conference_id  prov_public_conference_1_id
+ prov_public_attend_p__id prov_public_attend_1_p__id
+ prov_public_attend_c__id  prov_public_attend_1_c__id
+
+ prov_public_person_name
+ prov_public_person_sex
+
+ prov_public_person_1_name
+ prov_public_person_1_sex
+
+ prov_public_conference_name
+ prov_public_conference_year
+
+ prov_public_person_2_name
+ prov_public_person_2_sex
+
+ prov_public_conference_1_name
+ prov_public_conference_1_year
 */
