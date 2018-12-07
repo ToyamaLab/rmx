@@ -191,7 +191,10 @@ public class dbtest {
             //-----------------------------------------------------
             System.out.println("");
             // 3. 結果の表示
+            int correctCount = 0;
+            int differentCount = 0;
             while (rset.next()) {
+            		boolean dif = false;
             		String res = new String();
             		for(int i = 0; i < columnName.size(); i++) {
             			if(i != 0) res += ", ";
@@ -221,19 +224,33 @@ public class dbtest {
             			for(int j = 0; j < checks.size(); j++) {
             				String res2 = new String();
                 			String res3 = new String();
+                			ArrayList<String> checker = new ArrayList<String>();
             				for(int k = 1; k < checks.get(j).size(); k++) {
             					if(k != 1) res2 += ", ";
                 				if(k != 1) res3 += ", ";
                 				res2 += rset.getString(checks.get(j).get(k));
+                				checker.add(rset.getString(checks.get(j).get(k)));
+
                 				res3 += checks.get(j).get(k);
             				}
             				System.out.println("RES3 (" + res3 + ")  (" + res2 + ")");
+            				for(int k = 1; k < checker.size(); k++) {
+            					if(!checker.get(k).equals(checker.get(0))) {
+            						System.out.println("Column " + checks.get(j).get(0) + " has different provenance");
+            						dif = true;
+            					}
+            				}
             			}
 
 
             		}
+        			if(dif) differentCount++;
+        			else correctCount++;
+
 
             }
+            System.out.println("Correct column : " + correctCount);
+    		System.out.println("Different column : " + differentCount);
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
             e.printStackTrace();
