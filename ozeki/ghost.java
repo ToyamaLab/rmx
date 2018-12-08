@@ -33,29 +33,28 @@ public class dbtest {
     				   flag = true;
     				   break;
     			   }
-    			   //System.out.println(query);
     		   }
-    		   //System.out.println(query);
     	   }
-    	   //System.out.println("End");
     	   flag = false;
     	   connectpsql(query);
     }
 
     public static String getTableName(String s) {
-    		System.out.println("---getTableName ----- column name " + s);
+    		System.out.print("-- getTableName -- column name " + s);
 		String name = s.substring(12, s.indexOf("_", 13));
-		System.out.println("table name " + name + "------------");
+		System.out.println("　-->  table name " + name + "--");
     		return name;
     }
 
     public static String getColumnName(String s) {
+    		System.out.print("-- getColumnName -- column name " + s);
     		int last = s.lastIndexOf("_");
     		int next = s.lastIndexOf("__");
     		if(last - next <= 1) {
     			last = s.lastIndexOf("_", next - 1);
     		}
     		String name = s.substring(last + 1, s.length());
+    		System.out.println("　-->  column name " + name + "--");
     		return name;
     }
 
@@ -102,6 +101,9 @@ public class dbtest {
             ArrayList<TableInfo> tables = new ArrayList<TableInfo>();
             ArrayList<String> columnName = new ArrayList<String>();
             ArrayList<String> checkColumnName = new ArrayList<String>();
+            ArrayList<String> normalColumn = new ArrayList<String>();
+       		ArrayList<ArrayList<String>> corrects = new ArrayList<ArrayList<String>>();
+       		ArrayList<ArrayList<String>> differents = new ArrayList<ArrayList<String>>();
 
             for(int i = 0; i < rset.getMetaData().getColumnCount(); i++) {
             	System.out.println("i = " + i + " " + rset.getMetaData().getColumnCount());
@@ -161,6 +163,8 @@ public class dbtest {
              				System.out.println("Identifier column names --- " + table.getCheckColumn());
              			}
              		}
+             	}else {
+             		normalColumn.add(columnName.get(i));
              	}
             }
 
@@ -215,11 +219,10 @@ public class dbtest {
             				res3 += checks.get(j);
             			}
             				System.out.println("RES2 (" + res3 + ")  (" + res2 + ")");
-
             		}
 
-            		for(int i = 0; i < tables.size(); i++) {
 
+            		for(int i = 0; i < tables.size(); i++) {
             			ArrayList<ArrayList<String>> checks = tables.get(i).getChecks();
             			for(int j = 0; j < checks.size(); j++) {
             				String res2 = new String();
@@ -241,16 +244,45 @@ public class dbtest {
             					}
             				}
             			}
-
-
             		}
-        			if(dif) differentCount++;
-        			else correctCount++;
-
-
+        			if(dif) {
+        				ArrayList<String> ar = new ArrayList<String>();
+        				//differentCount++;
+        				for(int k = 0 ; k < normalColumn.size(); k++) {
+        					ar.add(rset.getString(normalColumn.get(k)));
+        				}
+        				differents.add(ar);
+        			}else{
+        				//correctCount++;
+        				ArrayList<String> ar = new ArrayList<String>();
+        				//differentCount++;
+        				for(int k = 0 ; k < normalColumn.size(); k++) {
+        					ar.add(rset.getString(normalColumn.get(k)));
+        				}
+        				corrects.add(ar);
+        			}
             }
-            System.out.println("Correct column : " + correctCount);
-    		System.out.println("Different column : " + differentCount);
+            System.out.println("Correct column : " + corrects.size());
+            for(int i = 0; i < corrects.size(); i++) {
+            		if(i != 0) System.out.print(", ");
+            		System.out.print("{");
+            		for(int j = 0 ; j < corrects.get(i).size(); j++) {
+            			if(j != 0) System.out.print(", ");
+            			System.out.print(corrects.get(i).get(j));
+            		}
+            		System.out.print("}");
+            }
+            System.out.println();
+            	System.out.println("Different column : " + differents.size());
+            for(int i = 0; i < differents.size(); i++) {
+            	if(i != 0) System.out.print(", ");
+        		System.out.print("{");
+            		for(int j = 0 ; j < differents.get(i).size(); j++) {
+            			if(j != 0) System.out.print(", ");
+            			System.out.print(differents.get(i).get(j));
+            		}
+            		System.out.print("}");
+            }
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
             e.printStackTrace();
