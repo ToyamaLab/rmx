@@ -1,4 +1,3 @@
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -106,34 +105,33 @@ public class dbtest {
        		ArrayList<ArrayList<String>> differents = new ArrayList<ArrayList<String>>();
 
             for(int i = 0; i < rset.getMetaData().getColumnCount(); i++) {
-            	System.out.println("i = " + i + " " + rset.getMetaData().getColumnCount());
+            	System.out.println("Column No : " + i + " / " + rset.getMetaData().getColumnCount());
             		columnName.add(rset.getMetaData().getColumnName(i + 1));
              	System.out.println("ColumnName --- " + columnName.get(i));
              	if(columnName.get(i).contains("prov_public_")) {
              		String tableName = getTableName(columnName.get(i));
              		if(isExist(tables, tableName)) {
-             			System.out.println(tableName + " is Exist");
+             			System.out.println("TABLE " + tableName + " is Exist");
              			int tableIndex = getTableIndex(tables, tableName);
              			if(tableIndex < 0) System.out.println("Not correct tableIndex");
              			if(columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
-             				System.out.println("MATCH");
+             				//System.out.println("MATCH");
              				String cname = getColumnName(columnName.get(i));
-             				System.out.println(cname);
+             				//System.out.println(cname);
              				for(int j = 0; j < tables.get(tableIndex).getCheckColumn().size(); j++) {
              					if(cname.equals(tables.get(tableIndex).getCheckColumn().get(j))) {
-                 					System.out.println("MATCH2");
+                 					System.out.println("MATCH with Check Column");
                  					tables.get(tableIndex).setTrue();
                  					tables.get(tableIndex).addCheckColumns(columnName.get(i));
                  				}
              				}
-
              				int x = tables.get(tableIndex).checksIndex(cname);
              				if(x != -1) {
              					tables.get(tableIndex).addCheck(x, columnName.get(i));
              				}
              			}
              		} else {
-             			System.out.println(tableName + " is NOT Exist");
+             			System.out.print("TABLE " + tableName + " is NOT Exist. -- ");
              			TableInfo table = new TableInfo(tableName);
              			tables.add(table);
              			DatabaseMetaData dbmd = conn.getMetaData();
@@ -141,13 +139,12 @@ public class dbtest {
              			try {
              				while (rs2.next()) {
              					String cname = rs2.getString("COLUMN_NAME");
-             					System.out.print("Indentifier column name ---");
+             					System.out.print("Indentifier column(s) --->");
              					System.out.println(Arrays.toString(
              						new Object[] {cname}
              					));
              					table.addCheckColumn(cname);
              					table.addNewCheck(cname, columnName.get(i));
-
              				}
              				table.addCheckColumns(columnName.get(i));
              				//table.addCheck(0, columnName.get(i));
@@ -206,8 +203,6 @@ public class dbtest {
             		}
             		System.out.println("RES " + res);
 
-
-
             		for(int i = 0; i < tables.size(); i++) {
             			String res2 = new String();
             			String res3 = new String();
@@ -233,7 +228,6 @@ public class dbtest {
                 				if(k != 1) res3 += ", ";
                 				res2 += rset.getString(checks.get(j).get(k));
                 				checker.add(rset.getString(checks.get(j).get(k)));
-
                 				res3 += checks.get(j).get(k);
             				}
             				System.out.println("RES3 (" + res3 + ")  (" + res2 + ")");
@@ -262,6 +256,20 @@ public class dbtest {
         				corrects.add(ar);
         			}
             }
+            if(differents.size() < 1) {
+            		for(int i = 0; i < normalColumn.size(); i++) {
+            			if(i != 0) System.out.print(", ");
+            			System.out.print(normalColumn.get(i));
+            		}
+            		System.out.println();
+            		for(int i = 0; i < corrects.size(); i++) {
+            			for(int j = 0; j < corrects.get(i).size(); j++) {
+            				if(j != 0) System.out.print(", ");
+                			System.out.print(corrects.get(i).get(j));
+            			}
+            			System.out.println();
+            		}
+            }else {
             System.out.println("Correct column : " + corrects.size());
             for(int i = 0; i < corrects.size(); i++) {
             		if(i != 0) System.out.print(", ");
@@ -282,6 +290,7 @@ public class dbtest {
             			System.out.print(differents.get(i).get(j));
             		}
             		System.out.print("}");
+            }
             }
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
@@ -316,7 +325,6 @@ class TableInfo{
 		checkColumns = new ArrayList<String>();
 		checkColumn = new ArrayList<String>();
 		check = false;
-
 		checks= new ArrayList<ArrayList<String>>();
 	}
 
@@ -325,9 +333,7 @@ class TableInfo{
 		System.out.println("checkcolumn : " + checkColumn);
 		System.out.println("checkcolumns : " + checkColumns);
 		System.out.println("check : " + check);
-
 		System.out.println("checks : " + checks);
-
 	}
 
 	public boolean checkable() {
@@ -408,6 +414,9 @@ class TableInfo{
 select provenance p.name
 from person p, sigmod s, y2000 y
 where s.name = y.name and p.name = s.name;
+select provenance s.name, p.sex
+from sigmod s, y2000 y, person p
+where s.name = y.name and s.name = p.name;
 */
 /*
  name
