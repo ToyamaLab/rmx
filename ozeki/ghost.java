@@ -103,12 +103,17 @@ public class dbtest {
             ArrayList<String> normalColumn = new ArrayList<String>();
        		ArrayList<ArrayList<String>> corrects = new ArrayList<ArrayList<String>>();
        		ArrayList<ArrayList<String>> differents = new ArrayList<ArrayList<String>>();
+       		ArrayList<Integer> ci = new ArrayList<Integer>();
+       		ArrayList<DifferentRow> di = new ArrayList<DifferentRow>();
+       		int normal = - 1;
+
 
             for(int i = 0; i < rset.getMetaData().getColumnCount(); i++) {
             	System.out.println("Column No : " + i + " / " + rset.getMetaData().getColumnCount());
             		columnName.add(rset.getMetaData().getColumnName(i + 1));
              	System.out.println("ColumnName --- " + columnName.get(i));
              	if(columnName.get(i).contains("prov_public_")) {
+             		if(normal == -1)normal = i;
              		String tableName = getTableName(columnName.get(i));
              		if(isExist(tables, tableName)) {
              			System.out.println("TABLE " + tableName + " is Exist");
@@ -194,6 +199,7 @@ public class dbtest {
             // 3. 結果の表示
             int correctCount = 0;
             int differentCount = 0;
+            int index = 0;
             while (rset.next()) {
             		boolean dif = false;
             		String res = new String();
@@ -252,9 +258,11 @@ public class dbtest {
         				//differentCount++;
         				for(int k = 0 ; k < normalColumn.size(); k++) {
         					ar.add(rset.getString(normalColumn.get(k)));
+
         				}
         				corrects.add(ar);
         			}
+        			index++;
             }
             if(differents.size() < 1) {
             		for(int i = 0; i < normalColumn.size(); i++) {
@@ -270,27 +278,41 @@ public class dbtest {
             			System.out.println();
             		}
             }else {
-            System.out.println("Correct column : " + corrects.size());
-            for(int i = 0; i < corrects.size(); i++) {
-            		if(i != 0) System.out.print(", ");
-            		System.out.print("{");
-            		for(int j = 0 ; j < corrects.get(i).size(); j++) {
-            			if(j != 0) System.out.print(", ");
-            			System.out.print(corrects.get(i).get(j));
+            		System.out.println("Correct column : " + corrects.size());
+            		for(int i = 0; i < corrects.size(); i++) {
+            			if(i != 0) System.out.print(", ");
+            			System.out.print("{");
+            			for(int j = 0 ; j < corrects.get(i).size(); j++) {
+            				if(j != 0) System.out.print(", ");
+            				System.out.print(corrects.get(i).get(j));
+            			}
+            			System.out.print("}");
             		}
-            		System.out.print("}");
-            }
-            System.out.println();
-            	System.out.println("Different column : " + differents.size());
-            for(int i = 0; i < differents.size(); i++) {
-            	if(i != 0) System.out.print(", ");
-        		System.out.print("{");
-            		for(int j = 0 ; j < differents.get(i).size(); j++) {
-            			if(j != 0) System.out.print(", ");
-            			System.out.print(differents.get(i).get(j));
+            		System.out.println();
+            		System.out.println("Different column : " + differents.size());
+            		for(int i = 0; i < differents.size(); i++) {
+            			if(i != 0) System.out.print(", ");
+            			System.out.print("{");
+            			for(int j = 0 ; j < differents.get(i).size(); j++) {
+            				if(j != 0) System.out.print(", ");
+            				System.out.print(differents.get(i).get(j));
+            			}
+            			System.out.print("}");
             		}
-            		System.out.print("}");
-            }
+            		System.out.println();
+            		System.out.println("Look Correct rows' provenances : Input 'c'");
+            		System.out.println("Look Different rows' all provenances : Input 'd'");
+            		System.out.println("Look Different rows' only different column provenances : Input 'd'");
+            		System.out.println("Look all rows' provenances : Input 'a'");
+            		System.out.println("Look provenances column name : Input 'p'");
+            		System.out.println("Finish this query : Input 'q'");
+            		Scanner s = new Scanner(System.in);
+            		while(s.hasNext()) {
+            			String input = s.next();
+            			if(input.equals("c")) {
+
+            			}
+            		}
             }
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
@@ -311,6 +333,23 @@ public class dbtest {
             }
         }
     }
+}
+class DifferentRow{
+	private int index;
+	private ArrayList<String> dColumns;
+
+	public DifferentRow(int i, ArrayList<String> d) {
+		index = i;
+		dColumns = d;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public ArrayList<String> getDColumns(){
+		return dColumns;
+	}
 }
 
 class TableInfo{
@@ -414,9 +453,12 @@ class TableInfo{
 select provenance p.name
 from person p, sigmod s, y2000 y
 where s.name = y.name and p.name = s.name;
+
 select provenance s.name, p.sex
 from sigmod s, y2000 y, person p
 where s.name = y.name and s.name = p.name;
+
+
 */
 /*
  name
