@@ -105,7 +105,9 @@ public class dbtest {
        		ArrayList<ArrayList<String>> differents = new ArrayList<ArrayList<String>>();
        		ArrayList<Integer> ci = new ArrayList<Integer>();
        		ArrayList<DifferentRow> di = new ArrayList<DifferentRow>();
+
        		int normal = - 1;
+
 
 
             for(int i = 0; i < rset.getMetaData().getColumnCount(); i++) {
@@ -169,6 +171,7 @@ public class dbtest {
              		normalColumn.add(columnName.get(i));
              	}
             }
+            //----ここまでカラムからテーブル情報（TableInfo）を作成・記入
 
         		System.out.println("Tables Size : " + tables.size());
             for(int i = 0; i < tables.size(); i++) {
@@ -182,12 +185,14 @@ public class dbtest {
                 		}
             		}else continue;
             }
+            //----ここまでどこを検査すればいいかを一列に整列　→　indexで管理してしまいたい
             System.out.println("----checks----");
             for(int i = 0; i < tables.size(); i++) {
-        		if(tables.get(i).checkable()) {
-        			System.out.println(new Object[]{tables.get(i).getChecks()});
-        		}else continue;
-        }
+            		if(tables.get(i).checkable()) {
+            			System.out.println(new Object[]{tables.get(i).getChecks()});
+            		}else continue;
+            }
+            //----ここまで確認用
 
             //-----For Debug---------------------------------------
             System.out.println("---- Check Column Name ----");
@@ -224,11 +229,15 @@ public class dbtest {
 
 
             		for(int i = 0; i < tables.size(); i++) {
+            			//Tableからどれが検査項目かを持ってくる
             			ArrayList<ArrayList<String>> checks = tables.get(i).getChecks();
+            			//検査項目ごとに（同じカラムごとに）
             			for(int j = 0; j < checks.size(); j++) {
             				String res2 = new String();
                 			String res3 = new String();
                 			ArrayList<String> checker = new ArrayList<String>();
+                			ArrayList<Integer> intChecker = new ArrayList<Integer>();
+                			//検査用に同じカラムごとに一旦配列を作る
             				for(int k = 1; k < checks.get(j).size(); k++) {
             					if(k != 1) res2 += ", ";
                 				if(k != 1) res3 += ", ";
@@ -336,9 +345,9 @@ public class dbtest {
 }
 class DifferentRow{
 	private int index;
-	private ArrayList<String> dColumns;
+	private ArrayList<ArrayList<Integer>> dColumns;
 
-	public DifferentRow(int i, ArrayList<String> d) {
+	public DifferentRow(int i, ArrayList<ArrayList<Integer>> d) {
 		index = i;
 		dColumns = d;
 	}
@@ -347,7 +356,7 @@ class DifferentRow{
 		return index;
 	}
 
-	public ArrayList<String> getDColumns(){
+	public ArrayList<ArrayList<Integer>> getDColumns(){
 		return dColumns;
 	}
 }
@@ -359,12 +368,16 @@ class TableInfo{
 	private ArrayList<ArrayList<String>> checks;
 	private boolean check;
 
+	private ArrayList<ArrayList<Integer>> intChecks;
+
 	public TableInfo(String s) {
 		name = s;
 		checkColumns = new ArrayList<String>();
 		checkColumn = new ArrayList<String>();
 		check = false;
 		checks= new ArrayList<ArrayList<String>>();
+
+		intChecks = new ArrayList<ArrayList<Integer>>();
 	}
 
 	public void seeAll() {
@@ -401,6 +414,7 @@ class TableInfo{
 	public void addCheckColumns(String s) {
 		checkColumns.add(s);
 	}
+
 
 	public String getTableName() {
 		return name;
