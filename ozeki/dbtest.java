@@ -5,29 +5,43 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class dbtest {
+	public static long startTime;
+	public static long finishTime;
 	public static void main(String[] args) {
-		inputQuery();
+		if(args.length < 2) {
+			System.out.println("Input Database pass and user name (and password)");
+			return;
+		}else if(args.length >= 2) {
+			String dbn = args[0];
+			String un = args[1];
+			if(args.length == 2) {
+				inputQuery(dbn, un, "");
+			}else if(args.length == 3) {
+				String ps = args[2];
+				inputQuery(dbn, un, ps);
+			}
+		}
 		return;
 	}
 
-    public static void inputQuery() {
+    public static void inputQuery(String dbn, String un, String ps) {
     	   boolean flag = false;
     	   String query = new String();
-    	   System.out.println("invoid");
     	   while(!flag) {
     		   Scanner scanner = new Scanner(System.in);
-    		   System.out.print("input : ");
+    		   System.out.print("Input Query: ");
 
     		   while(scanner.hasNext()) {
     			   String tmp = scanner.next();
+						 tmp = tmp.toLowerCase();
     			   if(tmp.equals("exit")) return;
+    			   else if(tmp.contains("provenance")) continue;
     			   query += " ";
     			   query += tmp;
-    			   //if(tmp.contains("select")) query += " PROVENANCE";
+    			   if(tmp.contains("select")) query += " PROVENANCE";
     			   if(tmp.contains(";")) {
     				   flag = true;
     				   break;
@@ -35,30 +49,70 @@ public class dbtest {
     		   }
     	   }
     	   flag = false;
-    	   connectpsql(query);
+    	   connectpsql(query, dbn, un, ps);
     }
 
     public static String getTableName(String s) {
-    		System.out.print("-- getTableName -- column name " + s);
+    		//System.out.print("-- getTableName -- column name " + s);
 		String name = s.substring(12, s.indexOf("_", 13));
-		System.out.println("　-->  table name " + name + "--");
+		//System.out.println("　-->  table name " + name + "--");
     		return name;
     }
 
     public static String getColumnName(String s) {
-    		System.out.print("-- getColumnName -- column name " + s);
+    		//System.out.print("-- getColumnName -- column name " + s);
     		int last = s.lastIndexOf("_");
     		int next = s.lastIndexOf("__");
     		if(last - next <= 1) {
     			last = s.lastIndexOf("_", next - 1);
     		}
     		String name = s.substring(last + 1, s.length());
-    		System.out.println("　-->  column name " + name + "--");
+    		//System.out.println("　-->  column name " + name + "--");
     		return name;
     }
 
-    public static String getPColumn(String s) {
-    		return s;
+    public static ArrayList<String> getPColumn(Connection conn, String tableName) {
+    		try {
+			DatabaseMetaData dbmd = conn.getMetaData();
+			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
+			ArrayList<String> checkColumn = new ArrayList<String>();
+			try {
+				while (rs2.next()) {
+					String cname = rs2.getString("COLUMN_NAME");
+					//System.out.print("Indentifier column(s) --->");
+					if(cname.contains("_")) {
+						//System.out.println("Contain _");
+						cname = cname.replace("_", "__");
+					}
+					//System.out.println(Arrays.toString(
+					//	new Object[] {cname}
+				//	));
+
+					checkColumn.add(cname);
+				}
+			} finally {
+				rs2.close();
+			}
+			if(checkColumn.isEmpty()) {
+				rs2 = dbmd.getColumns(null, conn.getSchema(), tableName, "%");
+				while(rs2.next()) {
+					String cname = rs2.getString("COLUMN_NAME");
+					//System.out.print("Indentifier column(s) --->");
+					if(cname.contains("_")) {
+						//System.out.println("Contain _");
+						cname = cname.replace("_", "__");
+					}
+				//	System.out.println(Arrays.toString(
+				//		new Object[] {cname}
+				//	));
+					checkColumn.add(cname);
+				}
+				//System.out.println("Identifier column names --- " + checkColumn);
+			}
+			return checkColumn;
+    		}catch(SQLException e) {
+    		}
+    		return null;
     }
 
     public static boolean isExist(ArrayList<TableInfo> ar, String s) {
@@ -75,8 +129,197 @@ public class dbtest {
 		return -1;
     }
 
-    public static void connectpsql(String q) {
+	public static ArrayList<ArrayList<Integer>> generateCheckIndexs(ArrayList<TableInfo> ts){
+		ArrayList<ArrayList<Integer>> cis = new ArrayList<ArrayList<Integer>>();
+		for(int i = 0; i < ts.size(); i++){
+			if(ts.get(i).checkable()) {
+				for(int j = 0; j < ts.get(i).getIntChecks().size(); j++) {
+					cis.add(ts.get(i).getIntChecks().get(j));
+				}
+			}
+		}
+		return cis;
+	}
+
+	public static void showAllColumn(ArrayList<String> columnName){
+		String res = new String();
+		for(int i = 0; i < columnName.size(); i++) {
+			if(i != 0) res += ", ";
+			res += columnName.get(i);
+		}
+		System.out.println(res);
+	}
+
+	public static void showAll(ResultSet rset, int columnNum) throws SQLException{
+		String res = new String();
+		for(int i = 1; i <= columnNum; i++) {
+			if(i != 1) res += ", ";
+			res += rset.getString(i);
+		}
+		System.out.println(res);
+	}
+
+	public static void showAllRow(ResultSet rset, int columnNum) throws SQLException{
+		rset.absolute(0);
+		while(rset.next()) {
+			showAll(rset, columnNum);
+		}
+	}
+
+	public static void showEachCheckColumn(ResultSet rset, ArrayList<ArrayList<Integer>> checkIndexs, ArrayList<String> columnName) throws SQLException{
+		for(int i = 0; i < checkIndexs.size(); i++) {
+			String res2 = new String();
+			String res3 = new String();
+			//ArrayList<String> checks = tables.get(i).getCheckColumns();
+			for(int j = 0; j < checkIndexs.get(i).size(); j++) {
+				if(j != 0) res2 += ", ";
+				if(j != 0) res3 += ", ";
+				res2 += rset.getString(checkIndexs.get(i).get(j) + 1);
+				res3 += columnName.get(checkIndexs.get(i).get(j));
+			}
+			//System.out.println("RES2 (" + res3 + ")  (" + res2 + ")");
+		}
+	}
+
+	public static DifferentRow checkEachCheckColumn(int index, ResultSet rset, ArrayList<ArrayList<Integer>> checkIndexs, ArrayList<String> columnName) throws SQLException{
+		ArrayList<Integer> difColumns = new ArrayList<Integer>();
+		for(int i = 0; i < checkIndexs.size(); i++) {
+			boolean dif = false;
+			String res2 = new String();
+			String res3 = new String();
+			String tmp = new String();
+			//ArrayList<String> checks = tables.get(i).getCheckColumns();
+			for(int j = 0; j < checkIndexs.get(i).size(); j++) {
+				String tmp2 = rset.getString(checkIndexs.get(i).get(j) + 1);
+				if(j == 0) tmp = tmp2;
+				else{
+					res2 += ", ";
+					res3 += ", ";
+					if(!tmp2.equals(tmp))	dif = true;
+				}
+				res2 += tmp2;
+				res3 += columnName.get(checkIndexs.get(i).get(j));
+			}
+			//System.out.println("RES (" + res3 + ")  (" + res2 + ")");
+			if(dif){
+				difColumns.add(i);
+				//System.out.println("Having Different Provenance");
+			}
+		}
+		if(!difColumns.isEmpty()){
+			DifferentRow dr = new DifferentRow(index, difColumns);
+			return dr;
+		}else{
+			return null;
+		}
+	}
+
+	public static void showNormalColumnName(ArrayList<String> columnName, int normal){
+		String s = new String();
+		for(int i = 0; i < normal; i++){
+			if(i != 0) s += ", ";
+			s += columnName.get(i);
+		}
+		System.out.println(s);
+	}
+
+	public static void showAllNormalColumn(ResultSet rset, int normal) throws SQLException{
+		rset.absolute(0);
+		while(rset.next()){
+			String s = new String();
+			for(int i = 0; i < normal; i++){
+				if(i != 0) s += ", ";
+				s += rset.getString(i + 1);
+			}
+			System.out.println(s);
+		}
+	}
+
+	public static void showDifferent(ArrayList<DifferentRow> drs, ResultSet rset, int x) throws SQLException{
+		for(int i = 0; i < drs.size(); i++){
+			rset.absolute(drs.get(i).getIndex() + 1);
+			//System.out.println(drs.get(i).getIndex());
+			String s = new String();
+			for(int j = 0; j < x; j++){
+				if(j != 0) s += ", ";
+				s += rset.getString(j + 1);
+			}
+			System.out.println(s);
+		}
+	}
+
+	public static void showCorrect(ArrayList<Integer> ci, ResultSet rset, int x) throws SQLException{
+		for(int i = 0; i < ci.size(); i++){
+			rset.absolute(ci.get(i) + 1);
+			String s = new String();
+			for(int j = 0; j < x; j++){
+				if(j != 0) s += ", ";
+				s += rset.getString(j + 1);
+			}
+			System.out.println(s);
+		}
+	}
+
+	public static void showOnlyDifferentProvenance(ArrayList<DifferentRow> drs, ResultSet rset, ArrayList<ArrayList<Integer>> checkIndexs, ArrayList<String> columnName, int normal) throws SQLException{
+		for(int i = 0; i < drs.size(); i++){
+			rset.absolute(drs.get(i).getIndex() + 1);
+			showNormalColumnName(columnName, normal);
+			showAll(rset, normal);
+			for(int j = 0; j < drs.get(i).getCheckIndex().size(); j++){
+				String c = new String();
+				String s = new String();
+				ArrayList<Integer> tmp = checkIndexs.get(drs.get(i).getCheckIndex().get(j));
+				for(int k = 0; k < tmp.size(); k++){
+					if(k != 0){
+						c += ", ";
+						s += ", ";
+					}
+					c += columnName.get(tmp.get(k));
+					s += rset.getString(tmp.get(k) + 1);
+				}
+				System.out.println("(" + c + ") = (" + s + ")");
+			}
+		}
+	}
+
+	public static void askNextOption(){
+		System.out.println();
+		System.out.println("Look all rows' all columns : Input 'a'");//
+		System.out.println("Look all rows' normal columns : Input 'an'");//
+		System.out.println("Look Same provenance rows' normal columns : Input 'sn'");//
+		System.out.println("Look Same provenance rows' all columns : Input 's'");//
+		System.out.println("Look Different provenance rows' normal columns : Input 'dn'");//
+		System.out.println("Look Different provenance rows' all provenances : Input 'd'");//
+		System.out.println("Look Different provenance rows' only different column provenances : Input 'dp'");//
+		System.out.println("Look the number of the Same and the Different provenance row : Input 'n'");//
+		System.out.println("Look all column names : Input 'c'");//
+		System.out.println("Finish this query : Input 'q'");
+	}
+
+	public static String waitUserInput(){
+		Scanner s = new Scanner(System.in);
+		while(s.hasNext()) {
+			String tmp = s.next();
+			//System.out.println(tmp);
+//			if(s.hasNext()) {
+//				System.out.println("Unexpected input　");
+//				break;
+//			}
+			if(tmp.equals("a") || tmp.equals("an") || tmp.equals("sn") || tmp.equals("s") || tmp.equals("dn") || tmp.equals("d") || tmp.equals("dp") || tmp.equals("n") || tmp.equals("c") || tmp.equals("q")) {
+				//System.out.println("ok");
+				return tmp;
+			}
+			else {
+				System.out.println("Unexpected input");
+				break;
+			}
+		}
+		return null;
+	}
+
+    public static void connectpsql(String q, String dbn, String un, String ps) {
     		System.out.println(q);
+    		startTime = System.currentTimeMillis();
         // データベースへの接続情報を格納する変数
         Connection conn = null;
         // JDBCドライバの読み込み
@@ -89,242 +332,195 @@ public class dbtest {
         }
         try {
             // 1. データベースへの接続
-            conn = DriverManager.getConnection("jdbc:postgresql:testdb", "perm", "pass");
-            System.out.println("Connect");
+        		String dbName = "jdbc:postgresql:" + dbn;
+        		String userName = un;
+        		String pass = ps;
+            conn = DriverManager.getConnection(dbName, userName, pass);
+            //System.out.println("Connect");
+            //conn = DriverManager.getConnection("jdbc:postgresql://172.17.0.2:5432/testdb", "perm", "");
 
             // 2. SELECT文の発光と結果の取得
             // Statementオブジェクトを生成
-            Statement stmt = conn.createStatement();
+            Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             // SELECT文の発行と検索結果を格納する
             ResultSet rset = stmt.executeQuery(q);
             ArrayList<TableInfo> tables = new ArrayList<TableInfo>();
             ArrayList<String> columnName = new ArrayList<String>();
             ArrayList<String> checkColumnName = new ArrayList<String>();
-            ArrayList<String> normalColumn = new ArrayList<String>();
-       		ArrayList<ArrayList<String>> corrects = new ArrayList<ArrayList<String>>();
-       		ArrayList<ArrayList<String>> differents = new ArrayList<ArrayList<String>>();
+//            ArrayList<String> normalColumn = new ArrayList<String>();
+//       		ArrayList<ArrayList<String>> corrects = new ArrayList<ArrayList<String>>();
+//       		ArrayList<ArrayList<String>> differents = new ArrayList<ArrayList<String>>();
        		ArrayList<Integer> ci = new ArrayList<Integer>();
        		ArrayList<DifferentRow> di = new ArrayList<DifferentRow>();
+			ArrayList<ArrayList<Integer>> checkIndexs;
 
        		int normal = - 1;
 
-
-
+			//各結果カラムに対して
             for(int i = 0; i < rset.getMetaData().getColumnCount(); i++) {
-            	System.out.println("Column No : " + i + " / " + rset.getMetaData().getColumnCount());
+            		//System.out.println("Column No : " + i + " / " + rset.getMetaData().getColumnCount());
             		columnName.add(rset.getMetaData().getColumnName(i + 1));
-             	System.out.println("ColumnName --- " + columnName.get(i));
+             	//System.out.println("ColumnName --- " + columnName.get(i));
              	if(columnName.get(i).contains("prov_public_")) {
              		if(normal == -1)normal = i;
              		String tableName = getTableName(columnName.get(i));
              		if(isExist(tables, tableName)) {
-             			System.out.println("TABLE " + tableName + " is Exist");
+             			//System.out.println("TABLE " + tableName + " is Exist");
              			int tableIndex = getTableIndex(tables, tableName);
-             			if(tableIndex < 0) System.out.println("Not correct tableIndex");
-             			if(columnName.get(i).matches(".*[_]+[0-9]+[_]+.*")) {
-             				//System.out.println("MATCH");
-             				String cname = getColumnName(columnName.get(i));
-             				//System.out.println(cname);
-             				for(int j = 0; j < tables.get(tableIndex).getCheckColumn().size(); j++) {
-             					if(cname.equals(tables.get(tableIndex).getCheckColumn().get(j))) {
-                 					System.out.println("MATCH with Check Column");
-                 					tables.get(tableIndex).setTrue();
-                 					tables.get(tableIndex).addCheckColumns(columnName.get(i));
-                 				}
-             				}
-             				int x = tables.get(tableIndex).checksIndex(cname);
-             				if(x != -1) {
-             					tables.get(tableIndex).addCheck(x, columnName.get(i));
-             				}
+             			if(tableIndex < 0) //System.out.println("Not correct tableIndex");
+             				;
+						String cname = getColumnName(columnName.get(i));
+             			for(int j = 0; j < tables.get(tableIndex).getCheckColumn().size(); j++) {
+             				if(cname.equals(tables.get(tableIndex).getCheckColumn().get(j))) {
+                 				//System.out.println("MATCH with Check Column");
+								tables.get(tableIndex).addintChecks(j, i);
+                 				if(columnName.get(i).matches(".*[_]+[0-9]+[_]+.*"))tables.get(tableIndex).setTrue();
+                 			}
              			}
              		} else {
-             			System.out.print("TABLE " + tableName + " is NOT Exist. -- ");
+             			//System.out.print("TABLE " + tableName + " is NOT Exist. -- ");
              			TableInfo table = new TableInfo(tableName);
              			tables.add(table);
-             			DatabaseMetaData dbmd = conn.getMetaData();
-             			ResultSet rs2 = dbmd.getBestRowIdentifier(null, conn.getSchema(), tableName, 0, true);
-             			try {
-             				while (rs2.next()) {
-             					String cname = rs2.getString("COLUMN_NAME");
-             					System.out.print("Indentifier column(s) --->");
-             					System.out.println(Arrays.toString(
-             						new Object[] {cname}
-             					));
-             					table.addCheckColumn(cname);
-             					table.addNewCheck(cname, columnName.get(i));
-             				}
-             				table.addCheckColumns(columnName.get(i));
-             				//table.addCheck(0, columnName.get(i));
-             			} finally {
-             				rs2.close();
-             			}
-             			if(table.getCheckColumn().isEmpty()) {
-             				rs2 = dbmd.getColumns(null, conn.getSchema(), tableName, "%");
-             				while(rs2.next()) {
-             					table.addCheckColumn(rs2.getString("COLUMN_NAME"));
-             					table.addNewCheck(rs2.getString("COLUMN_NAME"), columnName.get(i));
-             				}
-             				System.out.println("Identifier column names --- " + table.getCheckColumn());
+             			table.registCheckColumn2(getPColumn(conn, tableName));
+             			String cname = getColumnName(columnName.get(i));
+             			for(int j = 0; j < table.getCheckColumn().size(); j++) {
+             				if(cname.equals(table.getCheckColumn().get(j))) {
+                 				//System.out.println("MATCH with Check Column");
+								table.addintChecks(j, i);
+                 			}
              			}
              		}
-             	}else {
-             		normalColumn.add(columnName.get(i));
              	}
             }
             //----ここまでカラムからテーブル情報（TableInfo）を作成・記入
 
-        		System.out.println("Tables Size : " + tables.size());
+        		//System.out.println("Tables Size : " + tables.size());
             for(int i = 0; i < tables.size(); i++) {
-            		tables.get(i).seeAll();
+            		//tables.get(i).seeAll();
             		if(tables.get(i).checkable()) {
-            			System.out.println(tables.get(i).getCheckColumns());
+            			//System.out.println(tables.get(i).getCheckColumns());
             			ArrayList<String> columns = tables.get(i).getCheckColumns();
-            			System.out.println("columns : " + columns);
+            			//System.out.println("columns : " + columns);
             			for(int j = 0; j < columns.size(); j++) {
                 			checkColumnName.add(columns.get(j));
                 		}
             		}else continue;
             }
             //----ここまでどこを検査すればいいかを一列に整列　→　indexで管理してしまいたい
-            System.out.println("----checks----");
-            for(int i = 0; i < tables.size(); i++) {
-            		if(tables.get(i).checkable()) {
-            			System.out.println(new Object[]{tables.get(i).getChecks()});
-            		}else continue;
-            }
+            //System.out.println("----checks----");
+            //for(int i = 0; i < tables.size(); i++) {
+            //		if(tables.get(i).checkable()) {
+            			//System.out.println(new Object[]{tables.get(i).getChecks()});
+            	//	}else continue;
+            //}
+			checkIndexs = generateCheckIndexs(tables);
+			//System.out.println("----check Indexs----");
+			//for(int i = 0; i < checkIndexs.size(); i++) {
+				//System.out.println(checkIndexs.get(i));
+			//}
             //----ここまで確認用
 
             //-----For Debug---------------------------------------
-            System.out.println("---- Check Column Name ----");
+      /*      System.out.println("---- Check Column Name ----");
             for(int i = 0; i < checkColumnName.size(); i++) {
             		System.out.print(checkColumnName.get(i) + " , ");
             }
+						*/
             //-----------------------------------------------------
             System.out.println("");
             // 3. 結果の表示
-            int correctCount = 0;
-            int differentCount = 0;
+//            int correctCount = 0;
+//            int differentCount = 0;
             int index = 0;
+			showAllColumn(columnName);
             while (rset.next()) {
-            		boolean dif = false;
-            		String res = new String();
-            		for(int i = 0; i < columnName.size(); i++) {
-            			if(i != 0) res += ", ";
-            			res += rset.getString(columnName.get(i));
-            		}
-            		System.out.println("RES " + res);
+//            		boolean dif = false;
 
-            		for(int i = 0; i < tables.size(); i++) {
-            			String res2 = new String();
-            			String res3 = new String();
-            			ArrayList<String> checks = tables.get(i).getCheckColumns();
-            			for(int j = 0; j < checks.size(); j++) {
-            				if(j != 0) res2 += ", ";
-            				if(j != 0) res3 += ", ";
-            				res2 += rset.getString(checks.get(j));
-            				res3 += checks.get(j);
-            			}
-            				System.out.println("RES2 (" + res3 + ")  (" + res2 + ")");
-            		}
-
-
-            		for(int i = 0; i < tables.size(); i++) {
-            			//Tableからどれが検査項目かを持ってくる
-            			ArrayList<ArrayList<String>> checks = tables.get(i).getChecks();
-            			//検査項目ごとに（同じカラムごとに）
-            			for(int j = 0; j < checks.size(); j++) {
-            				String res2 = new String();
-                			String res3 = new String();
-                			ArrayList<String> checker = new ArrayList<String>();
-                			ArrayList<Integer> intChecker = new ArrayList<Integer>();
-                			//検査用に同じカラムごとに一旦配列を作る
-            				for(int k = 1; k < checks.get(j).size(); k++) {
-            					if(k != 1) res2 += ", ";
-                				if(k != 1) res3 += ", ";
-                				res2 += rset.getString(checks.get(j).get(k));
-                				checker.add(rset.getString(checks.get(j).get(k)));
-                				res3 += checks.get(j).get(k);
-            				}
-            				System.out.println("RES3 (" + res3 + ")  (" + res2 + ")");
-            				for(int k = 1; k < checker.size(); k++) {
-            					if(!checker.get(k).equals(checker.get(0))) {
-            						System.out.println("Column " + checks.get(j).get(0) + " has different provenance");
-            						dif = true;
-            					}
-            				}
-            			}
-            		}
-        			if(dif) {
-        				ArrayList<String> ar = new ArrayList<String>();
-        				//differentCount++;
-        				for(int k = 0 ; k < normalColumn.size(); k++) {
-        					ar.add(rset.getString(normalColumn.get(k)));
-        				}
-        				differents.add(ar);
-        			}else{
-        				//correctCount++;
-        				ArrayList<String> ar = new ArrayList<String>();
-        				//differentCount++;
-        				for(int k = 0 ; k < normalColumn.size(); k++) {
-        					ar.add(rset.getString(normalColumn.get(k)));
-
-        				}
-        				corrects.add(ar);
-        			}
-        			index++;
+				//showAll(rset, columnName.size());
+				//showEachCheckColumn(rset, checkIndexs, columnName);
+				DifferentRow dr = checkEachCheckColumn(index, rset, checkIndexs, columnName);
+				if(dr == null){
+					ci.add(index);
+				}else{
+					di.add(dr);
+				}
+	        		index++;
             }
-            if(differents.size() < 1) {
-            		for(int i = 0; i < normalColumn.size(); i++) {
-            			if(i != 0) System.out.print(", ");
-            			System.out.print(normalColumn.get(i));
-            		}
-            		System.out.println();
-            		for(int i = 0; i < corrects.size(); i++) {
-            			for(int j = 0; j < corrects.get(i).size(); j++) {
-            				if(j != 0) System.out.print(", ");
-                			System.out.print(corrects.get(i).get(j));
-            			}
-            			System.out.println();
-            		}
-            }else {
-            		System.out.println("Correct column : " + corrects.size());
-            		for(int i = 0; i < corrects.size(); i++) {
-            			if(i != 0) System.out.print(", ");
-            			System.out.print("{");
-            			for(int j = 0 ; j < corrects.get(i).size(); j++) {
-            				if(j != 0) System.out.print(", ");
-            				System.out.print(corrects.get(i).get(j));
-            			}
-            			System.out.print("}");
-            		}
-            		System.out.println();
-            		System.out.println("Different column : " + differents.size());
-            		for(int i = 0; i < differents.size(); i++) {
-            			if(i != 0) System.out.print(", ");
-            			System.out.print("{");
-            			for(int j = 0 ; j < differents.get(i).size(); j++) {
-            				if(j != 0) System.out.print(", ");
-            				System.out.print(differents.get(i).get(j));
-            			}
-            			System.out.print("}");
-            		}
-            		System.out.println();
-            		System.out.println("Look Correct rows' provenances : Input 'c'");
-            		System.out.println("Look Different rows' all provenances : Input 'd'");
-            		System.out.println("Look Different rows' only different column provenances : Input 'd'");
-            		System.out.println("Look all rows' provenances : Input 'a'");
-            		System.out.println("Look provenances column name : Input 'p'");
-            		System.out.println("Finish this query : Input 'q'");
-            		Scanner s = new Scanner(System.in);
-            		while(s.hasNext()) {
-            			String input = s.next();
-            			if(input.equals("c")) {
-
-            			}
-            		}
-            }
+			if(di.size() < 1){
+				//System.out.println("si");
+				showNormalColumnName(columnName, normal);
+				//showAllNormalColumn(rset, normal);
+				showCorrect(ci, rset, normal);
+			}else{
+				System.out.println("With Same Provenance Rows");
+				showNormalColumnName(columnName, normal);
+				showCorrect(ci, rset, normal);
+				System.out.println("With Different Provenance Rows");
+				showNormalColumnName(columnName, normal);
+				showDifferent(di, rset, normal);
+				finishTime = System.currentTimeMillis();
+				System.out.println("Time : " + (finishTime - startTime) + " ms");
+				while(true) {
+					askNextOption();
+					String in = waitUserInput();
+					if(in.equals("s")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, columnName.size());
+						showCorrect(ci, rset, columnName.size());
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("d")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, columnName.size());
+						showDifferent(di, rset, columnName.size());
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("dp")) {
+						startTime = System.currentTimeMillis();
+						showOnlyDifferentProvenance(di, rset, checkIndexs, columnName, normal);
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("a")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, columnName.size());
+						showAllRow(rset, columnName.size());
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("an")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, normal);
+						showAllRow(rset, normal);
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("sn")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, normal);
+						showCorrect(ci, rset, normal);
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("dn")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, normal);
+						showDifferent(di, rset, normal);
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("n")) {
+						startTime = System.currentTimeMillis();
+						System.out.println("Same provenances : " + ci.size());
+						System.out.println("Different provenances : " + di.size());
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("c")) {
+						startTime = System.currentTimeMillis();
+						showNormalColumnName(columnName, columnName.size());
+						finishTime = System.currentTimeMillis();
+						System.out.println("Time : " + (finishTime - startTime) + " ms");
+					}else if(in.equals("q")) break;
+				}
+			}
         } catch(SQLException e) {
             // 接続、SELECT文の発行でエラーが発生した場合
+        		System.out.println("Err");
             e.printStackTrace();
         } finally {
             // 4.データベース接続の切断
@@ -337,7 +533,7 @@ public class dbtest {
                     e.printStackTrace();
                 }finally {
                 	 System.out.println("Fin");
-                	 inputQuery();
+                	 inputQuery(dbn, un, ps);
                 }
             }
         }
@@ -346,10 +542,11 @@ public class dbtest {
 class DifferentRow{
 	private int index;
 	private ArrayList<ArrayList<Integer>> dColumns;
+	private ArrayList<Integer> checkIndex;
 
-	public DifferentRow(int i, ArrayList<ArrayList<Integer>> d) {
+	public DifferentRow(int i, ArrayList<Integer> d) {
 		index = i;
-		dColumns = d;
+		checkIndex = d;
 	}
 
 	public int getIndex() {
@@ -358,6 +555,10 @@ class DifferentRow{
 
 	public ArrayList<ArrayList<Integer>> getDColumns(){
 		return dColumns;
+	}
+
+	public ArrayList<Integer> getCheckIndex(){
+		return checkIndex;
 	}
 }
 
@@ -376,8 +577,6 @@ class TableInfo{
 		checkColumn = new ArrayList<String>();
 		check = false;
 		checks= new ArrayList<ArrayList<String>>();
-
-		intChecks = new ArrayList<ArrayList<Integer>>();
 	}
 
 	public void seeAll() {
@@ -386,12 +585,31 @@ class TableInfo{
 		System.out.println("checkcolumns : " + checkColumns);
 		System.out.println("check : " + check);
 		System.out.println("checks : " + checks);
+		System.out.println("intChecks : " + intChecks);
 	}
 
 	public boolean checkable() {
 		return check;
 	}
 
+	public void addintChecks(int no, int addIndex){
+//		System.out.println("addintChecks");
+//		System.out.println(no + " " + addIndex + " " + intChecks);
+//		System.out.println(intChecks.get(no));
+		intChecks.get(no).add(addIndex);
+	}
+
+	public ArrayList<ArrayList<Integer>> getIntChecks(){
+		return intChecks;
+	}
+
+	public void registCheckColumn2(ArrayList<String> as){
+		checkColumn = as;
+		intChecks = new ArrayList<ArrayList<Integer>>();
+		for(int i = 0; i < as.size(); i++) {
+			intChecks.add(new ArrayList<Integer>());
+		}
+	}
 	public void setTrue() {
 		check = true;
 	}
@@ -453,6 +671,15 @@ class TableInfo{
 		return -1;
 	}
 
+	public int checksIndex2(String s) {
+		for(int i = 0; i < checkColumn.size(); i++) {
+			if(s.equals(checkColumn.get(i))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public void addCheck(int x, String s) {
 		checks.get(x).add(s);
 	}
@@ -461,38 +688,3 @@ class TableInfo{
 		return checks;
 	}
 }
-//select * from artist;
-//select provenance a from x;
-/*
-select provenance p.name
-from person p, sigmod s, y2000 y
-where s.name = y.name and p.name = s.name;
-
-select provenance s.name, p.sex
-from sigmod s, y2000 y, person p
-where s.name = y.name and s.name = p.name;
-
-
-*/
-/*
- name
- prov_public_person_id  prov_public_person_1_id  prov_public_person_2_id
- prov_public_conference_id  prov_public_conference_1_id
- prov_public_attend_p__id prov_public_attend_1_p__id
- prov_public_attend_c__id  prov_public_attend_1_c__id
-
- prov_public_person_name
- prov_public_person_sex
-
- prov_public_person_1_name
- prov_public_person_1_sex
-
- prov_public_conference_name
- prov_public_conference_year
-
- prov_public_person_2_name
- prov_public_person_2_sex
-
- prov_public_conference_1_name
- prov_public_conference_1_year
-*/
